@@ -1,0 +1,1 @@
+This folder will contain all of the images, icons etc that the plugin uses

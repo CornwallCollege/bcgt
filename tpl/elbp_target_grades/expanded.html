@@ -1,0 +1,424 @@
+<?php if(!defined('ELBP')) exit; ?>
+
+<br><br>
+
+<div id="elbp_target_grades_content">
+    
+    <?php if($quals): ?>
+    
+    <table class="elbp_target_grades_table">
+        
+        <tr style="background-color:<?= $obj->getHeaderBackgroundColour() ?>;color:<?= $obj->getHeaderFontColour() ?>">
+            <th><?= get_string('qualification', 'block_bcgt') ?></th>
+            <th><?= get_string('asptargetgrade', 'block_bcgt') ?></th>
+            <th><?= get_string('targetgrade', 'block_bcgt') ?></th>
+            
+            <?php if (elbp_has_capability('block/bcgt:editasptargetgrade', $access)): ?>
+                <th></th>
+            <?php endif; ?>
+        </tr>
+        
+        <?php foreach($quals as $qual): ?>
+        <tr id="qual_row_<?= $qual->get_id() ?>">
+        
+            <td><?= $qual->get_display_name(); ?></td>
+            <td>
+                
+                <?php if (elbp_has_capability('block/bcgt:editasptargetgrade', $access)): ?>
+                    <div id="qual_<?= $qual->get_id() ?>_edit" style="display:none;">
+                        <select id="aspirational_<?= $qual->get_id() ?>" onchange="update_on_select(<?= $qual->get_id() ?>, this);return false;">
+                            <option value=""><?= $string['pleaseselect'] ?></option>
+                            <?php if(isset($qual->possibleGrades)): ?>
+                                <?php foreach($qual->possibleGrades as $grade): ?>
+                                    <option value="<?= $grade['location'] ?>:<?= $grade['id'] ?>:<?= $grade['grade'] ?>" <?= (isset($qual->aspirationalGrade) && isset($qual->aspirationalGrade->grade) && $qual->aspirationalGrade->grade == $grade['grade']) ? 'selected' : ''; ?> ><?= $grade['grade'] ?></option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>                    
+                    </div>
+                <?php endif; ?>
+                
+                <div id="qual_<?= $qual->get_id() ?>_view">
+                    
+                    <div id="aspirational_info_<?= $qual->get_id() ?>">
+                        <?php if (isset($qual->aspirationalGrade) && isset($qual->aspirationalGrade->grade)): ?>
+                            <h3><?= $qual->aspirationalGrade->grade ?></h3>
+                            <small><?= $string['setby'] ?> <?= fullname($qual->aspirationalGrade->setby) ?></small>
+                        <?php else: ?>
+                            -
+                        <?php endif; ?>
+                    </div>
+
+                </div>
+                
+               
+            </td>
+            
+            
+            
+            
+            
+            
+            
+            
+            <td>
+                
+                <div id="qual_<?= $qual->get_id() ?>_edit_target" style="display:none;">
+                
+                    <?php if ($qual->can_have_target_grade() && $qual->has_auto_target_grade_calculation() === false && elbp_has_capability('block/bcgt:editasptargetgrade', $access)): ?>
+
+                            <select id="target_<?= $qual->get_id() ?>">
+                                <option value=""><?= $string['pleaseselect'] ?></option>
+                                <?php if(isset($qual->possibleGrades)): ?>
+                                    <?php foreach($qual->possibleGrades as $grade): ?>
+                                        <option value="<?= $grade['location'] ?>:<?= $grade['id'] ?>:<?= $grade['grade'] ?>" <?= (isset($qual->targetGrade) && isset($qual->targetGrade->grade) && $qual->targetGrade->grade == $grade['grade']) ? 'selected' : ''; ?> ><?= $grade['grade'] ?></option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </select>                    
+
+                    <?php else: ?>
+                        <span><?= get_string('noedit', 'block_bcgt') ?></span>
+                    <?php endif; ?>   
+                
+                </div>
+                                
+                
+                <div id="qual_<?= $qual->get_id() ?>_view_target">
+                    
+                    <div id="target_info_<?= $qual->get_id() ?>">
+                        <?php if (isset($qual->targetGrade) && isset($qual->targetGrade->grade)): ?>
+                            <h3><?= $qual->targetGrade->grade ?></h3>
+                            <small><?= $string['setby'] ?> <?= (isset($qual->targetGrade->setby)) ? fullname($qual->targetGrade->setby) : get_string('na', 'block_bcgt') ?></small>
+                        <?php else: ?>
+                            -
+                        <?php endif; ?>
+                    </div>
+
+                </div>
+                
+                
+            </td>
+            
+            
+            
+            
+            
+            
+            
+            <?php if (elbp_has_capability('block/bcgt:editasptargetgrade', $access)): ?>
+                <td>
+                    <div id="button_<?= $qual->get_id() ?>_save" style="display:none;">
+                        <button class="elbp_b" onclick="save_targets('<?= $qual->get_id() ?>', 'q');return false;"><?= $string['save'] ?></button>
+                    </div>
+                    <div id="button_<?= $qual->get_id() ?>_edit">
+                        <button class="elbp_b" onclick="load_edit('<?= $qual->get_id() ?>');return false;"><?= $string['edit'] ?></button>
+                    </div>
+                    <div id="button_<?= $qual->get_id() ?>_loading" style="display:none;">
+                        <img src="<?= $CFG->wwwroot ?>/blocks/elbp/pix/loader.gif" alt="<?= $string['loading'] ?>" />
+                    </div>
+                </td>
+            <?php endif; ?>
+        </tr>
+        <?php endforeach; ?>
+        
+        
+    </table>
+    
+    <?php else: ?>
+        <p class='c'><?= $string['noresults'] ?></p>
+    <?php endif; ?>
+    
+    <br><br><br><br>
+    
+    <p class="c"><small><?= get_string('courseswithoutquals', 'block_bcgt') ?></small></p>
+    
+    
+    <?php if($courses): ?>
+    
+    <table class="elbp_target_grades_table">
+        
+        <tr style="background-color:<?= $obj->getHeaderBackgroundColour() ?>;color:<?= $obj->getHeaderFontColour() ?>">
+            <th><?= get_string('course', 'block_bcgt') ?></th>
+            <th><?= get_string('asptargetgrade', 'block_bcgt') ?></th>
+            <th><?= get_string('targetgrade', 'block_bcgt') ?></th>
+            
+            <?php if (elbp_has_capability('block/bcgt:editasptargetgrade', $access)): ?>
+                <th></th>
+            <?php endif; ?>
+        </tr>
+        
+        <?php foreach($courses as $course): ?>
+            <tr id="course_row_<?= $course->id ?>">
+
+                <td><?= $course->fullname; ?></td>
+                <td>
+
+                    <?php if (elbp_has_capability('block/bcgt:editasptargetgrade', $access)): ?>
+                        <div id="course_<?= $course->id ?>_edit" style="display:none;">
+                            <select id="aspirational_course_<?= $course->id ?>" onchange="update_on_select_course(<?= $course->id ?>, this);return false;">
+                                <option value=""><?= $string['pleaseselect'] ?></option>
+                                <?php if(isset($course->possibleGrades)): ?>
+                                    <?php foreach($course->possibleGrades as $grade): ?>
+                                        <option value="<?= $grade['location'] ?>:<?= $grade['id'] ?>:<?= $grade['grade'] ?>" <?= (isset($course->aspirationalGrade) && isset($course->aspirationalGrade->id) && $course->aspirationalGrade->id == $grade['id']) ? 'selected' : ''; ?>  ><?= $grade['grade'] ?></option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                                <option value="OTHER"><?= $string['other'] ?></option>
+                            </select>
+
+                            <div id="aspirational_freetext_course_<?= $course->id ?>" style="display:none;">
+                                <br>
+                                <input type="text" id="aspirational_custom_course_<?= $course->id ?>" placeholder="<?= $string['grade'] ?>" />
+                            </div>
+
+                        </div>
+                    <?php endif; ?>
+                    
+
+                    <div id="course_<?= $course->id ?>_view">
+
+                        <div id="aspirational_info_course_<?= $course->id ?>">
+                             <?php if (isset($course->aspirationalGrade) && isset($course->aspirationalGrade->grade)): ?>
+                                <h3><?= $course->aspirationalGrade->grade ?></h3>
+                                <small><?= $string['setby'] ?> <?= fullname($course->aspirationalGrade->setby) ?></small>
+                            <?php else: ?>
+                                -
+                            <?php endif; ?>
+                        </div>
+
+                    </div>
+
+                    
+                </td>
+
+                
+                
+                
+                
+                
+                
+                
+            <td>
+                
+                    <div id="course_<?= $course->id ?>_edit_target" style="display:none;">
+
+                        <?php if (elbp_has_capability('block/bcgt:editasptargetgrade', $access)): ?>
+
+                                <select id="target_course_<?= $course->id ?>" onchange="update_on_select_course_target(<?= $course->id ?>, this);return false;">
+                                    <option value=""><?= $string['pleaseselect'] ?></option>
+                                    <?php if(isset($course->possibleGrades)): ?>
+                                        <?php foreach($course->possibleGrades as $grade): ?>
+                                            <option value="<?= $grade['location'] ?>:<?= $grade['id'] ?>:<?= $grade['grade'] ?>" <?= (isset($course->targetGrade) && isset($course->targetGrade->grade) && $course->targetGrade->grade == $grade['grade']) ? 'selected' : ''; ?> ><?= $grade['grade'] ?></option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                    <option value="OTHER"><?= $string['other'] ?></option>
+                                </select>    
+                        
+                                <div id="target_freetext_course_<?= $course->id ?>" style="display:none;">
+                                    <br>
+                                    <input type="text" id="target_custom_course_<?= $course->id ?>" placeholder="<?= $string['grade'] ?>" />
+                                </div>
+
+                        <?php else: ?>
+                            <span><?= get_string('noedit', 'block_bcgt') ?></span>
+                        <?php endif; ?>   
+
+                    </div>
+
+
+                    <div id="course_<?= $course->id ?>_view_target">
+
+                        <div id="target_info_course_<?= $course->id ?>">
+                            <?php if (isset($course->targetGrade) && isset($course->targetGrade->grade)): ?>
+                                <h3><?= $course->targetGrade->grade ?></h3>
+                                <small><?= $string['setby'] ?> <?= (isset($course->targetGrade->setby)) ? fullname($course->targetGrade->setby) : get_string('na', 'block_bcgt') ?></small>
+                            <?php else: ?>
+                                -
+                            <?php endif; ?>
+                        </div>
+
+                    </div>
+
+                
+            </td>
+                
+                
+                
+                
+                
+                
+                
+
+
+                <?php if (elbp_has_capability('block/bcgt:editasptargetgrade', $access)): ?>
+                    <td>
+                        <div id="button_course_<?= $course->id ?>_save" style="display:none;">
+                            <button class="elbp_b" onclick="save_targets('<?= $course->id ?>', 'c');return false;"><?= $string['save'] ?></button>
+                        </div>
+                        <div id="button_course_<?= $course->id ?>_edit">
+                            <button class="elbp_b" onclick="load_edit_course('<?= $course->id ?>');return false;"><?= $string['edit'] ?></button>
+                        </div>
+                        <div id="button_course_<?= $course->id ?>_loading" style="display:none;">
+                            <img src="<?= $CFG->wwwroot ?>/blocks/elbp/pix/loader.gif" alt="<?= $string['loading'] ?>" />
+                        </div>
+                    </td>
+                <?php endif; ?>
+            </tr>
+        <?php endforeach; ?>
+        
+        
+        
+    </table>
+    
+    <?php else: ?>
+        <p class='c'><?= $string['noresults'] ?></p>
+    <?php endif; ?>
+    
+    
+</div>
+
+<script>
+    
+    
+    function load_edit(qualID){
+        
+        $('#qual'+'_'+qualID+'_view').hide();
+        $('#qual'+'_'+qualID+'_edit').show();
+        $('#button_'+qualID+'_edit').hide();
+        $('#button_'+qualID+'_save').show();
+        $('#button_'+qualID+'_loading').hide();
+        
+        $('#qual'+'_'+qualID+'_view_target').hide();
+        $('#qual'+'_'+qualID+'_edit_target').show();
+        
+        
+    }
+    
+    function load_edit_course(cID){
+        
+        $('#course'+'_'+cID+'_view').hide();
+        $('#course'+'_'+cID+'_edit').show();
+        $('#button_course_'+cID+'_edit').hide();
+        $('#button_course_'+cID+'_save').show();
+        $('#button_course_'+cID+'_loading').hide();
+        
+        $('#course'+'_'+cID+'_view_target').hide();
+        $('#course'+'_'+cID+'_edit_target').show();
+        
+    }
+    
+    function close_edit(qualID){
+        
+        $('#qual'+'_'+qualID+'_view').show();
+        $('#qual'+'_'+qualID+'_edit').hide();
+        $('#button_'+qualID+'_edit').show();
+        $('#button_'+qualID+'_save').hide();
+        $('#button_'+qualID+'_loading').hide();
+        
+        $('#qual'+'_'+qualID+'_view_target').show();
+        $('#qual'+'_'+qualID+'_edit_target').hide();
+        
+    }
+    
+    function close_edit_course(cID){
+        
+        $('#course'+'_'+cID+'_view').show();
+        $('#course'+'_'+cID+'_edit').hide();
+        $('#button_course_'+cID+'_edit').show();
+        $('#button_course_'+cID+'_save').hide();
+        $('#button_course_'+cID+'_loading').hide();
+        
+        $('#course'+'_'+cID+'_view_target').show();
+        $('#course'+'_'+cID+'_edit_target').hide();
+        
+    }
+    
+    function update_on_select(qualID, select){
+        
+        var val = select.value;
+        if (val == "OTHER"){
+            $('#aspirational_freetext_'+qualID).show();
+        }
+        
+    }
+    
+    function update_on_select_course(cID, select){
+        
+        var val = select.value;
+        if (val == "OTHER"){
+            $('#aspirational_freetext_course_'+cID).show();
+        }
+        
+    }
+    
+    function update_on_select_course_target(cID, select){
+        
+        var val = select.value;
+        if (val == "OTHER"){
+            $('#target_freetext_course_'+cID).show();
+        }
+        
+    }
+    
+    function save_targets(id, type){
+        
+        if (type == 'q'){
+            
+            var aspirational = $('#aspirational_'+id).val();
+            var aspirationalcustom = $('#aspirational_custom_'+id).val();
+            
+            var target = $('#target_'+id).val();            
+                                    
+            var params = { 
+                        qualID: id,
+                        studentID: <?= $obj->getStudentID() ?>, 
+                        aspirationalgrade: aspirational,
+                        aspirationalcustom: aspirationalcustom,
+                        targetgrade: target
+                    };
+                    
+            var data = { action: 'save', params: params };
+        
+            $('#button_'+id+'_save').hide();
+            $('#button_'+id+'_loading').show();
+            
+            $.post('<?= $CFG->wwwroot ?>/blocks/bcgt/ajax/elbp_target_grades/ajax.php', data, function(d){
+                close_edit(id);
+                eval(d);
+                $('#qual_row_'+id).effect( "highlight", {color: '#ccff66'}, 3000 );
+            });
+            
+        } 
+        else if(type == 'c'){
+            
+            
+            var aspirational = $('#aspirational_course_'+id).val();
+            var aspirationalcustom = $('#aspirational_custom_course_'+id).val();
+            
+            var target = $('#target_course_'+id).val();
+            var targetcustom = $('#target_custom_course_'+id).val();
+                        
+            var params = { 
+                        courseID: id,
+                        studentID: <?= $obj->getStudentID() ?>, 
+                        aspirationalgrade: aspirational,
+                        aspirationalcustom: aspirationalcustom,
+                        targetgrade: target,
+                        targetcustom: targetcustom
+                    };
+                    
+                    
+            var data = { action: 'save', params: params };
+        
+            $('#button_course_'+id+'_save').hide();
+            $('#button_course_'+id+'_loading').show();
+            
+            $.post('<?= $CFG->wwwroot ?>/blocks/bcgt/ajax/elbp_target_grades/ajax.php', data, function(d){
+                close_edit_course(id);
+                eval(d);
+                $('#course_row_'+id).effect( "highlight", {color: '#ccff66'}, 3000 );
+            });
+            
+        }                
+        
+    }
+    
+</script>

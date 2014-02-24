@@ -1,0 +1,331 @@
+QualID,TypeID,Type,SubTypeID,SubType,LevelID,Level,Name,Credits,Code
+423,2,"BTEC Lower",2,Diploma,1,"Level 1","Art & Design",0,L637
+416,2,"BTEC Lower",2,Diploma,1,"Level 1","Health and social care",0,k1124
+63,2,"BTEC Lower",2,Diploma,1,"Level 1","LAND AND ENVIRONMENT 2012",0,B663-12
+65,2,"BTEC Lower",2,Diploma,1,"Level 1","SPORT AND ACTIVE LEISURE 2011",,H1238-11
+66,2,"BTEC Lower",2,Diploma,1,"Level 1","in Sport (H646)",0,H1238-12
+415,2,"BTEC Lower",2,Diploma,1,"Level 1","Foundation Public Services",0,K1379
+485,2,"BTEC Lower",2,Diploma,1,"Level 1","Health and social care 2012",0,K1124-13
+497,2,"BTEC Lower",2,Diploma,1,"Level 1","in Sport (H646) 2012",0,H1238-13
+502,2,"BTEC Lower",2,Diploma,1,"Level 1","in Sport (H646-13)",0,H646-13
+511,2,"BTEC Lower",2,Diploma,1,"Level 1","Foundation Public Services 2013",0,K1379-13
+512,2,"BTEC Lower",2,Diploma,1,"Level 1","Foundation Public Services 2012",0,K1380-13
+564,2,"BTEC Lower",2,Diploma,1,"Level 1","LAND AND ENVIRONMENT 2013",0,B332-13
+417,2,"BTEC Lower",4,Certificate,1,"Level 1","IT Users",13,500/6568/3
+64,2,"BTEC Lower",4,Certificate,1,"Level 1","LAND BASED STUDIES",,B948-12
+67,2,"BTEC Lower",4,Certificate,1,"Level 1","SPORT AND ACTIVE LEISURE 2011",,H1239-11
+68,2,"BTEC Lower",4,Certificate,1,"Level 1","SPORT AND ACTIVE LEISURE 2012",,H1239-12
+419,2,"BTEC Lower",4,Certificate,1,"Level 1","Workskills 2011 - 2012",13,600/2394/6
+468,2,"BTEC Lower",4,Certificate,1,"Level 1","IT Users 2012",13,F1666-13
+470,2,"BTEC Lower",4,Certificate,1,"Level 1","Workskills 2012 - 2013",13,F1752-13
+498,2,"BTEC Lower",4,Certificate,1,"Level 1","SPORT AND ACTIVE LEISURE 2013",,H1239-13
+595,2,"BTEC Lower",4,Certificate,1,"Level 1","LAND BASED STUDIES 2013",,B948-13
+623,13,"BTEC Lower",2,Diploma,1,"Level 1","For IT Users 2012 - 2013",0,
+640,13,"BTEC Lower",2,Diploma,1,"Level 1","Land-based Studies",37,500/6701/1
+641,13,"BTEC Lower",2,Diploma,1,"Level 1","Diploma in Land-Based Studies (14-16)",37,
+643,13,"BTEC Lower",4,Certificate,1,"Level 1","Land Based Studies (14-16)",13,
+399,2,"BTEC Lower",10,Award,1,"Level 1","SPORT AND ACTIVE LEISURE",,H1240-12
+418,2,"BTEC Lower",10,Award,1,"Level 1","Conn Management",0,
+422,2,"BTEC Lower",10,Award,1,"Level 1","Personal And Social Development ",6,500/5859/9
+469,2,"BTEC Lower",10,Award,1,"Level 1","Personal And Social Development  2012",6,F1736-13
+499,2,"BTEC Lower",10,Award,1,"Level 1","SPORT AND ACTIVE LEISURE 2012",,H1240-13
+601,2,"BTEC Lower",10,Award,1,"Level 1","Personal And Social Development  2012 - 2013",6,F1052-13
+28,2,BTEC,2,Diploma,2,"Level 2","ANIMAL CARE",0,B627-11
+32,2,BTEC,2,Diploma,2,"Level 2","COUNTRYSIDE AND ENVIRONMENT 2011",,B749-11
+33,2,BTEC,2,Diploma,2,"Level 2","COUNTRYSIDE AND ENVIRONMENT 2012",,B749-12
+37,2,BTEC,2,Diploma,2,"Level 2","FISH HUBSANDRY",,B1002-12
+41,2,BTEC,2,Diploma,2,"Level 2","HORSE CARE",0,B637-11
+47,2,BTEC,2,Diploma,2,"Level 2",HORTICULTURE,0,B753-11
+52,2,BTEC,2,Diploma,2,"Level 2","SPORT 2011",,B619-11
+53,2,BTEC,2,Diploma,2,"Level 2","in Sport (H647)",0,B619-12
+75,2,BTEC,2,Diploma,2,"Level 2","PUBLIC SERVICES 2011",,K1203-11
+76,2,BTEC,2,Diploma,2,"Level 2","PUBLIC SERVICES 2012",,K1203-12
+87,2,BTEC,2,Diploma,2,"Level 2",IT,,
+89,2,BTEC,2,Diploma,2,"Level 2","Art and Design",,
+90,2,BTEC,2,Diploma,2,"Level 2",Agriculture,,
+98,2,BTEC,2,Diploma,2,"Level 2","Health and Social Care",,
+102,2,BTEC,2,Diploma,2,"Level 2","Creative Media production",0,
+109,2,BTEC,2,Diploma,2,"Level 2",Fisheries,,
+115,2,BTEC,2,Diploma,2,"Level 2",Countryside,,
+150,2,BTEC,2,Diploma,2,"Level 2","Performing Arts (performance)",,
+152,2,BTEC,2,Diploma,2,"Level 2","L2 Music",0,
+170,2,BTEC,2,Diploma,2,"Level 2","Sport (outdoor adventure)",60,B404
+175,2,BTEC,2,Diploma,2,"Level 2",Business,,
+402,2,BTEC,2,Diploma,2,"Level 2","Applied Science",0,
+407,2,BTEC,2,Diploma,2,"Level 2",Engineering,0,EJ022
+463,2,BTEC,2,Diploma,2,"Level 2","L2 Music 2012",0,L523-13
+464,2,BTEC,2,Diploma,2,"Level 2","Performing Arts (performance) 2012",,L524-13
+465,2,BTEC,2,Diploma,2,"Level 2","IT 2012 - 2013",0,F1045-13
+476,2,BTEC,2,Diploma,2,"Level 2","Engineering 2012",0,D565-13
+480,2,BTEC,2,Diploma,2,"Level 2","Business 2012",,E1010-13
+486,2,BTEC,2,Diploma,2,"Level 2","Health and Social Care 2012",,K639-13
+487,2,BTEC,2,Diploma,2,"Level 2","Sport (outdoor adventure) 2012",60,B404-13
+490,2,BTEC,2,Diploma,2,"Level 2","in Sport (H647) 2012",0,B619-13
+503,2,BTEC,2,Diploma,2,"Level 2","in Sport (H647-13)",0,H647-13
+506,2,BTEC,2,Diploma,2,"Level 2","PUBLIC SERVICES 2013",,K1203-13
+555,2,BTEC,2,Diploma,2,"Level 2","BTEC First Diploma in Uniformed Public Services",0,K645-13
+566,2,BTEC,2,Diploma,2,"Level 2","ANIMAL CARE 2013",0,B627-13
+569,2,BTEC,2,Diploma,2,"Level 2","HORSE CARE 2013",0,B637-13
+578,2,BTEC,2,Diploma,2,"Level 2","HORTICULTURE 2013",0,B393-13
+593,2,BTEC,2,Diploma,2,"Level 2","COUNTRYSIDE AND ENVIRONMENT 2013",,B749-13
+621,2,BTEC,2,Diploma,2,"Level 2","Level 2 Diploma Animal Care 12 P/T",60,B800
+642,2,BTEC,2,Diploma,2,"Level 2","Animal Care (14-16)",60,
+429,2,BTEC,3,"Subsidiary Diploma",2,"Level 2","Example Qualification",0,
+54,2,BTEC,4,Certificate,2,"Level 2",SPORT,,B680-12
+77,2,BTEC,4,Certificate,2,"Level 2","PUBLIC SERVICES 2011",,A514-11
+78,2,BTEC,4,Certificate,2,"Level 2","PUBLIC SERVICES 2012",,A514-12
+88,2,BTEC,4,Certificate,2,"Level 2","Art and Design",,
+97,2,BTEC,4,Certificate,2,"Level 2","Health and Social Care",,
+100,2,BTEC,4,Certificate,2,"Level 2","Horse Care",,
+101,2,BTEC,4,Certificate,2,"Level 2","Creative Media production",,
+104,2,BTEC,4,Certificate,2,"Level 2","Animal Care",,
+127,2,BTEC,4,Certificate,2,"Level 2",Horticulture,,
+132,2,BTEC,4,Certificate,2,"Level 2","Applied Science",,
+151,2,BTEC,4,Certificate,2,"Level 2","Music Technology",,
+169,2,BTEC,4,Certificate,2,"Level 2","Sport (outdoor adventure)",,
+492,2,BTEC,4,Certificate,2,"Level 2","SPORT 2012",,B680-13
+99,2,BTEC,1,"Extended Diploma",2,"Level 2","Horse Care",,
+128,2,BTEC,1,"Extended Diploma",2,"Level 2",Horticulture,,
+153,2,BTEC,1,"Extended Diploma",2,"Level 2","Music Technology",,
+398,2,BTEC,9,"Extended Certificate",2,"Level 2",SPORT,,B679-12
+401,2,BTEC,9,"Extended Certificate",2,"Level 2","PUBLIC SERVICES",,K1204-12
+491,2,BTEC,9,"Extended Certificate",2,"Level 2","SPORT 2012",,B679-13
+507,2,BTEC,9,"Extended Certificate",2,"Level 2","PUBLIC SERVICES 2012",,K1204-13
+635,2,BTEC,9,"Extended Certificate",2,"Level 2","Animal Care",60,
+18,2,BTEC,2,Diploma,3,"Level 3","Art and Design Photography",,
+13,2,BTEC,2,Diploma,3,"Level 3","Business and Finance",400,
+23,2,BTEC,2,Diploma,3,"Level 3","FISH MANAGEMENT 2011",,B675-11
+24,2,BTEC,2,Diploma,3,"Level 3","FISH MANAGEMENT 2012",,B675-12
+30,2,BTEC,2,Diploma,3,"Level 3","ANIMAL MANAGEMENT 2012",,B632-12
+36,2,BTEC,2,Diploma,3,"Level 3",COUNTRYSIDE,,B710-12
+406,2,BTEC,2,Diploma,3,"Level 3","Year 2 in Sport (H648-12)",0,H648-12
+45,2,BTEC,2,Diploma,3,"Level 3","HORSE MANAGEMENT",,B644-12
+405,2,BTEC,2,Diploma,3,"Level 3","Horticulture 2012",0,
+51,2,BTEC,2,Diploma,3,"Level 3","HORTICULTURE 2011",0,B717-12
+57,2,BTEC,2,Diploma,3,"Level 3","Year 2 in Sport (H648)",60,"H648-12 B & C"
+60,2,BTEC,2,Diploma,3,"Level 3","ANIMAL MANAGEMENT 2011",,B653-11
+71,2,BTEC,2,Diploma,3,"Level 3","PUBLIC SERVICES 2011",,K1223-11
+72,2,BTEC,2,Diploma,3,"Level 3","PUBLIC SERVICES 2012",,K1223-12
+79,2,BTEC,2,Diploma,3,"Level 3","Countryside Management",,
+84,2,BTEC,2,Diploma,3,"Level 3","Travel and Tourism",,
+91,2,BTEC,2,Diploma,3,"Level 3","Public Services (Uniformed)",,
+93,2,BTEC,2,Diploma,3,"Level 3","Forestry and Arboriculture",,
+106,2,BTEC,2,Diploma,3,"Level 3","Music Technology",,
+111,2,BTEC,2,Diploma,3,"Level 3","Art and Design Fine Art",,
+120,2,BTEC,2,Diploma,3,"Level 3","Electrical/Electronic Engineering",,
+124,2,BTEC,2,Diploma,3,"Level 3","Sports (Performance and Excellence)",,
+129,2,BTEC,2,Diploma,3,"Level 3","Art and Design",,
+130,2,BTEC,2,Diploma,3,"Level 3","Sport (Outdoor Adventure)",120,B446
+139,2,BTEC,2,Diploma,3,"Level 3","Performing Arts (Musical Theatre)",,
+142,2,BTEC,2,Diploma,3,"Level 3","Sports (Development, Coaching and Fitness)",,
+147,2,BTEC,2,Diploma,3,"Level 3","Art and Design Interactive Media",,
+155,2,BTEC,2,Diploma,3,"Level 3","Health and Social Care - social care",,
+161,2,BTEC,2,Diploma,3,"Level 3","Applied Science (Forensics)",,
+165,2,BTEC,2,Diploma,3,"Level 3","Art and Design Graphic Design",,
+171,2,BTEC,2,Diploma,3,"Level 3",Fisheries,,
+180,2,BTEC,2,Diploma,3,"Level 3","Health and Social Care",,
+404,2,BTEC,2,Diploma,3,"Level 3","IT 2011 - 2013",0,F1048
+409,2,BTEC,2,Diploma,3,"Level 3","Mechanical Engineering",120,KM286
+412,2,BTEC,2,Diploma,3,"Level 3","Electrical/Electronic Engineering - 2nd Years",0,
+413,2,BTEC,2,Diploma,3,"Level 3","Electrical/Electronic Engineering - 1st Years",0,
+425,2,BTEC,2,Diploma,3,"Level 3","Diploma in Arboriculture",0,"b872 (11)"
+430,2,BTEC,2,Diploma,3,"Level 3","diploma in foundation studies",120,"L500 ( 12)"
+435,2,BTEC,2,Diploma,3,"Level 3","L3 Dip Arboriculture (11)",0,
+437,2,BTEC,2,Diploma,3,"Level 3","BTEC L3 Nat Dip Construction",70,
+440,2,BTEC,2,Diploma,3,"Level 3","Aeroautical Engineering",120,
+442,2,BTEC,2,Diploma,3,"Level 3","Mechanical Engineering 2012",120,D1000-11
+451,2,BTEC,2,Diploma,3,"Level 3","Aeroautical Engineering 2012",120,D1075-13
+453,2,BTEC,2,Diploma,3,"Level 3","Electrical/Electronic Engineering - 1st Years 2012",0,D999-13
+457,2,BTEC,2,Diploma,3,"Level 3",Engineering,0,
+467,2,BTEC,2,Diploma,3,"Level 3","IT 2013",0,F1048-13
+471,2,BTEC,2,Diploma,3,"Level 3","BTEC L3 Nat Dip Construction 2012",70,C1389-13
+473,2,BTEC,2,Diploma,3,"Level 3","Engineering 2012",0,D1244-13
+482,2,BTEC,2,Diploma,3,"Level 3","Cambridge Technicals",120,E1053-13
+489,2,BTEC,2,Diploma,3,"Level 3","Sport (Outdoor Adventure) 2012",120,B446-13
+494,2,BTEC,2,Diploma,3,"Level 3","Year 2 in Sport (H648) 2012",60,B691-13
+504,2,BTEC,2,Diploma,3,"Level 3","Year 1 in Sport (H648-13) NOT IN USE",0,H648-13
+508,2,BTEC,2,Diploma,3,"Level 3","Public Services (Uniformed) 2012",,K1222-13
+509,2,BTEC,2,Diploma,3,"Level 3","PUBLIC SERVICES 2013",,K1223-13
+516,2,BTEC,2,Diploma,3,"Level 3","Travel and Tourism 2012",,H653-13
+557,2,BTEC,2,Diploma,3,"Level 3","Animal Management (2013)",180,
+567,2,BTEC,2,Diploma,3,"Level 3","ANIMAL MANAGEMENT 2013",,B632-13
+579,2,BTEC,2,Diploma,3,"Level 3","Horticulture 2013",0,B399-13
+585,2,BTEC,2,Diploma,3,"Level 3","FISH MANAGEMENT 2013",,B675-13
+588,2,BTEC,2,Diploma,3,"Level 3","COUNTRYSIDE 2013",,B710-13
+590,2,BTEC,2,Diploma,3,"Level 3","HORTICULTURE 2012",0,B717-13
+617,2,BTEC,2,Diploma,3,"Level 3","Mechanical Engineering 2013",120,D1000-13
+632,2,BTEC,2,Diploma,3,"Level 3","OCR Cambridge Technical in Business",120,
+636,2,BTEC,2,Diploma,3,"Level 3","Operations & Maintenance Engineering",120,
+644,2,BTEC,2,Diploma,3,"Level 3","BTEC L3 Diploma in Fish Management",120,
+645,2,BTEC,2,Diploma,3,"Level 3","BTEC L3 DIPLOMA IN FISH MANAGEMENT",120,B744
+10,2,BTEC,3,"Subsidiary Diploma",3,"Level 3","Art and Design",60,
+20,2,BTEC,3,"Subsidiary Diploma",3,"Level 3","Art and Design Photography",,
+25,2,BTEC,3,"Subsidiary Diploma",3,"Level 3",AGRICULTURE,,B676-12
+31,2,BTEC,3,"Subsidiary Diploma",3,"Level 3","ANIMAL MANAGEMENT 2011",0,B633-12
+46,2,BTEC,3,"Subsidiary Diploma",3,"Level 3","HORSE MANAGEMENT",,B646-12
+58,2,BTEC,3,"Subsidiary Diploma",3,"Level 3",SPORT,,B692-12
+73,2,BTEC,3,"Subsidiary Diploma",3,"Level 3","PUBLIC SERVICES 2011",,K1225-11
+74,2,BTEC,3,"Subsidiary Diploma",3,"Level 3","PUBLIC SERVICES 2012",,K1225-12
+81,2,BTEC,3,"Subsidiary Diploma",3,"Level 3","Countryside Management",,
+86,2,BTEC,3,"Subsidiary Diploma",3,"Level 3","Travel and Tourism",,
+94,2,BTEC,3,"Subsidiary Diploma",3,"Level 3","Forestry and Arboriculture",,
+108,2,BTEC,3,"Subsidiary Diploma",3,"Level 3","Music Technology",,
+113,2,BTEC,3,"Subsidiary Diploma",3,"Level 3","Art and Design Fine Art",,
+118,2,BTEC,3,"Subsidiary Diploma",3,"Level 3","Creative Media Production Film and TV",,
+126,2,BTEC,3,"Subsidiary Diploma",3,"Level 3","Sports (Performance and Excellence)",,
+137,2,BTEC,3,"Subsidiary Diploma",3,"Level 3","Art and Design Design Crafts",,
+144,2,BTEC,3,"Subsidiary Diploma",3,"Level 3","Sports (Development, Coaching and Fitness)",,
+149,2,BTEC,3,"Subsidiary Diploma",3,"Level 3","Art and Design Interactive Media",,
+157,2,BTEC,3,"Subsidiary Diploma",3,"Level 3","Health and Social Care - social care",,
+163,2,BTEC,3,"Subsidiary Diploma",3,"Level 3","Applied Science (Forensics)",,
+167,2,BTEC,3,"Subsidiary Diploma",3,"Level 3","Art and Design Graphic Design",,
+173,2,BTEC,3,"Subsidiary Diploma",3,"Level 3",Fisheries,,
+177,2,BTEC,3,"Subsidiary Diploma",3,"Level 3","Performing Arts (Acting)",,
+182,2,BTEC,3,"Subsidiary Diploma",3,"Level 3","Health and Social Care",,
+424,2,BTEC,3,"Subsidiary Diploma",3,"Level 3"," Animal Management 2012",0,B801
+433,2,BTEC,3,"Subsidiary Diploma",3,"Level 3","1013 Sub Dip in Arboriculture L3 (12)",0,
+434,2,BTEC,3,"Subsidiary Diploma",3,"Level 3","L3 sub dip Horticulture (12) ",0,
+441,2,BTEC,3,"Subsidiary Diploma",3,"Level 3","Subsidary Diploma in Business",60,
+447,2,BTEC,3,"Subsidiary Diploma",3,"Level 3","Level 3 Subsidiary Diploma in Animal Management ",60,B654
+448,2,BTEC,3,"Subsidiary Diploma",3,"Level 3","Level 3 Subsidiary Diploma in Animal Management 2012",60,B654-12
+458,2,BTEC,3,"Subsidiary Diploma",3,"Level 3","Music Technology 2012",,L1418-13
+495,2,BTEC,3,"Subsidiary Diploma",3,"Level 3","SPORT 2012",,B692-13
+510,2,BTEC,3,"Subsidiary Diploma",3,"Level 3","PUBLIC SERVICES 2013",,K1225-13
+568,2,BTEC,3,"Subsidiary Diploma",3,"Level 3","ANIMAL MANAGEMENT 2012",0,B633-13
+570,2,BTEC,3,"Subsidiary Diploma",3,"Level 3","HORSE MANAGEMENT 2013",,B646-13
+573,2,BTEC,3,"Subsidiary Diploma",3,"Level 3"," Animal Management 2013",0,B801-13
+575,2,BTEC,3,"Subsidiary Diploma",3,"Level 3","L3 sub dip Horticulture (12)  2013",0,B1021-13
+586,2,BTEC,3,"Subsidiary Diploma",3,"Level 3","AGRICULTURE 2013",,B676-13
+17,2,BTEC,4,Certificate,3,"Level 3","Art and Design Photography",,
+11,2,BTEC,4,Certificate,3,"Level 3","Art and Design",30,
+59,2,BTEC,4,Certificate,3,"Level 3",SPORT,,B693-12
+82,2,BTEC,4,Certificate,3,"Level 3","Countryside Management",,
+83,2,BTEC,4,Certificate,3,"Level 3","Travel and Tourism",,
+95,2,BTEC,4,Certificate,3,"Level 3","Forestry and Arboriculture",,
+105,2,BTEC,4,Certificate,3,"Level 3","Music Technology",,
+110,2,BTEC,4,Certificate,3,"Level 3","Art and Design Fine Art",,
+117,2,BTEC,4,Certificate,3,"Level 3","Creative Media Production Film and TV",,
+123,2,BTEC,4,Certificate,3,"Level 3","Sports (Performance and Excellence)",,
+135,2,BTEC,4,Certificate,3,"Level 3","Art and Design Design Crafts",,
+140,2,BTEC,4,Certificate,3,"Level 3","Performing Arts (Musical Theatre)",,
+141,2,BTEC,4,Certificate,3,"Level 3","Sports (Development, Coaching and Fitness)",,
+145,2,BTEC,4,Certificate,3,"Level 3",Horticulture,,
+146,2,BTEC,4,Certificate,3,"Level 3","Art and Design Interactive Media",,
+154,2,BTEC,4,Certificate,3,"Level 3","Health and Social Care - social care",,
+158,2,BTEC,4,Certificate,3,"Level 3","Horse Management",,
+160,2,BTEC,4,Certificate,3,"Level 3","Applied Science (Forensics)",,
+164,2,BTEC,4,Certificate,3,"Level 3","Art and Design Graphic Design",,
+174,2,BTEC,4,Certificate,3,"Level 3",Fisheries,,
+178,2,BTEC,4,Certificate,3,"Level 3","Performing Arts (Acting)",,
+179,2,BTEC,4,Certificate,3,"Level 3","Health and Social Care",,
+438,2,BTEC,4,Certificate,3,"Level 3","Lvl 3 Award in Support Work",12,K1387
+439,2,BTEC,4,Certificate,3,"Level 3","Lvl 3 Cert in Supporting Teaching and Learning in Schools",32,K1388
+454,2,BTEC,4,Certificate,3,"Level 3","Certificate in Agriculture L3",0,b885
+496,2,BTEC,4,Certificate,3,"Level 3","SPORT 2012",,B693-13
+19,2,BTEC,1,"Extended Diploma",3,"Level 3","Art and Design Photography",0,
+12,2,BTEC,1,"Extended Diploma",3,"Level 3",Animation,180,L1139-11
+21,2,BTEC,1,"Extended Diploma",3,"Level 3","AGRICULTURE 2011",,B674-11
+22,2,BTEC,1,"Extended Diploma",3,"Level 3","AGRICULTURE 2012",,B674-12
+34,2,BTEC,1,"Extended Diploma",3,"Level 3","Countryside Management 2011",0,B709-12
+35,2,BTEC,1,"Extended Diploma",3,"Level 3","COUNTRYSIDE 2012",,B709-12
+39,2,BTEC,1,"Extended Diploma",3,"Level 3","FISH MANAGEMENT 2011",,B743-11
+40,2,BTEC,1,"Extended Diploma",3,"Level 3","FISH MANAGEMENT 2012",,B743-12
+43,2,BTEC,1,"Extended Diploma",3,"Level 3","HORSE MANAGEMENT",0,B643-11
+49,2,BTEC,1,"Extended Diploma",3,"Level 3","HORTICULTURE 2011",,B716-11
+50,2,BTEC,1,"Extended Diploma",3,"Level 3","HORTICULTURE 2012",,B716-12
+55,2,BTEC,1,"Extended Diploma",3,"Level 3","SPORT 2011",,B690-11
+56,2,BTEC,1,"Extended Diploma",3,"Level 3","Year 2 in Sport (H649-12)",90,B690-12
+80,2,BTEC,1,"Extended Diploma",3,"Level 3","Countryside Management",,
+85,2,BTEC,1,"Extended Diploma",3,"Level 3","Travel and Tourism",,
+92,2,BTEC,1,"Extended Diploma",3,"Level 3","Public Services (Uniformed)",0,
+96,2,BTEC,1,"Extended Diploma",3,"Level 3","Animal Management",,
+103,2,BTEC,1,"Extended Diploma",3,"Level 3","Mechanical Engineering",240,KM287
+107,2,BTEC,1,"Extended Diploma",3,"Level 3","Music Technology (12)",0,
+112,2,BTEC,1,"Extended Diploma",3,"Level 3","Art and Design Fine Art",,
+114,2,BTEC,1,"Extended Diploma",3,"Level 3","Performing Arts (Dance)",,
+116,2,BTEC,1,"Extended Diploma",3,"Level 3","Creative Media Production Film and TV",,
+119,2,BTEC,1,"Extended Diploma",3,"Level 3",Business,,
+121,2,BTEC,1,"Extended Diploma",3,"Level 3","Electrical/Electronic Engineering",,
+122,2,BTEC,1,"Extended Diploma",3,"Level 3","Performing Arts (Production)",,
+125,2,BTEC,1,"Extended Diploma",3,"Level 3","Sports (Performance and Excellence)",,
+131,2,BTEC,1,"Extended Diploma",3,"Level 3","Sport (Outdoor Adventure)",180,B414
+134,2,BTEC,1,"Extended Diploma",3,"Level 3","Aeronautical Engineering",0,
+136,2,BTEC,1,"Extended Diploma",3,"Level 3","Art and Design Design Crafts",,
+138,2,BTEC,1,"Extended Diploma",3,"Level 3","Performing Arts (Musical Theatre)",,
+143,2,BTEC,1,"Extended Diploma",3,"Level 3","Year 2 in Sport (H649)",90,"H649-11 A & B"
+148,2,BTEC,1,"Extended Diploma",3,"Level 3","Art and Design Interactive Media",,
+156,2,BTEC,1,"Extended Diploma",3,"Level 3","Health and Social Care - social care",10,600/8994
+159,2,BTEC,1,"Extended Diploma",3,"Level 3",Music,,
+162,2,BTEC,1,"Extended Diploma",3,"Level 3","Applied Science (Forensics)",0,
+166,2,BTEC,1,"Extended Diploma",3,"Level 3","Art and Design Graphic Design",,
+168,2,BTEC,1,"Extended Diploma",3,"Level 3","IT 2011 - 2013",0,
+172,2,BTEC,1,"Extended Diploma",3,"Level 3",Fisheries,,
+176,2,BTEC,1,"Extended Diploma",3,"Level 3","Performing Arts (Acting)",,
+181,2,BTEC,1,"Extended Diploma",3,"Level 3","Health and Social Care",,
+397,2,BTEC,1,"Extended Diploma",3,"Level 3","Art And Design In Textiles",180,
+410,2,BTEC,1,"Extended Diploma",3,"Level 3","Electrical/Electronic Engineering - 2nd Years",240,
+411,2,BTEC,1,"Extended Diploma",3,"Level 3","Electrical/Electronic Engineering - 1st Years",0,
+421,2,BTEC,1,"Extended Diploma",3,"Level 3",IT,180,500/9149/9
+426,2,BTEC,1,"Extended Diploma",3,"Level 3","L3 Extended Diploma in Music Technology",0,L518
+432,2,BTEC,1,"Extended Diploma",3,"Level 3",Construction,180,"C899 (12)"
+455,2,BTEC,1,"Extended Diploma",3,"Level 3","Bedford College Training",180,BCT
+459,2,BTEC,1,"Extended Diploma",3,"Level 3","Music 2012",,L1427-13
+460,2,BTEC,1,"Extended Diploma",3,"Level 3","Music Technology (12) 2012",0,L518-13
+461,2,BTEC,1,"Extended Diploma",3,"Level 3","Performing Arts (Acting) 2012",,L521-13
+462,2,BTEC,1,"Extended Diploma",3,"Level 3","Performing Arts (Production) 2012",,L522-13
+466,2,BTEC,1,"Extended Diploma",3,"Level 3","IT 2012 - 2014",180,F1046-13
+472,2,BTEC,1,"Extended Diploma",3,"Level 3","Construction 2012",180,C899-13
+481,2,BTEC,1,"Extended Diploma",3,"Level 3","Cambridge Technical Business",180,E1011-13
+484,2,BTEC,1,"Extended Diploma",3,"Level 3","Health and Social Care - social care 2012",0,K1005-13
+488,2,BTEC,1,"Extended Diploma",3,"Level 3","Sport (Outdoor Adventure) 2012",180,B414-13
+493,2,BTEC,1,"Extended Diploma",3,"Level 3","Year 1 in Sport (H649) 2012",90,B690-13
+505,2,BTEC,1,"Extended Diploma",3,"Level 3","Year 1 in Sport (H649-13)",90,H649-13
+514,2,BTEC,1,"Extended Diploma",3,"Level 3","Public Services (Uniformed) 2013",0,K646-13
+517,2,BTEC,1,"Extended Diploma",3,"Level 3","Travel and Tourism 2012",,H655-13
+524,2,BTEC,1,"Extended Diploma",3,"Level 3","BTEC Extemded Diploma",0,
+530,2,BTEC,1,"Extended Diploma",3,"Level 3","Creative Makeup ",180,L1531
+537,2,BTEC,1,"Extended Diploma",3,"Level 3","BTEC Extended Design Crafts",180,
+556,2,BTEC,1,"Extended Diploma",3,"Level 3","Animal Management (2013)",180,
+558,2,BTEC,1,"Extended Diploma",3,"Level 3","BTEC Level 3 Extended Diploma Electrical/Electronic Engineering",0,
+561,2,BTEC,1,"Extended Diploma",3,"Level 3","AGRICULTURE 2013",0,
+565,2,BTEC,1,"Extended Diploma",3,"Level 3","HORSE MANAGEMENT 2013",0,B388-13
+576,2,BTEC,1,"Extended Diploma",3,"Level 3","Countryside Management 2012",0,B367-13
+577,2,BTEC,1,"Extended Diploma",3,"Level 3","FISH MANAGEMENT 2013",,B377-13
+587,2,BTEC,1,"Extended Diploma",3,"Level 3","COUNTRYSIDE 2013",,B709-13
+589,2,BTEC,1,"Extended Diploma",3,"Level 3","HORTICULTURE 2013",,B716-13
+596,2,BTEC,1,"Extended Diploma",3,"Level 3","Art and Design Fine Art 2013",,L1142-13
+597,2,BTEC,1,"Extended Diploma",3,"Level 3","Art and Design Graphic Design 2013",,L1147-13
+599,2,BTEC,1,"Extended Diploma",3,"Level 3","Performing Arts (Musical Theatre) 2013",,L1292-13
+600,2,BTEC,1,"Extended Diploma",3,"Level 3","Music 2013",,L1402-13
+633,2,BTEC,1,"Extended Diploma",3,"Level 3","OCR Cambridge Techincal",180,
+408,12,"BTEC Foundation",2,Diploma,3,"Level 3","Foundation Diploma in Art and Design",0,
+531,2,BTEC,13,"90-Credit Diploma",3,"Level 3",Engineering,90,D1426
+536,2,BTEC,13,"90-Credit Diploma",3,"Level 3","BTEC Level 3 Design Crafts",90,
+549,2,BTEC,13,"90-Credit Diploma",3,"Level 3","Art & Design (Animation)",90,L1549_AN
+550,2,BTEC,13,"90-Credit Diploma",3,"Level 3","Art & Design (Photography)",90,L1549_PH
+551,2,BTEC,13,"90-Credit Diploma",3,"Level 3","Art & Design (Graphic Design)",90,L1549_GD
+552,2,BTEC,13,"90-Credit Diploma",3,"Level 3","Art & Design (Fine Art)",90,L1549_FA
+553,2,BTEC,13,"90-Credit Diploma",3,"Level 3","Art & Design (Fashion & Textiles)",90,L1549_FT
+637,2,BTEC,13,"90-Credit Diploma",3,"Level 3","Creative Media Production",90,
+428,11,BTEC Higher,11,HNC,5,"Level 4","Test Qualification",0,
+431,11,BTEC Higher,11,HNC,5,"Level 4","Mechanical Engineering",0,
+450,11,BTEC Higher,11,HNC,5,"Level 4","Electrical/Electronic Engineering HNC",0,D365
+456,11,BTEC Higher,11,HNC,5,"Level 4","Public Services",120,K816-12
+475,11,BTEC Higher,11,HNC,5,"Level 4","Mechanical Engineering 2012",0,D342-13
+515,11,BTEC Higher,11,HNC,5,"Level 4","Public Services 2012",120,K816-13
+519,11,BTEC Higher,11,HNC,5,"Level 4",Electrical/Electronic,120,
+520,11,BTEC Higher,11,HNC,5,"Level 4","Public Services1",0,
+522,11,BTEC Higher,11,HNC,5,"Level 4","Graphic Design",120,
+622,11,BTEC Higher,11,HNC,5,"Level 4","HNC-D in Electrical & Electronic Engineering",0,D365
+625,11,BTEC Higher,11,HNC,5,"Level 4","HNC in Hospitality Management",120,
+627,11,BTEC Higher,11,HNC,5,"Level 4",Graphics,0,L511
+638,11,BTEC Higher,11,HNC,5,"Level 4","Art & Design (3D Design)",120,
+518,11,BTEC Higher,12,HND,6,"Level 5",Eletrical/Electronic,240,
+521,11,BTEC Higher,12,HND,6,"Level 5","Public Services",0,
+523,11,BTEC Higher,12,HND,6,"Level 5","Graphic Design",240,
+554,11,BTEC Higher,12,HND,6,"Level 5","Hospitality Management",120,H875
+598,11,BTEC Higher,12,HND,6,"Level 5","Hospitality Management 2012",120,H666-12
+624,11,BTEC Higher,12,HND,6,"Level 5","HND in Hospitality Management",240,
+628,11,BTEC Higher,12,HND,6,"Level 5",Graphics,0,
+634,11,BTEC Higher,12,HND,6,"Level 5","HND Business",0,
+639,11,BTEC Higher,12,HND,6,"Level 5","Art & Design (3D Design)",240,

@@ -1,0 +1,2896 @@
+/*
+ * Moodle Gradetracker V1.0 – This code is copyright of Bedford College and is 
+ * supplied for evaluation purposes only. The code may not be used for any 
+ * purpose without permission from The Learning Technologies Team, 
+ * Bedford College:  moodlegrades@bedford.ac.uk
+ * 
+ * Author mchaney@bedford.ac.uk
+ */
+
+@import url("css/start/jquery-ui-1.10.3.custom.css");
+
+/************************/
+ /*Start of CSS rewrite:*/
+
+ /** Generalisations **/
+ .bcgt_admin_container{
+     
+ }
+
+.bcgt_table {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.bcgt_table td,  .bcgt_table th{
+    border : 1px solid #CFCFCF;
+}
+
+.bcgt_table th {
+    background-color : #C9DEEF;
+}
+    
+.bcgt_table tr:nth-child(odd) td{
+    background-color : #EFFEFF;
+}
+
+.bcgt_table tr:nth-child(even) td{
+    background-color : #FFFFFF;
+}
+
+.bcgt_table td.critdivider {
+    background-color : #A4A4A4!important;
+    
+}
+
+.bcgt_table td.unitnocrit {
+    background-color: #D8D8D8!important;
+}
+
+.bcgt_form .save_input {
+    width: 50px;
+    margin:auto;
+    display: block;
+}
+
+.bcgt_form .search_input {
+    width: 60px;
+    margin:auto;
+    display: block;
+    padding-top:10px;
+    padding-bottom:10px;
+}
+
+.bcgt_form .filter_input {
+    width: 50px;
+    height: 25px;
+    margin:auto;
+    display: block;
+    margin-top:5px;
+}
+
+.bcgt_div_container .tabtree .tabrow0 li.focus a {
+    background-color: #C8E5FF;
+}
+
+.bcgtmainfilter {
+    border: #888888 dashed 1px;
+    background-color: #EFE8F0;
+    width: 90%;
+    margin:auto;
+    margin-bottom: 5px;
+    padding-left: 10px;
+    padding-right:10px;
+    padding-bottom: 10px;
+}
+
+/*#bcgtmainfiltergroups {
+    border: #888888 dashed 1px;
+    background-color: #EFE8F0;
+    width: 50%;
+    margin:auto;
+    margin-bottom: 5px;
+    padding-left: 10px;
+    padding-right:10px;
+    padding-bottom: 10px;
+}*/
+
+.bcgtmainfilter .inputContainer {
+    width: 100%!important;
+    margin-top:5px;
+    margin-bottom:5px;
+}
+
+.bcgtmainfilter .inputLeft {
+    width: 24%!important;
+}
+
+.bcgtmainfilter .inputRight {
+    width: 73%!important;
+}
+
+#bcgtmainfiltergroups {
+    padding-top:5px;
+    padding-bottom:5px;
+}
+
+#bcgtmainfiltergroups .bcgtoptionalfilter {
+    margin-bottom: 0px;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+#bcgtmainfiltergroups .inputContainer {
+    margin-top: 0px;
+}
+
+.bcgtqualfilterdesc {
+    font-size: 0.7em;
+}
+
+/*****/
+
+/**Group Preferances:**/
+.bcgt_group_prefs td.bcgtgrouppref {
+    padding: 0em;
+}
+
+.bcgt_group_prefs .no_groups {
+    color: gray;
+}
+
+.bcgt_group_prefs tr.no_groups td.bcgtgrouppref {
+    background-color : lightgray;
+}
+
+.bcgt_group_pref_inner tr:nth-child(odd) td{
+    background-color : lightgray;
+}
+
+.bcgt_group_pref_inner tr:nth-child(even) td{
+    background-color : #FFFFFF;
+}
+
+.bcgt_group_pref_inner td {
+    border : 0px solid #000000;
+    border-top: 1px solid #CFCFCF;
+    border-bottom: 1px solid #CFCFCF;
+}
+
+.bcgt_group_pref_inner tr.nogroups td {
+    border : 0px solid #000000;
+}
+
+.bcgt_group_pref_inner {
+    margin: 0em;
+}
+
+/*****************/
+
+/*************My DashBoard********************/
+#bcgtDashTabs li.focus a{
+    background-color: #8FB28F;
+}
+
+#trackersDashContainer span.report,  #groupsDashContainer span.report{
+    background-color: lightgrey;
+    
+}
+
+#trackersDashContainer span.report:hover, #groupsDashContainer span.report:hover {
+    cursor: pointer;
+}
+
+#trackersDashContainer .simplequalreportcontent, #groupsDashContainer .simplequalreportcontent {
+    margin-bottom: 50px; 
+}
+
+#trackersDashContainer .simplequalreportcontent li.focus a, #groupsDashContainer .simplequalreportcontent li.focus a {
+    background-color: #8FB28F;
+}
+
+#trackersDashContainer .simplequalreportcontent li a.nolink, #groupsDashContainer .simplequalreportcontent li a.nolink {
+    cursor: pointer;
+}
+
+#groupsDashContainer span.editgroups {
+    color: #BCBCC2;
+    font-size: 0.6em;
+}
+
+/************* GRID SELECRT ******************/
+#gridSelect .bcgt_col_one {
+    width:32%;
+    float: left;
+}
+
+#gridSelect .bcgt_col_two {
+    width:66%;
+    float: right;
+}
+
+#gridSelect .gridSelectDesc {
+    font-size: 0.8em;
+    color: grey;
+}
+
+a.bcgtnoaccess {
+    color: grey;
+    pointer-events: none;
+    cursor: default;
+}
+
+#gridSelect .bcgt_col_two img.bcgtmodcriticon {
+    height: 18px;
+    width: 18px;
+}
+
+/*.dataTables_scrollBody { min-height: 300px !important; }*/
+
+.warningcredits {
+    color:red;
+}
+
+.dataTable td, .dataTable th {
+    padding-top: 0!important;
+    padding-bottom: 0!important;
+}
+
+/*.dataTables_wrapper {
+    padding-right:8px;
+}*/
+
+.dataTables_scrollHead {
+    
+}
+
+.dataTable, .dataTables_wrapper {
+    border-spacing:0px!important;
+    border-collapse: separate!important;
+}
+
+.dataTable th {
+    font-weight: normal!important;
+}
+
+.dataTable .grid_cell_blank:after {
+    content: ".";
+    display: block; 
+    visibility: hidden;
+}
+
+/*.dataTable {
+    table-layout: fixed;
+}*/
+
+.bcgt_three_c_container{
+    margin:auto;
+    width: 90%;
+}
+
+.bcgt_two_c_container {    
+    margin: auto;
+    width: 90%;
+}
+
+.bcgt_float_container:after {
+    clear: both;
+    content: ".";
+    display: block;
+    height: 0;    
+    visibility: hidden; 
+}
+
+.bcgt_three_c_container .bcgt_col {
+    width:33%;
+}
+
+.bcgt_two_c_container .bcgt_col {
+    width:80%;
+}
+
+.bcgt_admin_left {
+    float: left;
+}
+
+#projectCenter {
+    float : left;
+    margin : 0 5px 0 5px;
+    width: 30%!important;    
+}
+
+#projectCenter .arrow_button {
+}
+
+#addQual, #removeQual {
+    /* margin:auto; */
+    margin-left : 20px;
+}
+
+.bcgt_admin_right {
+    float: right;
+}
+
+.bcgt_three_c_container .bcgt_col_one {
+    float:left;
+    position: relative;    
+}
+
+.bcgt_three_c_container .bcgt_col_two {
+    float:left;
+    position: relative;    
+}
+
+.bcgt_three_c_container .bcgt_col_three {
+    float:right;
+    position: relative;    
+}
+
+.bcgt_admin_box{  
+    border: 1px solid #CFCFCF;
+    border-radius : 5px;
+    margin: 0px auto 10px auto;
+    padding : 5px;
+    width: 92%;
+}
+
+h2.bcgt_admin_title {
+    text-align: center;
+}
+
+.bcgt_admin_list li {
+    line-height : 150%;
+}
+
+.bcgt_admin_controls .inputContainer:after {
+    clear: both;
+    content: ".";
+    display: block;
+    height: 0;    
+    visibility: hidden;
+}
+
+.bcgt_admin_controls .inputContainer {    
+    /* margin:auto;*/
+    margin-top: 5px;	
+    width:80%;
+}
+
+.bcgt_admin_controls .inputContainer span.required {
+    color: red;	
+}
+
+.bcgt_admin_controls .inputContainer .inputLeft {
+    clear:left;
+    float:left;    
+    text-align: right;
+    width:49%;
+}
+
+.bcgt_admin_controls .inputContainer .inputRight {
+    clear:right;
+    float:right;    
+    text-align: left;
+    width:49%;
+}
+
+.bcgt_admin_controls {
+    border:1px solid #cfcfcf;
+    border-radius : 10px;
+    margin:auto;
+    margin-bottom: 20px;
+    padding-top:10px;
+    padding-bottom:20px;
+    text-align: center;    
+    width:95%;
+}
+
+.bcgt_admin_controls:after {
+    clear: both;
+    content: ".";
+    display: block;
+    height: 0;    
+    visibility: hidden;	
+}
+
+.bcgt_admin_controls {
+    width:100%;	
+}
+
+.bcgt_admin_controls select {
+    width: 100%;
+}
+
+.bcgt_admin_controls .sub_title {
+    text-align : left;
+}
+
+/************ Form Button Style **************/
+.bcgtFormButton {
+    padding : 5px;
+    margin : 0px 5px;
+}
+/************ END Form Button Style **************/
+
+#trackersDashContainer h3.noStudents {
+    color: lightgray;
+}
+
+
+/************ Qualification and unit forms **************/
+
+#unitsCenter, #unitsRight {
+    padding-bottom:20px;
+}
+
+#unitsLeft {
+    padding-bottom: 2px;
+}
+
+#unitsLeft, #unitsRight {
+    border : 1px solid #CFCFCF;
+    width:40%;
+}
+
+#unitsCenter {	
+    margin-top:100px;
+    width:17%;
+}
+
+#unitsLeft, #unitsCenter {
+    float:left;	
+}
+
+#unitsLeft {
+    margin-left:1%;	
+}
+
+#unitsRight {
+    float:right;	
+    margin-right:1%;
+}
+
+#addselect, #removeselect {
+    margin-top:10px;
+    margin-bottom:10px;	
+    width : 100%;
+}
+
+/* surrounding div */
+#editCourseQual, /* used on grid_select */
+#editQualUnits, 
+#bcgtEditQualForm, 
+#bcgtQualSelectForm, 
+#bcgtCourseSelectForm, 
+#bcgtQualSelect, 
+#bcgtCourseSelect {
+    border-radius : 10px;
+}
+
+#gridselect li.gridSelectQualSelect {
+    color: grey;
+}
+
+#gridselect fieldset {
+    border: #888888 solid 1px;
+    width: 90%;
+    margin: auto;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    padding-top:5px;
+}
+
+#gridselect fieldset legend {
+    text-align: left;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+#gridselect #qual option.noStudents {
+    color: red;
+}
+
+#gridselect li.gridSelectQualSelect a{
+    color: black;
+}
+
+/* container for qual & course search fields */
+
+#bcgtQualSelect, 
+#bcgtCourseSelect {
+    border: 1px solid #cfcfcf;
+    padding : 10px 0 10px 0;
+}
+
+#editQualUnits p.edit {
+    font-size: 0.8em;
+    margin-top:0px;	
+}
+
+#unitsQualContainer option, #unitsQualContainer select {
+    width:95%;	
+}
+
+#editQualUnits #unitsContainer {
+    margin-bottom: 10px;    
+}
+
+/* Areas around unit selection */
+#unitsLeft, #unitsRight {
+    background-color : #C9DEEF;
+    border-radius : 10px;
+    margin-bottom : 10px;
+}
+
+/* Inputs for unit numbers and credit numbers, normally disabled */
+input[name^="noUnits"], input[name^="credits"] {    
+    text-align : center;
+    width : 50px !important;
+}
+
+/* Note: info about units */
+#unitsLeft .note {
+    font-size : 10px;
+    margin-top : 10px;
+}
+
+/* Search for keyword & course */
+input#searchKeyword, 
+input#cSearch, 
+input#sSearch, 
+input#tSearch {
+    /* margin: 0px 5px; */
+    width : 95%;
+}
+
+#bcgtEditQualForm input, 
+#unitDetails input, 
+form#bcgtQualSelect input, 
+form#bcgtCourseSelect input, 
+#bcgtEditQualForm textarea, 
+#unitDetails textarea, 
+#bcgtEditQualForm select, 
+#unitDetails select, 
+form#bcgtQualSelect select, 
+form#bcgtCourseSelect select,
+#noPass, 
+#noMerit, 
+#noDiss,
+#noL1{
+    padding : 5px;
+}
+
+#unitDetails input[type="text"] {
+    width : 298px; /* As no reset */    
+}
+
+#unitDetails input[type^="checkbox"] {
+    width : 20px;
+}
+
+#unitDetails textarea {
+    width : 300px;
+    height : 100px;
+}
+
+#unitDetails select {
+    width : 311px;
+} 
+
+/* Deleting Things */
+
+.bcgtDelTables {
+    margin : auto;
+}
+
+.bcgtDelTables th, 
+.bcgtDelTables td {
+    border : 1px solid #CFCFCF;
+}
+.bcgtDelTables th {
+    background-color : #C9DEEF;
+}
+
+.bcgtDelTables tr:nth-child(odd) {
+    background-color : #EFF;
+}
+
+/************ END Qualification and unit forms **************/
+
+
+/************ The Qual Teachers ******************/
+#editQualUsers .bcgt_col {
+    margin: auto;
+}
+
+#bcgtColumnConainer .bcgt_col_one {
+    width:32%;
+}
+
+#bcgtColumnConainer .bcgt_col_two {
+    width:66%;
+}
+
+#bcgtInnerConainer .bcgt_col_one {
+    width:40%;
+}
+
+#bcgtInnerConainer .bcgt_col_two {
+    width: 15%
+}
+
+#bcgtInnerConainer .bcgt_col_three {
+     width:40%;
+}
+
+#editQualUsers select {
+    width: 100%;
+}
+
+#editQualUsers .bcgt_col_two input{
+    margin: auto;
+}
+/***************** END QUAL TEACHERS **********************/
+
+#editCourseQualUsers td.qualSelect input{
+    margin:auto;
+}
+#editCourseQualUsers td.qualSelect {
+    text-align: center;
+}
+
+#editCourseQualUsers td.qualSelect input.qualSelect, #editCourseQualUsers td.qualSelect a.qualSelect {
+    margin:auto;
+}
+
+#editCourseQualUsers table.courseQualUserTable td.checked {
+    background-color: #FF6666;
+}
+
+#editCourseQualUsers h3.enroledstaff {
+    margin-top:30px;
+}
+
+#editStudentsUnits, #editCourseQualUsers {
+    width: 95%;
+    margin: auto;
+}
+
+#editStudentsUnits th.creditsCol, #editStudentsUnits td.creditsCol {
+    width: 25px;
+}
+
+#editStudentsUnits th.usernameCol, #editStudentsUnits td.usernameCol {
+    width: 30px;
+}
+
+#editStudentsUnits th.nameCol, #editStudentsUnits td.nameCol {
+    width: 40px;
+}
+
+#editStudentsUnits th.rowUserOptionCol, #editStudentsUnits td.rowUserOptionCol {
+    width: 15px;
+}
+
+
+/*#editStudentsUnits th, #editStudentsUnits th, td{
+    padding: 0em;
+}*/
+
+/***************** PROJECTs ***********************/
+
+.projectTile {
+    border:2px solid #a1a1a1;
+    padding:10px 10px;
+    margin: 10px;
+    background:#dddddd;
+    border-radius: 5px;
+    float: left;
+}
+
+#projectTileContainer {
+    width: 100%;
+}
+
+#projectTileContainer:after {
+    clear: both;
+    content: ".";
+    display: block;
+    height: 0;    
+    visibility: hidden;
+}
+
+#bcgt_edit_project {
+    width: 80%;
+    margin:auto;
+}
+
+.bcgtProjectIconBar {
+    float : right;
+    width : 100px;
+    text-align : right;
+}
+
+/****************** END PROJECTS ************************/ 
+
+/***************** TARGET GRADE SETTINGS ***********************/
+
+#bcgtTargetGradeSettingOverview td {
+   border : 1px solid #CFCFCF;
+}
+/* Table headings, and subtable headings */
+#bcgtTargetGradeSettingOverview th {
+    background-color : #C9DEEF;
+}
+
+#bcgtTargetGradeSettingsExpandedCols td {
+    border : 0px;
+}
+
+.bcgtTargetGradeSettingsOverall tr:nth-child(odd), 
+.bcgtTargetGradeSettingsIndividual tr:nth-child(odd) {
+    background-color : #EFFEFF;
+}
+
+.bcgtTargetGradeSettingsOverall tr:nth-child(even), 
+.bcgtTargetGradeSettingsIndividual tr:nth-child(even) {
+    background-color : #FFFFFF;
+}
+
+/****************** END TARGET GRADE SETTINGS ************************/ 
+
+/**************** BTEC FAMILY SETTINGS *******************/
+
+/* bcgtBtecFamSettings is form surrounding bespoke settings for 
+* icons etc 
+*/
+#bcgtBtecFamSettings {
+    overflow: auto;
+    padding-bottom : 20px; /* pads out scrollbar and buttons */
+}
+
+/**************** END BTEC FAMILY SETTINGS *******************/
+
+/**************** EDIT UNIT ******************************/
+
+/* Table of units which appears beneath unit editing forms */
+.qualsUnitOn {
+    margin: auto;
+}
+
+.qualsUnitOn th {
+    background-color : #C9DEEF;
+}
+
+.qualsUnitOn td, .qualsUnitOn th {
+    border : 1px solid #CFCFCF;
+}
+
+/******** GRADING STRUCTURE FORMS ********/
+
+/* delete existing dropdown menu */
+#bcgtDelGradStruct {
+    width : 80%;
+}
+
+/******** END GRADING STRUCTURE FORMS ********/
+
+/******** BTEC UNIT CRITERIA ********/
+
+#bcgtEditUnitForm select#noPass, #bcgtEditUnitForm select#noMerit, 
+#bcgtEditUnitForm select#noDiss, #bcgtEditUnitForm select#noL1 {
+    width: 10%;
+    margin-right: 15px;
+}
+
+#editUnitForm #btecUnitCriteria:after {
+    clear: both;
+    content: ".";
+    display: block;
+    height: 0;    
+    visibility: hidden;
+}
+
+#editUnitForm #btecUnitCriteria {    
+    padding-left:10px;
+    padding-right:10px;
+    width:100%;	
+    margin-top: 15px;
+}
+
+#editUnitForm #btecUnitCriteria table td, #editUnitForm #btecUnitCriteria table th {
+    padding-right:5px;	
+}
+
+#editUnitForm #btecUnitCriteria .criteriaCustomName {
+    width: 45px;
+}
+
+
+#editUnitForm #btecUnitCriteria #btecPassCriteria, 
+#editUnitForm #btecUnitCriteria #btecHigherPassCriteria,
+#editUnitForm #btecUnitCriteria #btecbtecpassCriteria,
+#editUnitForm #btecUnitCriteria #btecpassCriteria
+{
+    clear:left;
+    float:left;    
+    width:33%;
+}
+
+#editUnitForm #btecUnitCriteria #bteclevel1Criteria {
+    clear:left;
+    float:left;    
+    width:25%;
+}
+
+#editUnitForm #btecUnitCriteria #btecMeritCriteria, 
+#editUnitForm #btecUnitCriteria #btecHigherMeritCriteria, 
+#editUnitForm #btecUnitCriteria #btecDistinctionCriteria, 
+#editUnitForm #btecUnitCriteria #btecHigherDistinctionCriteria {
+    float:left;	
+    width:33%;
+}
+
+#editUnitForm #btecUnitCriteria #btecbtecmeritCriteria, 
+#editUnitForm #btecUnitCriteria #btecbtecdissCriteria,
+#editUnitForm #btecUnitCriteria #btecmeritCriteria, 
+#editUnitForm #btecUnitCriteria #btecdissCriteria
+{
+    float:left;	
+    width:33%;
+}
+
+#editUnitForm #btecUnitCriteria #btecbtecpassl2Criteria,
+#editUnitForm #btecUnitCriteria #btecbtecmeritl2Criteria,
+#editUnitForm #btecUnitCriteria #btecbtecdissl2Criteria {
+    float:left;	
+    width:25%;
+}
+
+#editUnitForm #btecUnitCriteria h3.criteriaHeading {
+    text-align: center;	
+}
+
+#btecUnitCriteria input {    
+    /* height: 20px;
+    width: 80px; */
+}
+
+#btecUnitCriteria table.btecHigherCriteria img.actionImage {
+    cursor: pointer;
+    display: block;
+    margin-top:3px;
+    margin-bottom:3px;
+}
+
+#btecUnitCriteria table.subCriteria td{
+    background-color: #efefef;
+}
+
+#bcgt_tooltip, .bcgt_tooltip {
+    background-color: #eee;
+    border: 1px solid #111;
+    opacity: 0.85;
+    padding: 5px;
+    position: absolute;
+    z-index: 3000;
+}
+
+/*******END BTEC UNIT CRITERIA ******/
+
+/****** GRID STYLES KDD 2013-08-30 *****/
+
+/* Wrapper around buttons, key and grid */
+.bcgt_grid_outer {
+    width : 95%;
+}
+
+/* Border around grid tables */
+/*.student_gridsFixedTables {
+    border : 1px solid #CFCFCF;
+}
+
+table.datatables {
+    border:none!important;
+}*/
+
+/* Grid table header with P1 etc on Student and Staff by 
+    referring to the role attribute */
+th[role^="columnheader"] {
+    background-color : #C9DEEF;
+}
+
+/* Targetting P1, P2 etc - trying to fix 1px difference bug */
+.criteriaName {
+    height : 16px;
+}
+
+/*th.criteriaName
+{
+    min-width: 35px;
+}*/
+
+/* Grid table header, when empty */
+.student_gridsFixedTables th:empty {
+    background-color : #B8D6EE;
+    width: 1px !important;
+    padding-left:0px !important;
+    padding-right:0px !important;
+}
+
+/* Adding Border to Award */
+.student_gridsFixedTables th {
+    border-right : 1px solid #CFCFCF;
+}
+
+/* Borders for data grid with results */
+.dataTable td {
+    border : 1px solid #CFCFCF;
+}
+
+/* Data grid with results Odd Row */
+.odd {
+    background-color : #EEFFFF;
+}
+
+/* Data grid with results Even Row */
+.even {
+    background-color : #FFFFFF;
+}
+
+/* Background for empty cells in odd rows */
+.dataTable tr td:empty {
+    background-color: #f9f7f7;
+    width: 1px !important;
+    padding-left:0px !important;
+    padding-right:0px !important;
+}
+
+/* Final summary table of overall grades and precited grades */
+#summaryAwardGrades {  
+    border : 2px solid #C9DEEF;
+    margin-top : 20px;    
+}
+
+#summaryAwardGrades td {
+    border : 1px solid #CFCFCF;
+}
+
+/* bold the headings, which aren't th for now */
+#summaryAwardGrades td:first-child {
+    font-weight : bold;
+}
+
+/* Colours rows 1 and 3 */
+#summaryAwardGrades tr:nth-child(1), #summaryAwardGrades tr:nth-child(3) {
+    background-color : #EEFFFF;
+}
+
+/* Advanced edit criteria dropdowns */
+.criteriaValueSelect {
+    width : 60px;
+}
+
+/* Add Comments button on grids */
+.addComments {
+    float : left;
+    margin-left : 2px;
+}
+
+/* Unit Award dropdown when clipped, unit grid edit simple */
+.unitAward {
+    width : 50px;
+}
+
+#bcgtblanket { 
+    background-color: #005A70;
+    display: none;
+    left: 0px;
+    opacity: 0.85;
+    position: fixed;
+    top: 0px;
+    width: 100%;
+    z-index: 9001;    
+}
+
+#popUpDiv { 
+    background-color: #FFFFFF;
+    border: 2px double rgba(101, 1, 0, 0);
+    display: none;
+    height: 400px;
+    position: fixed;
+    text-align: center;
+    top: 250px;
+    width: 600px;
+    z-index: 9002;    
+}
+
+div#commentMove
+{
+    cursor: move;
+    float: left;
+    width: 95%;    
+}
+
+div#commentClose {  
+    float: right;
+    width: 5%;
+}
+
+#popUpDiv > #commentUserSpan { 
+    color: #0055A8;
+    font-size: 14pt;
+}
+
+#popUpDiv > #commentUnitSpan { 
+    color: #023561;
+    font-size: 12pt;
+}
+
+#popUpDiv > #commentCriteriaSpan, #popUpDiv > #commentTaskSpan { 
+    color: #000000;
+    font-size: 10pt;
+    font-weight: 700;
+}
+
+#popUpDiv > input[type="button"], #genericPopup > input[type="button"] { 
+    font-size: 14pt;
+    padding: 5px;
+}
+
+div.tooltipContent { 
+    display: none;
+}
+
+td.criteriaComments { 
+    background-color: #FFFF99 !important;
+}
+
+/* Textfield for qualification comments below grid in Advanced Edit */
+#qualComment textarea {
+    height : 150px;
+    width : 400px;    
+}
+
+/* A-Levels */
+
+/* Table cell borders for summary CETA/FA and main assignment grid */
+#alevelSummary td, 
+#alevelSummary th, 
+.alevelStudentsGridTables th, 
+.alevelStudentsGridTables td, 
+.alevelClassGridTables th, 
+.alevelClassGridTables td {
+    border : 1px solid #CFCFCF;
+}
+
+/* A-Level Headings */
+#alevelSummary th, 
+.alevelStudentsGridTables th, 
+.alevelClassGridTables th {
+    background-color : #C9DEEF;
+}
+
+/* A-Level striped rows */
+#alevelSummary tr:nth-child(odd),
+.alevelStudentsGridTables tr:nth-child(odd),
+.alevelClassGridTables tr:nth-child(odd) {
+    background-color : #EFF;
+}
+
+.unitGridDiv .bcgtmodcriticon {
+    width:18px;
+    height:18px;
+    padding:4px;
+    float:left;
+} 
+
+
+/****** END GRID STYLES *****/
+
+/****** MAIN HEADING STYLES KDD 2013-05-01 *****/
+h2.formheading {
+    font-size : 18px;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+h3.subTitle
+{
+    text-align: center;
+    color: #000077;
+    margin-bottom: 30px;
+}
+
+/****** END MAIN HEADING STYLES *****/
+
+/****** BUTTON & SHOW LATE STYLES KDD 2013-07-25 *****/
+
+/* Wrapper around buttons */
+.bcgtgridbuttons {
+    border : 1px solid #CFCFCF;
+    border-radius : 10px;
+    float : left;
+    width : 35%;    
+}
+
+/* Set up button shape */
+.viewsimple, .viewadvanced, .editsimple, .editadvanced, .gridsave, .printsimple {
+    border-radius : 10px;
+    cursor : pointer;
+    font-weight : bold;    
+    margin : 10px;
+    padding : 7px;
+    width : 130px;  
+}
+
+/* Set up View button defaults */
+.viewsimple, .viewadvanced {
+    border : 2px solid #C9DEEF;
+    color : #000077;
+}
+
+/* View buttons: OFF */
+.viewsimple, .viewadvanced {
+    background-color : #EEFFFF;
+}
+
+.printsimple {
+    background-color: #FFE49E;
+    color: #000;
+    border: 2px solid #BE9B74;
+}
+
+.printsimple:hover {
+    background-color: #CFB665;
+}
+
+/* View buttons: ON/HOVER */
+.viewsimple:hover, .viewadvanced:hover, 
+.vs_s, .va_a {
+    background-color : #C9DEEF;  
+}
+
+/* Set up Edit button defaults */
+.editsimple, .editadvanced {    
+    border : 2px solid #A7CC25;
+}
+
+/* Edit buttons: OFF */
+.editsimple, .editadvanced {
+    background-color : #AAEEAA;
+}
+
+/* Edit buttons: ON/HOVER */
+.editsimple:hover, .editadvanced:hover, 
+.es_es, .ea_ea {
+    background-color : #A7CC25;   
+}
+
+/* Set up View button defaults */
+.gridsave {
+    border : 2px solid #f7941d;
+    color : #000077;
+}
+
+/* View buttons: OFF */
+.gridsave {
+    background-color : #fbaf5d;
+}
+
+/* View buttons: ON/HOVER */
+.gridsave:hover {
+    background-color : #f7941d;  
+}
+
+/* All buttons: ON */
+.gridbuttonswitchON {    
+    border-color : #d75f00;
+    box-shadow: 2px 2px 5px #888888;
+}
+
+#showLateFunc {
+    margin : 10px;
+}
+
+/****** BUTTON STYLES *****/
+
+/****** KEY/LEGEND STYLES KDD 2013-05-01 *****/
+
+/* The Key */
+.gridKey {
+   background-color : #C9DEEF;
+   border : 1px solid #CFCFCF;
+   border-radius : 10px;
+   float : right;
+   margin-bottom : 5px;
+   text-align : center;
+   width : 60%;
+}
+/* Individual items on key */
+.keyValue {
+    margin-right : 10px;
+}
+
+/****** END KEY/LEGEND STYLES *****/
+
+/****** SELECT STUDENT UNITS GRID STYLES KDD 2013-05-02 *****/
+
+/* change student/qual dropdown area */
+#studentChange, #qualChange {
+    width : 45%;
+}
+
+/* Dropdown menus beside each other */
+.bcgtStudentChange, .bcgtQualChange, .bcgtUnitChange {
+    float : left;
+}
+
+.bcgtStudentChange, .bcgtUnitChange {
+    width : 25%;
+}
+
+.bcgtQualChange {
+    width : 30%;
+}
+
+#unitChange {
+    width : 50%;
+}
+
+/* Top menu above grids */
+.bcgtGridMenu {
+   background-color : #B8D6EE;
+   border-radius : 5px;
+   height : 20px;   
+   margin-bottom : 2px;
+   padding : 10px;
+   width : 95%; 
+}
+
+.bcgtGridMenuList {
+    margin-left : 0px;
+}
+
+/* Dropdown menu headers: Core/Context */
+li.bcgtHeadLink {
+    float : left;    
+    list-style : none;
+    margin-top : -10px;
+    text-align : center;
+    width : 10%;
+}
+
+li.bcgtHeadLink a {
+    display : block;
+}
+
+li.bcgtHeadLink ul { 
+    display: none; 
+}
+
+/* Dropdown menu */
+li.bcgtHeadLink:hover ul { 
+    background-color : #B8D6EE;
+    border-radius : 5px;
+    box-shadow : 2px 2px 5px #888888;
+    display: block;
+    list-style-type : none;
+    margin-left : 0px;
+    margin-top : 0px;
+    opacity:0.95;
+    position : absolute;
+    width : 14%;
+    z-index: 10000;
+}
+
+li.bcgtHeadLink:hover li {
+    height : 30px;
+}
+
+.bcgtDroppy li:first-child {
+    padding-top : 20px;
+}
+
+
+/* single student: qualification header above the grid */
+h4.singleStudentUnitsHeader {
+    font-size : 16px;
+    margin : 20px 0px 20px 0px;
+}
+
+/* single student: the headings are cluttered, reduce font size */
+.singleStudentUnits th[role^="columnheader"], .btecStudentsUnitsTable th {
+    font-size : 90%;
+}
+
+/* whole class: unit names in header */
+.btecStudentsUnitsTable th {
+    background-color : #C9DEEF;
+}
+
+/* whole class: total possible unit credits */
+.totalPossibleCredits {
+    font-size : 14px;
+    font-weight : bold;
+    margin-top : 20px;
+}
+
+/* whole class: search */
+#btecStudentUnits1_filter label input {
+    margin-bottom : 20px;
+}
+
+/****** END SELECT STUDENT UNITS GRID STYLES *****/
+
+/****** TABLES OF STUDENTS & UNITS IN QUALIFICATION STYLES KDD 2013-05-02 *****/
+.qualificationUsers, .qualificationUsers {
+    margin-left : 20px;
+}
+
+.qualificationUsers th, .qualificationUsers td, 
+.qualificationUsers th, .qualificationUsers td {
+    border : 1px solid #CFCFCF;
+}
+
+.qualificationUsers th, .qualificationUsers th {
+    background-color : #C9DEEF;
+}
+/****** TABLE OF STUDENTS IN QUALIFICATION STYLES *****/
+
+/********** ALEVELS ***********/
+select.alevelCetas, select.alevelFormalAssessments, input.alevelAdditionalInput {
+    width: 60px!important;
+}
+
+
+/****** ACTIVITY LINK STYLES KDD 2013-07-12 *****/
+.activityLinks {
+    margin-left : 20px;
+}
+
+.activityLinks th, .activityLinks td 
+{
+    border : 1px solid #CFCFCF;
+}
+
+.activityLinks th {
+    background-color : #C9DEEF;
+}
+
+.activityLinksAssignmentGroup {
+}
+
+.activityLinksActivities {
+    
+}
+/* select assignment/unit dropdown */
+.bgctSelectActivity {
+    background-color : #C9DEEF;   
+    padding : 10px;
+    width : 60%;
+}
+
+/* units that are attached */
+.bgctActivityUnit {
+    border : 1px solid #C9DEEF;
+    margin : 5px 0px;
+    padding : 0px 10px;
+    width : 60%;
+}
+
+/****** ACTIVITY LINK STYLES *****/
+
+
+/****** TRACKING GRID FORMAL ASSESSMENTS STYLES KDD 23.08.13 *****/
+
+#ass_stu_grid {
+    overflow-x: scroll;
+}
+
+#alevelStudentGridOuter .alevelSingleQual, #alevelClassGridOuter {
+    overflow-x: scroll;
+}
+
+/* Table headings */
+#assGridOuter th {
+    background-color : #C9DEEF;
+    border : 1px solid #CFCFCF;
+}
+
+/* Table borders */
+#assGridOuter td {
+    border : 1px solid #CFCFCF;  
+}
+
+/* Row colours */
+#assGridOuter tr:nth-child(odd) {
+    background-color : #EFF;
+}
+
+/* Current Formal assessment */
+#assGridForm .current, 
+#assGridOuter .current, 
+.alevelStudentsGridTables .current, 
+.alevelClassGridTables .current {    
+    border-left : 2px double #787878;
+    border-right : 2px double #787878;
+}
+
+/* Current Formal assessment Header */
+#assGridForm th.current, 
+#assGridOuter th.current, 
+.alevelStudentsGridTables th.current
+.alevelClassGridTables th.current {
+    background-color : #61b0ef;
+    border-bottom : 2px double #787878;
+}
+
+#assGridForm th.current, 
+#assGridOuter th.current, 
+.alevelStudentsGridTables th.current, 
+.alevelClassGridTables th.current {
+    background-color : #61b0ef;
+    border-bottom : 2px double #787878;
+}
+
+/* Needs review as somehow overlapping 
+#assGridForm th.current:first-child, 
+#assGridOuter th.current:first-child, 
+.alevelStudentsGridTables th.current:first-child, 
+.alevelClassGridTables th.current:first-child {    
+    border-top : 2px double #787878;
+} */
+
+#assGridForm .current a, 
+#assGridOuter .current a, 
+.alevelStudentsGridTables .current a, 
+.alevelClassGridTables .current a {
+    color : white;
+}
+
+#assGridForm .projdate, 
+#assGridClassForm .projdate, 
+.alevelgrid .projdate, 
+.alevelClassGridTables .projdate {
+    display: block;
+    font-size: 0.9em;
+    font-weight : normal;
+}
+
+/* Formal Assessment on target */
+#assGridForm .ontarget, 
+#assGridOuter .ontarget, 
+.alevelStudentsGridTables .ontarget, 
+.alevelClassGridTables .ontarget {
+    background-color : #95c7ef; /* blue */
+}
+
+/* Formal Assessment behind target */
+#assGridForm .behindtarget, 
+#assGridOuter .behindtarget, 
+.alevelStudentsGridTables .behindtarget, 
+.alevelClassGridTables .behindtarget {
+    background-color : #f26c4f; /* salmon red */
+}
+
+/* Formal Assessment Ahead target */
+#assGridForm .aheadtarget, 
+#assGridOuter .aheadtarget, 
+.alevelStudentsGridTables .aheadtarget, 
+.alevelClassGridTables .aheadtarget {
+    background-color : #AEA; /* pale green */
+}
+
+/* Gradebook */
+#assGridForm th.gradebook, 
+#assGridOuter th.gradebook, 
+.alevelStudentsGridTables th.gradebook, 
+.alevelClassGridTables th.gradebook {
+    background-color : #448ccb;
+}
+
+/****** END: TRACKING GRID FORMAL ASSESSMENTS STYLES *****/
+
+/***** SETTINGS *****/
+input.bcgtValueRow {
+    width:40px!important;
+}
+
+input.bcgtValueRowL {
+    width:100px!important;
+}
+
+
+
+
+/* City & Guilds */
+table.cgCriteriaHolderTable
+{
+    width: 80%;
+    max-width: 80%;
+    margin: auto;
+    overflow-x: scroll;
+}
+
+table.cgCriteriaHolderTable th
+{
+    background-color: #666666;
+    color: #ffffff;
+    font-weight: bold;
+    text-align: center;
+}
+
+table.cgCriteriaHolderTable tr:nth-child(odd)
+{
+    background-color: #f1f1f1;
+}
+
+
+input.critNameInput
+{
+    width: 80px !important;
+}
+
+textarea.critDetailsTextArea
+{
+    width: 300px;
+    height: 60px;
+}
+
+.align-l
+{
+    text-align: left;
+}
+
+.align-c
+{
+    text-align: center;
+}
+
+#CGStudentGrid .addComments, #CGUnitGrid .addComments
+{
+    float: none !important;
+}
+
+.meter { 
+    background: #555555;
+    border-radius: 25px;
+    box-shadow: inset 0px -1px 1px rgba(255, 255, 255, 0.298);
+    height: 10px;
+    margin: auto auto 5px;
+    padding: 0px;
+    position: relative;
+    width: 100px;
+}
+
+.meter > span { 
+    background-color: #2BC253;
+    border-radius: 20px;
+    box-shadow: inset 0px 2px 9px rgba(255, 255, 255, 0.298), inset 0px -2px 6px rgba(0, 0, 0, 0.400);
+    display: block;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+input.bcgtDatePicker, input.criteriaValueDate
+{
+    width: 80px !important;
+}
+
+table.cgHBVRQTaskHolderTable td, table.cgHBNVQTaskHolderTable td, table.cgHBNVQSSHolderTable td
+{
+    text-align: center;
+}
+
+
+table.criteriaObservationTable td, table.criteriaOutcomeTable td, table.criteriaSubCriteriaTable td
+{
+    border: 1px solid #CFCFCF;
+    font-size: 8pt;
+}
+
+table.criteriaOutcomeTable, table.criteriaSubCriteriaTable
+{
+    width: 100%;
+}
+
+td.cgHBNVQOutcomeCriteriaCell
+{
+    padding: 0 !important;
+    height: 100%;
+}
+
+table.criteriaOutcomeTable th
+{
+    background-color: #006699;
+    color: #fff;
+}
+
+table.criteriaSubCriteriaTable th
+{
+    background-color: #A00;
+    color: #fff;
+}
+
+tr.sepRow td
+{
+    background-color: #fff;
+    height: 75px;
+    border-top: 2px double #000;
+}
+
+td.blank_cell_left
+{
+    border-left: none !important;
+}
+
+td.small_cell
+{
+    width: 18px !important;
+    text-align: center !important;
+    padding: 0px !important;
+    vertical-align: middle !important;
+}
+
+.smalltext
+{
+    font-size: 10px !important;
+}
+
+input.tinyInput { 
+    width: 20px !important;
+}
+
+select.tinySelect {
+    width: 40px !important;
+}
+
+.dataTables_scrollBody
+{
+    min-height: 250px !important;
+}
+
+.DTFC_LeftBodyWrapper
+{
+    min-height: 150px !important;
+}
+
+div#cgUnitGrid, div#cgStudentGrid, div#cgStudGrid
+{
+    margin-top: 100px !important;
+    overflow-x: scroll !important;
+}
+
+table#CGUnitGrid td, table#CGStudentGrid td
+{
+    text-align: center;
+}
+
+table.CGHB th
+{
+    background-color: #e2c0ee !important;
+}
+
+table.CGHB tr.unitHeader th
+{
+    background-color: #D6AEE5 !important;
+}
+
+table#CGStudentGrid, table#CGUnitGrid
+{
+    font-size: 11px;
+    color: #000000;
+}
+
+td.ivTD
+{
+    min-width: 30px;
+}
+
+table#CGStudentGrid td, table#CGUnitGrid td, table#CGStudentGrid th, table#CGUnitGrid th { 
+    border: 1px solid #BAB4BE;
+    font-weight: normal !important;
+}
+
+a.observationName + div, span.observationName + div { 
+    display: none;
+}
+
+
+
+#popUpDiv > input[type="button"], #genericPopup > input[type="button"]{
+    font-size: 14pt;
+    padding: 5px;
+}
+
+div#commentClose
+{
+    float: right;
+}
+
+#genericPopup
+{
+    position: fixed;
+    top: 150px;
+    background-color: #fff;
+    max-width: 960px;
+    z-index: 9002 !important; /* Needs to be important to override webkit-drag-drop z-index */
+    text-align: center;
+    border: 2px double darkblue;
+    padding: 10px;
+    max-height: 768px;
+    overflow-y: scroll;
+    -ms-touch-action: none;
+}
+
+#popUpTitle
+{
+    font-size: 16pt;
+    padding-top: 40px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+
+
+table#rangePopupTable
+{
+    min-width: 400px;
+    margin: auto;
+    font-size: 11px;
+}
+
+table#rangePopupTable th
+{
+   font-weight: normal !important;
+}
+
+table#rangePopupTable th, table#rangePopupTable td
+{
+    border: 1px solid #000;
+    padding: 5px;
+    text-align: left;
+}
+
+tr.doubleTop
+{
+    border-top: 4px double #000;
+}
+
+tr.lightpink th
+{
+    background-color: #ffd4ec !important;
+    max-width: 600px
+}
+
+tr.lightpink td
+{
+    background-color: #fef0f8;
+}
+
+tr.lightyellow td, tr.lightyellow th
+{
+    background-color: #FFFCD3;
+}
+
+tr.pink th
+{
+    background-color: #ed329c;
+    color: #fff !important;
+}
+
+td.white_cell
+{
+    background-color: #ffffff !important;
+}
+
+a.observationName + div, span.observationName + div
+{
+    display: none;
+}
+
+img.gridIcon
+{
+    width: 24px;
+    height: 24px;
+    float: none !important;
+}
+
+div#criteriaHolder
+{
+    text-align: left;
+}
+
+div#requiredSettings
+{
+    width:80%;
+    margin:auto;
+    background-color: #faf7fb;
+    border-bottom:1px solid #000;
+    border-left:1px solid #000;
+    border-right:1px solid #000;
+}
+
+p.requiredSettingsHeader
+{
+    border-top:1px solid #000;
+    border-left:1px solid #000;
+    border-right:1px solid #000;
+    background-color: #542177;
+    padding:5px;
+    color:#fff;
+}
+
+a.observationName:hover, a.taskName:hover
+{
+    color: #fff;
+}
+
+table.criteriaPopupDetailsTable { 
+    margin: auto;
+    width: 300px;
+    font-size: 8pt !important;
+}
+
+table.criteriaPopupDetailsTable th { 
+    background-color: #C9DEEF;
+    border: 1px solid #4F718D !important;
+    font-weight: 700;
+    text-align: center;
+}
+
+table.criteriaPopupDetailsTable td { 
+    border: 1px solid #4F718D !important;
+    padding: 4px 8px;
+}
+
+table.unittooltip td.bg
+{
+    background-color: #C9DEEF;
+}
+
+table.unittooltip td
+{
+    border: 1px solid #4F718D !important;
+}
+
+div#requiredSettings { 
+    background-color: #FAF7FB;
+    border-bottom: 1px solid #000000;
+    border-left: 1px solid #000000;
+    border-right: 1px solid #000000;
+    margin: auto;
+    width: 80%;
+}
+
+p#requiredSettingsHeader { 
+    background-color: #542177;
+    border-left: 1px solid #000000;
+    border-right: 1px solid #000000;
+    border-top: 1px solid #000000;
+    color: #FFFFFF;
+    padding: 5px;
+}
+
+div#requiredSettingsRed { 
+    background-color: #FFF0F0;
+    border-bottom: 1px solid #000000;
+    border-left: 1px solid #000000;
+    border-right: 1px solid #000000;
+    margin: auto;
+    width: 80%;
+}
+
+p#requiredSettingsHeaderRed { 
+    background-color: #8F2828;
+    border-left: 1px solid #000000;
+    border-right: 1px solid #000000;
+    border-top: 1px solid #000000;
+    color: #FFFFFF;
+    padding: 5px;
+}
+
+span.saveSetting { 
+    color: blue;
+    display: none;
+    font-style: italic;
+}
+
+tr.selectedStudent th, tr.selectedStudent td
+{
+    background-color: #e3eef6 !important;
+}
+
+
+#bcgtEditUnitForm hr
+{
+    width: 80%;
+    margin: auto;
+    border: 1px solid #ebebeb;
+    background: none;
+}
+
+
+
+/** general **/
+
+input[type='number']
+{
+    width: 40px;
+}
+
+.error
+{
+    color: red;
+}
+
+.success
+{
+    color: blue;
+}
+
+table.criterionTable
+{
+    width: 50%;
+    margin: auto;
+}
+
+table.subCriterionTable
+{
+    width: 80%;
+    margin: auto;
+    background-color: #cccccc;
+}
+
+table.criterionTable input, table.criterionTable textarea, table.criterionTable select, table.subCriterionTable input, table.subCriterionTable textarea, table.subCriterionTable select
+{
+    width: 90%;
+}
+
+.w40
+{
+    width: 40px !important;
+}
+
+#BespokeStudentGrid tbody td
+{
+    text-align: center;
+}
+
+.c
+{
+    text-align: center;
+}
+
+.l
+{
+    text-align: left;
+}
+
+table.black-border
+{
+    border-collapse: collapse;
+}
+
+table.black-border th, table.black-border td
+{
+    border: 1px solid #000;
+}
+
+/********** IMPORT *****************/
+span.importexamples, span.importheader {
+    display: block;
+    font-weight: bold;
+    margin-top:8px;
+    margin-bottom:4px;
+}
+
+#import {
+    margin-left: 10px;
+}
+
+#import span.desc {
+    padding-left: 20px;
+    display:block;
+    background:whitesmoke;
+}
+
+
+#importContainer, #importValues, #importsummary {
+    width: 80%;
+    margin:auto;
+    border:2px solid #a1a1a1;
+    padding:10px 10px;
+    background:#dddddd;
+    border-radius: 5px;
+}
+
+#importsummary {
+    margin-bottom: 20px;
+}
+
+.importsuccess {
+    border:2px solid #33AD5C!important;
+    background:#99D6AD!important;
+}
+
+.importfail {
+    border:2px solid #7A0000!important;
+    background:#EB9999!important;
+}
+
+#importValues {
+    margin-top: 20px;
+}
+
+#importBCGT .tabtree {
+    margin-bottom: 0!important;
+}
+
+
+#bcgtoptions td {
+}
+.ui-tooltip-content
+{
+    font-size: 9pt !important;
+}
+
+
+.projNonCurrentCeta {
+    color: grey;
+    font-style: italic;
+    font-size: 0.8em;
+}
+
+td.blank
+{
+    background-color: #EFE8F0;
+}
+
+input.datePickerOutcomeObservation
+{
+    width: 70px !important;
+    font-size: 11px !important;
+}
+
+div.signoffTooltip
+{
+    display: none;
+}
+
+tr.pink th {
+    background-color: #ed329c;
+    color: #fff !important;
+}
+
+tr.bordered th, tr.borderedbordered td
+{
+    border: 1px solid #696969 !important;
+}
+
+.bcgthidden
+{
+    display: none;
+}
+
+
+
+/* elbp */
+#elbp_bcgt_content .gridKey
+{
+    float: none !important;
+    margin: auto !important;
+}
+
+#elbp_prior_learning_content table
+{
+    width: 80%;
+    margin: auto;
+}
+
+
+#elbp_prior_learning_content table tr:nth-child(odd) td
+{
+    background-color: #fff;
+}
+
+#elbp_prior_learning_content table tr:nth-child(even) td
+{
+    background-color: #ededed;
+}
+
+#elbp_prior_learning_content table td, #elbp_prior_learning_content table th
+{
+    border: 1px solid #000;
+}
+
+div#avggcse
+{
+    width: 90px;
+    padding: 5px;
+    margin: auto;
+}
+
+div#avggcse small
+{
+    font-size: 10px;
+}
+
+table.simplequalreports tr.OnTarget td{
+    color: grey;
+}
+
+table.simplequalreports tr.Behind td{
+    color: blue;
+}
+
+table.simplequalreports tr.Ahead td{
+    color: red;
+}
+
+table.simplequalreports tr td.status {
+    width:8px;
+}
+table.simplequalreports tr td.OnTarget{
+    background-color: grey;
+}
+table.simplequalreports tr td.Behind{
+    background-color: blue;
+}
+table.simplequalreports tr td.Ahead{
+    background-color: red;
+}
+
+table.overviewreport tr.overviewhead {
+    font-size: 11px;
+}
+
+.simplequalreport {
+    width:90%;
+    margin: auto;
+}
+
+#classReport {
+    width:100%;
+    overflow:auto;
+}
+
+
+table.elbp_target_grades_table
+{
+    width: 80%;
+    margin: auto;
+    text-align: center;
+}
+
+table.elbp_target_grades_table td
+{
+    vertical-align: middle;
+}
+
+
+
+
+/* line 10, bootstrap/_buttons.scss */
+.btn {
+  display: inline-block;
+  *display: inline;
+  /* IE7 inline-block hack */
+  *zoom: 1;
+  padding: 4px 12px;
+  margin-bottom: 0;
+  font-size: 14px;
+  line-height: 20px;
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+  color: #333333;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
+  background-color: whitesmoke;
+  background-image: -moz-linear-gradient(top, white, #e6e6e6);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(white), to(#e6e6e6));
+  background-image: -webkit-linear-gradient(top, white, #e6e6e6);
+  background-image: -o-linear-gradient(top, white, #e6e6e6);
+  background-image: linear-gradient(to bottom, #ffffff, #e6e6e6);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFFFFFFF', endColorstr='#FFE6E6E6', GradientType=0);
+  border-color: #e6e6e6 #e6e6e6 #bfbfbf;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  *background-color: #e6e6e6;
+  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+  border: 1px solid #bbbbbb;
+  *border: 0;
+  border-bottom-color: #a2a2a2;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  *margin-left: .3em;
+  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+  -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05); }
+  /* line 496, bootstrap/_mixins.scss */
+  .btn:hover, .btn:active, .btn.active, .btn.disabled, .btn[disabled] {
+    color: #333333;
+    background-color: #e6e6e6;
+    *background-color: #d9d9d9; }
+  /* line 504, bootstrap/_mixins.scss */
+  .btn:active, .btn.active {
+    background-color: #cccccc \9; }
+  /* line 61, bootstrap/_mixins.scss */
+  .btn:first-child {
+    *margin-left: 0; }
+  /* line 29, bootstrap/_buttons.scss */
+  .btn:hover {
+    color: #333333;
+    text-decoration: none;
+    background-position: 0 -15px;
+    -webkit-transition: background-position 0.1s linear;
+    -moz-transition: background-position 0.1s linear;
+    -o-transition: background-position 0.1s linear;
+    transition: background-position 0.1s linear; }
+  /* line 40, bootstrap/_buttons.scss */
+  .btn:focus {
+    outline: thin dotted #333;
+    outline: 5px auto -webkit-focus-ring-color;
+    outline-offset: -2px; }
+  /* line 46, bootstrap/_buttons.scss */
+  .btn.active, .btn:active {
+    background-image: none;
+    outline: 0;
+    -webkit-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+    -moz-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05); }
+  /* line 54, bootstrap/_buttons.scss */
+  .btn.disabled, .btn[disabled] {
+    cursor: default;
+    background-image: none;
+    opacity: 0.65;
+    filter: alpha(opacity=65);
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none; }
+  
+  
+  #bespokeStudentGrid table, #bespokeUnitGrid table
+  {
+      max-width: 90% !important;
+      font-size: 11px;
+      color: #000000;
+  }
+  
+  #bespokeStudentGrid div.fht-tbody, #bespokeUnitGrid div.fht-tbody
+  {
+      max-height: 600px !important;
+  }
+  
+  
+#bespokeStudentGrid table th, #bespokeUnitGrid table th
+{
+     border: 1px solid #BAB4BE;
+     background-color: #00ADFF !important;
+     color: #ffffff;
+     font-weight: normal !important;
+     text-align: center;
+     padding: 0.5em;
+}
+
+#bespokeStudentGrid table td, #bespokeUnitGrid table td
+{
+    border: 1px solid #BAB4BE;
+    font-weight: normal !important;
+    text-align: center;
+    padding: 0.5em;
+    vertical-align: middle;
+}
+
+
+#bespokeStudentGrid table td:first-child, #bespokeUnitGrid table td:first-child
+{
+    min-width: 35px !important;
+}
+
+#bespokeStudentGrid table td:first-child img
+{
+    max-width: 25px !important;
+    max-height: 25px !important;
+}
+
+#bespokeStudentGrid table tr.odd, #bespokeUnitGrid table tr.odd
+{
+    background-color: #e3f7ff !important;
+}
+
+#bespokeStudentGrid table td:empty, #bespokeUnitGrid table td:empty
+{
+    background-color: #e0e0e0 !important;
+}
+
+#bespokeStudentGrid table td select, #bespokeUnitGrid table td select
+{
+    width: 100px;
+}
+
+#bespokeStudentGrid table th.unit_name
+{
+    min-width: 200px !important;
+}
+
+table#bespokeStudentGridTable td.val img, table#bespokeUnitGridTable td.val img, div#bespokeGridKey img
+{
+    width: 25px;
+    height: 25px;
+}
+
+table.bespokeCriteriaHolderTable
+{
+    width: 80%;
+    max-width: 80%;
+    margin: auto;
+    overflow-x: scroll;
+}
+
+table.bespokeCriteriaHolderTable th
+{
+    background-color: #666666;
+    color: #ffffff;
+    font-weight: bold;
+    text-align: center;
+}
+
+table.bespokeCriteriaHolderTable tr:nth-child(odd)
+{
+    background-color: #f1f1f1;
+}
+
+table.bespokeCriteriaHolderTable td
+{
+    text-align: center;
+}
+
+table.bespokeCriteriaHolderTable select
+{
+    max-width: 150px;
+}
+
+div#bespokeGridKey
+{
+    width: 90%;
+    margin: auto;
+    margin-top: 20px;
+    background-color: #F4FAFF;
+}
+
+div#bespokeGridKey table
+{
+    margin-bottom: 0px;
+}
+
+div#bespokeGridKey table th
+{
+    background-color: #0055A8;
+    color: #fff;
+}
+
+div#bespokeGridKey table td
+{
+    text-align: center;
+    padding: 0;
+    vertical-align: top;
+}
+
+div#bespokeGridKey table tr.imgs td
+{
+    padding-top: 10px;
+}
+
+div#bespokeGridKey table tr.names td
+{
+    padding-bottom: 10px;
+    font-size: smaller;
+}
+
+.criteriaValueTooltip, .unitDetailsTooltip
+{
+    display: none;
+}
+
+p.commentsSection
+{
+    padding: 3px;
+    background-color: #FEFFDA;
+}
+
+td.hasComments
+{
+    background-color: #FEFFDA;
+}
+
+.critValueInTooltip
+{
+    color: #33AD5C;
+}
+
+div.errorsDiv
+{
+    width: 90%;
+    padding: 2.5%;
+    margin: auto;
+    background-color: #ffeaea;
+    border: 2px double #c40404;
+    color: #c40404;
+}
+
+table#edit_qual_settings
+{
+    width: 50%;
+    margin: auto;
+}
+
+table#edit_qual_settings th
+{
+    background-color: #ff6600;
+    color: #fff;
+}
+
+table#edit_qual_settings th, table#edit_qual_settings td
+{
+    padding: 5px;
+    border: 1px solid #642f0b;
+}
+
+.hiddenCriteriaCommentButton
+{
+    display: none;
+}
+
+img.editComments, img.addComments, img.editUnitComments, img.addUnitComments
+{
+    cursor: pointer;
+}
+
+#bespokeStudentGridTable img.addComments, #bespokeUnitGridTable img.addComments,
+#bespokeUnitGridTable img.addComments, #bespokeUnitGridTable img.addComments
+{
+    float: none !important;
+    margin: 0px !important;
+}
+
+.c
+{
+    text-align: center;
+}
+
+.l
+{
+    text-align: left;
+}
+
+table#gsTable td
+{
+    vertical-align: middle;
+}
+
+table#gsTable td img
+{
+    height: 25px;
+    width: 25px;
+}
+
+/* Final summary table of overall grades and precited grades */
+.bespokeSummaryAwardGrades {  
+    border : 2px solid #C9DEEF;
+    margin-top : 20px;    
+    margin-bottom: 20px;
+}
+
+.bespokeSummaryAwardGrades td {
+    border : 1px solid #CFCFCF;
+}
+
+/* bold the headings, which aren't th for now */
+.bespokeSummaryAwardGrades td:first-child {
+    font-weight : bold;
+}
+
+/* Colours rows */
+.bespokeSummaryAwardGrades tr:nth-child(1) {
+    background-color: #FFFDD0;
+}
+
+.bespokeSummaryAwardGrades tr:nth-child(2) {
+    background-color: #F1FFB8;
+}
+
+input.long
+{
+    width: 500px !important;
+}
+
+.bcgt_pagination {
+    padding: 10px;
+}
+
+.pageNumber {
+    display: inline-block;
+    padding: 2px 8px;
+    margin-right: 4px;
+    border-radius: 3px;
+    border: solid 1px #c0c0c0;
+    background: #e9e9e9;
+    box-shadow: inset 0px 1px 0px rgba(255,255,255, .8), 0px 1px 3px rgba(0,0,0, .1);
+    font-size: .875em;
+    font-weight: bold;
+    text-decoration: none;
+    color: #717171;
+    text-shadow: 0px 1px 0px rgba(255,255,255, 1);
+}
+
+.pageNumber:hover, .pageNumber.gradient:hover {
+    background: #fefefe;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FEFEFE), to(#f0f0f0));
+    background: -moz-linear-gradient(0% 0% 270deg,#FEFEFE, #f0f0f0);
+}
+
+.pageNumber.active {
+    background: #616161;
+    box-shadow: inset 0px 0px 8px rgba(0,0,0, .5), 0px 1px 0px rgba(255,255,255, .8);
+    color: #f0f0f0;
+    text-shadow: 0px 0px 3px rgba(0,0,0, .5);
+}
+
+.pageNumber.gradient {
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f8f8f8), to(#e9e9e9));
+    background: -moz-linear-gradient(0% 0% 270deg,#f8f8f8, #e9e9e9);
+}
+
+.bcgt_activity_controls .tabs .tabtree {
+    margin-bottom: 2em!important;
+}
+
+.bcgt_mod_keyos {
+    width: 40%;
+    margin:auto;
+    padding-bottom:10px;
+}
+
+.bcgt_mod_keyos .key {
+    display:block;
+}
+
+.bcgt_mod_keyos .key .criterialinkextra {
+    font-size: 0.8em;
+    font-style: italic;
+}
+
+.ui-dialog {
+    width: 500px!important;
+    /*left:420px!important;*/
+    /*top: -1000px!important;*/
+}
+
+#bcgtdialogcontent {
+    max-height: 400px;
+    overflow-y: scroll;
+}
+
+.bcgtdialogmodcheck {
+    background-color: white!important;
+    border:grey solid 1px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    padding: 4px;
+    mid-width: 200px;
+}
+
+.bcgtdialogmodcheck img.modalload{
+    display: block;
+    width: 50px;
+    height: 50px;
+    margin: auto;
+    margin-top: 40px;
+}
+
+
+.bcgtdialogmodcheck .ui-corner-all {
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+.bcgtdialogmodcheck .ui-widget-header {
+    border: 1px solid #aaaaaa;
+    background: #cccccc url(pix/css/softback_cccccc.png) 50% 50% repeat-x;
+    color: #222222;
+    font-weight: bold;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    pading-left: 4px;
+}
+
+.bcgtdialogmodcheck .ui-dialog-title{
+    margin: .1em 0;
+    white-space: nowrap;
+    width: 90%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-left: 4px;
+}
+
+.bcgtdialogmodcheck .ui-dialog-titlebar-close {
+    float: right;
+    right: .3em;
+    top: 50%;
+    margin: -2px 4px 0 0;
+    padding: 1px;
+    height: 20px;
+}
+
+.ui-widget-overlay {
+    background: #aaaaaa;
+    opacity: .3;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.bcgtdialogmodcheck .modlink {
+    border: #cccccc solid 1px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    margin:4px;
+    margin-top:5px;
+    margin-bottom:5px;
+    padding: 2px;
+}
+
+.bcgtdialogmodcheck .modlink .modlinkheader {
+    background-color: #CFCFCF;
+    padding-top:2px;
+    padding-bottom:2px;
+}
+
+.bcgtdialogmodcheck .modlink .modlinkheader .activityicon{
+    height: 18px;
+    width:18px;
+    margin-right:2px;
+}
+
+.bcgtdialogmodcheck .modlink .modlinkheadername {
+    font-size: 1.3em;
+    font-weight: bold;
+    padding-left:2px;
+    padding-right:2px;
+    width:79px;
+    text-wrap: normal;
+}
+
+.bcgtdialogmodcheck .modlink .modlinkheadermod {
+    font-size: 0.9em;
+    font-style: italic;
+    margin-left: 3px;
+    margin-right: 3px;
+    text-transform: capitalize;
+}
+
+.bcgtdialogmodcheck .modlink .modlinkheaderdate {
+    float: right;
+    margin-right:4px;
+}
+
+.bcgtdialogmodcheck .modlinkingsubsummary {
+    width:80%;
+    margin:auto;
+    padding:4px;
+    border-bottom: grey dashed 1px;
+}
+
+#bcgtdialogcontent .modlinktrackingsummary {
+    padding-top:8px;
+    padding-bottom:8px;
+}
+
+.bcgtdialogmodcheck .modlinkingsubsummary .modlinkingssub {
+    margin-left:8px;
+    margin-right:8px;
+}
+
+.bcgtdialogmodcheck .modlink .modlinktrackingsummary table.modlinkingsummary, 
+.bcgtmodlinkingselections table.modlinkingsummary{
+    margin-bottom:0px;
+    margin-left:5px;
+    border: grey solid 1px;
+}
+
+bcgtmodlinkingselections
+ 
+.bcgtdialogmodcheck .modlink .modlinktrackingsummary table.modlinkingsummary td, 
+.bcgtmodlinkingselections table.modlinkingsummary td{
+    padding:0px;
+    border-bottom: grey solid 1px;
+    border-top: grey solid 1px;
+}
+
+.bcgtdialogmodcheck .modlink .modlinktrackingsummary  table.modlinkingsummary table.activityLinksActivities,
+.bcgtmodlinkingselections table.modlinkingsummary table.activityLinksActivities{
+    margin-bottom:0px;
+    padding:0px;
+}
+.bcgtdialogmodcheck .modlink .modlinktrackingsummary table.modlinkingsummary table.activityLinksActivities td,
+.bcgtmodlinkingselections table.modlinkingsummary table.activityLinksActivities td{
+    padding:.5em;
+    border-top: none;
+}
+
+.bcgtdialogmodcheck .modlink .bcgtmodlinkingaction {
+    width:240px;
+    margin:auto;
+    padding-top:2px;
+    padding-bottom:2px;
+    display:block;
+}
+
+.bcgtdialogmodcheck .modlink .bcgtmodlinkingaction input {
+    margin-left:2px;
+    margin-right:2px;
+    padding: 2px;
+/*    display: block;
+    margin:auto;*/
+}   
+
+.bcgtmodlinkingselections img.activityicon {
+    height:18px;
+    width:18px;
+}
+
+.bcgtmodlinkingselections table.activityLinks td.bcgtmodlinkingunitsummary {
+    padding-left:0px!important;
+}
+
+.bcgtdialogmodcheck .ui-icon {
+    left: 50%;
+    margin-left: -8px;
+    position: absolute;
+    top: 50%;
+    margin-top: -8px;
+    width: 16px;
+    height: 16px;
+    background-image: url(pix/css/close.png);
+    display: block;
+    text-indent: -99999px;
+    overflow: hidden;
+    background-repeat: no-repeat;
+}
+
+.bcgtdialogmodcheck .ui-button-text {
+    padding: .4em;
+    text-indent: -9999999px;
+}
+
+span.bcgtcritass:hover {
+    cursor: pointer;
+} 
+
+img.modcheckicon{
+   width:18px;
+   height:18px;
+}
+
+td.bcgtcritass span.bcgtcritass .bcgtmodcriticon {
+    height: 18px!important;
+    width: 18px!important;
+    margin-left:2px;
+}
+
+.bcgtmodkey .bcgtmodkeyicon {
+    height: 30px!important;
+    width: 30px!important;
+}
+
+.bcgtmodkey td span.bcgtmodkeymod {
+    text-transform: capitalize;
+    position:relative;
+    top:-5px;
+    vertical-align: super;
+    
+}
+
+td.bcgtcritass span.bcgtcritass sup {
+    vertical-align: super!important;
+    position: relative;
+    top:-8px;
+}
+
+.bcgt_unit_activities {
+    width:70%;
+    margin:auto;
+}
+
+.bcgt_unit_activities h3 {
+    background-color: #e0e0e0;
+    width:60%;
+    margin:auto;
+    margin-bottom: 10px;
+    margin-top:25px;
+    padding:5px;
+}
+
+.bcgt_unit_activities .bgctActivityUnit h3 {
+    margin-bottom: 10px;
+    margin-top:5px;
+    background-color: white;
+    width:100%;
+    border-bottom:grey solid 1px;
+}
+
+.bcgt_unit_activities .bgctActivityUnit table {
+    margin-top:8px;
+}
+
+
+.bcgt_unit_activities .bgctActivityUnit table td.deleteselection {
+    float: right;
+}
+
+.bcgt_unit_activities .bgctSelectActivity, .bcgt_unit_activities .bgctSelectActivity {
+    margin:auto;
+}
+
+.bcgt_unit_activities .bgctActivityUnit {
+    margin:auto;
+}
+
+.bcgt_unit_activities .currentSelections {
+}
+
+.bcgt_unit_activities h2 {
+    margin:auto;
+    display: block;
+    width:80%;
+    margin-bottom: 10px;
+        
+}
+
+.bcgt_unit_activities input.save {
+    display: block;
+    margin:auto;
+}
+
+.bcgt_unit_activities .activityicon {
+    height: 18px;
+    width: 18px;
+    padding-left: 5px;
+    padding-right:5px;
+}
+
+.bcgt_unit_activities .activityDueDate {
+    float:right;
+    padding-left:4px;
+    padding-right:4px;
+}
+
+.bcgt_unit_activities .activityName {
+    max-width: 50%;
+    text-wrap: normal;
+    overflow: visible;
+}
+
+table.trackersOverallTable {
+    min-width:90%;
+}
+
+
+.bgctActivityUnit {
+    overflow-x: scroll;
+}
+

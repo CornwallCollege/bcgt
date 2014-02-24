@@ -1,0 +1,33 @@
+<?php if(!defined('ELBP')) exit; ?>
+
+<table class="elbp_summary_table">
+    <tbody>
+      <tr>
+        <td class="elbp_summary_icon">
+            <img src="<?= $CFG->wwwroot ?><?= $obj->getPath() ?>pix/elbp_prior_learning/icon.png" alt="<?= $obj->getTitle() ?>">
+        </td>
+        <td class="elbp_summary_right">
+            <?= get_string('mypriorquals', 'block_bcgt') ?>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+
+<table class="elbp_summary_table elbp_bcgt_summary">
+    <tbody>
+      <?php if($prior): ?>
+        <?php foreach($prior as $pqual): ?>
+        <tr>
+            <td><?= $pqual->qualname ?></td>
+            <td><?= $pqual->subject ?></td>
+            <td><?= $pqual->grade ?></td>
+        </tr>
+        <?php endforeach; ?>
+        <?php else: ?>
+        <tr>
+            <td class='c'><?= $string['noresults'] ?></td>
+        </tr>
+      <?php endif; ?>
+    </tbody>
+  </table>

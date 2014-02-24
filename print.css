@@ -1,0 +1,199 @@
+body
+{
+     font-family: "Trebuchet MS", Arial, sans-serif;   
+}
+
+.c
+{
+    text-align: center;
+}
+
+.b
+{
+    font-weight: bold;
+}
+
+div#key img
+{
+    width: 25px;
+    height: 25px;
+}
+
+table#printGridTable
+{
+    min-width:60%;
+    margin:auto;
+    text-align:left;   
+    border-collapse: collapse;
+}
+
+#printGridTable td, #printGridTable th
+{
+    padding: 8px 4px;
+    border: 1px solid silver;
+    text-align: center;
+}
+
+#printGridTable th
+{
+    font-size: 11pt;
+    color: #fff;
+    background-color: #696969;
+}
+
+#printGridTable td
+{
+    font-size: 10pt;
+    color: #000;
+}
+
+.grid_cell_blank { 
+    background-color: #F3F3F3;
+}
+
+.tooltipContent
+{
+    display: none;
+}
+
+.page_break
+{
+    page-break-after: always;
+}
+
+.divider
+{
+    background-color: #696969;
+}
+
+table.aLvl .current, table#printGridTable .current
+{
+    background-color: rgb(219, 219, 219) !important;
+    color: #000 !important;
+}
+
+
+div.report_left
+{
+    width: 30%;
+    float: left;
+    min-height: 400px;
+}
+
+div.report_left table
+{
+    min-width: 75%;
+}
+
+div.report_left table tr td {
+    padding-bottom: 20px;
+}
+
+div.report_right
+{
+    width: 90%;
+    margin: auto;
+    min-height: 400px;
+}
+
+div.report_right table
+{
+    width: 100%;
+    border-collapse: collapse;
+}
+
+div.report_right table tr:first-child
+{
+    border-bottom: 2px solid #000;
+    background-color: #e3e3e3;
+}
+
+div.report_right table tr.grey
+{
+    border-bottom: 2px solid #000;
+    background-color: #e3e3e3;
+}
+
+div.report_right table td, div.report_right table th
+{
+    border: 1px solid #000;
+    font-size: 10pt;
+    padding: 2px;
+}
+
+tr.divider-row
+{
+    background-color: #000;
+    height: 15px;
+}
+
+table#summaryAwardGrades, table.bespokeSummaryAwardGrades
+{
+    margin:auto;
+    text-align:left;   
+    border-collapse: collapse;
+    font-size: 11pt;
+    margin-top: 10px;
+}
+
+table#summaryAwardGrades tr:nth-child(even), table.bespokeSummaryAwardGrades tr:nth-child(even)
+{
+    background-color: #f5f5f5;
+}
+
+table#summaryAwardGrades tr:nth-child(odd), table.bespokeSummaryAwardGrades tr:nth-child(odd)
+{
+    background-color: #ffffff;
+}
+
+table#summaryAwardGrades td, table.bespokeSummaryAwardGrades td
+{
+    padding: 8px 4px;
+    border: 1px solid silver;
+}
+
+td.val img
+{
+    width: 25px;
+    height: 25px;
+}
+
+.criteriaValueTooltip, .hiddenCriteriaCommentButton
+{
+    display: none;
+}
+
+div#bespokeGridKey {
+    width: 85%;
+    margin: auto;
+    margin-top: 20px;
+}
+
+div#bespokeGridKey table {
+    margin-bottom: 0px;
+    font-size: 11pt;    
+    border-collapse: collapse;
+}
+
+
+div#bespokeGridKey table td, div#bespokeGridKey table th
+{
+    padding: 4px;
+    border: 1px solid silver;
+    text-align: center;
+}
+
+tr.award_row td:nth-child(2)
+{
+    text-align: center;
+}
+
+tr.award_row td:nth-child(3)
+{
+    display: none;
+}
+
+.criteriaPopupDetailsTable
+{
+    display: none;
+}

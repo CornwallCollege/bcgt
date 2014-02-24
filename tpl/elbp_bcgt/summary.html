@@ -1,0 +1,29 @@
+<?php if(!defined('ELBP')) exit; ?>
+
+<table class="elbp_summary_table">
+    <tbody>
+      <tr>
+        <td class="elbp_summary_icon">
+            <img src="<?= $CFG->wwwroot ?><?= $obj->getPath() ?>pix/elbp_bcgt/icon.png" alt="<?= $obj->getTitle() ?>">
+        </td>
+        <td class="elbp_summary_right">
+            <?= get_string('mytrackers', 'block_bcgt') ?>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+
+<table class="elbp_summary_table elbp_bcgt_summary">
+    <tbody>
+      <?php if ($quals): foreach($quals as $qual): ?>
+      <tr>
+          <td><a href="#" onclick="loadTrackerPopup(<?= $qual->id ?>);return false;"><?= \bcgt_get_qualification_display_name($qual) ?></a></td>
+      </tr>
+      <?php endforeach; else: ?>
+      <tr>
+          <td class='c'><?= $string['noresults'] ?></td>
+      </tr>
+      <?php endif; ?>
+    </tbody>
+  </table>
