@@ -25,6 +25,7 @@ class Import {
     protected $errorMessage;
     protected $backup;
     protected $group;
+    protected $registerGroups;
     //I AM FULLY AWARE THAT HAVING THESE SWITCHES IN IT IS NOT FULLY OBJECT ORIENTED!!
 //THEY SHOULD BE inherited instancs of classes. in a workspace or something
     
@@ -197,6 +198,10 @@ class Import {
                 $obj = new Group();
                 $this->group = $obj;
                 break;
+            case 'reggrp':
+                $obj = new RegisterGroupImport();
+                $this->registerGroups = $obj;
+            break;
         }
     }
     
@@ -235,6 +240,9 @@ class Import {
             case 'gr':
                 return $this->group;
                 break;
+            case 'reggrp':
+                return $this->registerGroups;
+            break;
         }
     }
     
@@ -296,6 +304,9 @@ class Import {
                 return html_writer::tag('h2', get_string('groups'). 
                         '', array('class'=>'formheading'));
                 break;
+            case 'reggrp':
+                return html_writer::tag('h2', get_string('registergroups', 'block_bcgt'), array('class' => 'formheading'));
+            break;
         }
         
     }
@@ -328,10 +339,14 @@ class Import {
         $out .= $this->get_ind_tab($this->action, 'targetgrades', 'tg');
         $out .= $this->get_ind_tab($this->action, 'qualweightings', 'w');
         $out .= $this->get_ind_tab($this->action, 'assessmentmarks', 'fam');
-        $out .= $this->get_ind_tab($this->action, 'userdata', 'ud');
+        //$out .= $this->get_ind_tab($this->action, 'userdata', 'ud');
         if(get_config('bcgt', 'usegroupsingradetracker'))
         {
             $out .= $this->get_ind_tab($this->action, 'groupsgroupings', 'gr');
+        }
+        if(get_config('bcgt', 'useregistergroups'))
+        {
+            $out .= $this->get_ind_tab($this->action, 'registergroups', 'reggrp');
         }
 //        $out .= '<li>'.
 //                '<a href="'.$CFG->wwwroot.'/blocks/bcgt/forms/import.php?a=sd">'.
@@ -362,12 +377,12 @@ class Import {
     {
         $retval = '';        
         $obj = $this->get_object();
-        
+                
         $desc = $obj->get_description();
         $multipleFiles = $obj->has_multiple();
         $headers = $obj->get_headers();
         $examples = $obj->get_examples();
-        
+                
         $retval .= '<h3>'.get_string('desc', 'block_bcgt').'</h3>';
         $retval .= '<p id="import">';
         $retval .= '<span class="description">'.$desc.'</span>';

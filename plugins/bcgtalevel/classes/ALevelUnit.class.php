@@ -134,8 +134,7 @@ class AlevelUnit extends Unit {
     {
         //does alevel have critera?
         //Assessments? FormalAssessments etc
-        if($useFAs = get_config('bcgt', 'alevelusefa') && 
-                    !$manageCentrally = get_config('bcgt', 'alevelManageFACentrally'))
+        if($useFAs = get_config('bcgt', 'alevelusefa'))
             {
                 $jsModule = array(
                 'name'     => 'mod_bcgtalevel',

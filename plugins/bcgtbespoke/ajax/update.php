@@ -19,7 +19,7 @@ switch($action)
     case 'update_criteria_value':
         
         if (!isset($params['studentID']) || !isset($params['unitID']) || !isset($params['criteriaID']) || !isset($params['qualID'])) exit;
-        
+                
         $studentID = $params['studentID'];
         $criteriaID = $params['criteriaID'];
         $unitID = $params['unitID'];
@@ -60,30 +60,36 @@ switch($action)
 
         $criteria->save_student($qualID, false); # Save straight away so we can check the parent and loop through all children's awards         
 
-        // Recaluclate unit stuff
-        $unitAward = $unit->calculate_unit_award($qualID);
-        if ($unitAward)
+        if ($qualification->use_auto_calculations())
         {
-            echo "$('#unitAwardSelect_U{$unitID}_Q{$qualID}_S{$studentID}').val('{$unitAward->get_id()}');";
-            echo "$('td#unitAward_U{$unitID}_Q{$qualID}_S{$studentID}').effect( 'highlight', {color: '#ccff66'}, 3000 );";
+            // Recaluclate unit stuff
+            $unitAward = $unit->calculate_unit_award($qualID);
+            if ($unitAward)
+            {
+                echo "$('#unitAwardSelect_U{$unitID}_Q{$qualID}_S{$studentID}').val('{$unitAward->get_id()}');";
+                echo "$('td#unitAward_U{$unitID}_Q{$qualID}_S{$studentID}').effect( 'highlight', {color: '#ccff66'}, 3000 );";
+            }
         }
         
         $qualification->update_single_unit($unit);
         
-        // Recaluclate qual stuff
-        $predictedAward = $qualification->calculate_predicted_grade();        
-        if ($predictedAward)
+        if ($qualification->use_auto_calculations())
         {
-            echo "$('.predictedAward_S{$studentID}_Q{$qualID}').text('{$predictedAward->get_award()}');";
-            echo "$($('.predictedAward_S{$studentID}_Q{$qualID}').parents('td')).effect( 'highlight', {color: '#ccff66'}, 3000 );";
-        }
-        
-        
-        $qualAward = $qualification->calculate_final_grade();
-        if ($qualAward)
-        {
-            echo "$('.finalAward_S{$studentID}_Q{$qualID}').text('{$qualAward->get_award()}');";
-            echo "$($('.finalAward_S{$studentID}_Q{$qualID}').parents('td')).effect( 'highlight', {color: '#ccff66'}, 3000 );";
+            // Recaluclate qual stuff
+            $predictedAward = $qualification->calculate_predicted_grade();        
+            if ($predictedAward)
+            {
+                echo "$('.predictedAward_S{$studentID}_Q{$qualID}').text('{$predictedAward->get_award()}');";
+                echo "$($('.predictedAward_S{$studentID}_Q{$qualID}').parents('td')).effect( 'highlight', {color: '#ccff66'}, 3000 );";
+            }
+
+
+            $qualAward = $qualification->calculate_final_grade();
+            if ($qualAward)
+            {
+                echo "$('.finalAward_S{$studentID}_Q{$qualID}').text('{$qualAward->get_award()}');";
+                echo "$($('.finalAward_S{$studentID}_Q{$qualID}').parents('td')).effect( 'highlight', {color: '#ccff66'}, 3000 );";
+            }
         }
         
         // Highlight criteria box briefly
@@ -140,20 +146,25 @@ switch($action)
         $unit->set_student_award($award);
         $unit->save_student($qualID);
         
-        // Recaluclate stuff
-        $predictedAward = $qualification->calculate_predicted_grade();        
-        if ($predictedAward)
+        if ($qualification->use_auto_calculations())
         {
-            echo "$('.predictedAward_S{$studentID}_Q{$qualID}').text('{$predictedAward->get_award()}');";
-            echo "$($('.predictedAward_S{$studentID}_Q{$qualID}').parents('td')).effect( 'highlight', {color: '#ccff66'}, 3000 );";
-        }
+            
+            // Recaluclate stuff
+            $predictedAward = $qualification->calculate_predicted_grade();        
+            if ($predictedAward)
+            {
+                echo "$('.predictedAward_S{$studentID}_Q{$qualID}').text('{$predictedAward->get_award()}');";
+                echo "$($('.predictedAward_S{$studentID}_Q{$qualID}').parents('td')).effect( 'highlight', {color: '#ccff66'}, 3000 );";
+            }
+
+
+            $qualAward = $qualification->calculate_final_grade();
+            if ($qualAward)
+            {
+                echo "$('.finalAward_S{$studentID}_Q{$qualID}').text('{$qualAward->get_award()}');";
+                echo "$($('.finalAward_S{$studentID}_Q{$qualID}').parents('td')).effect( 'highlight', {color: '#ccff66'}, 3000 );";
+            }
         
-        
-        $qualAward = $qualification->calculate_final_grade();
-        if ($qualAward)
-        {
-            echo "$('.finalAward_S{$studentID}_Q{$qualID}').text('{$qualAward->get_award()}');";
-            echo "$($('.finalAward_S{$studentID}_Q{$qualID}').parents('td')).effect( 'highlight', {color: '#ccff66'}, 3000 );";
         }
         
         // Done
@@ -163,10 +174,56 @@ switch($action)
         
     break;
     
+    case 'update_qual_award':
+        
+        if (!isset($params['studentID']) || !isset($params['qualID'])) exit;
+        
+        $studentID = $params['studentID'];
+        $qualID = $params['qualID'];
+        $value = (isset($params['value'])) ? $params['value'] : -1;
+        
+        $loadParams = new stdClass();
+        $loadParams->loadLevel = Qualification::LOADLEVELMIN;
+        $loadParams->loadAward = true;
+        $qualification = Qualification::get_qualification_class_id($qualID, $loadParams);
+        if($qualification)
+        {
+            $qualification->load_student_information($studentID,
+                $loadParams);
+        }
+
+        // If qualification is still not valid
+        if (is_null($qualification) || !$qualification) exit;
+        
+        if ($value <= 0)
+        {
+            $qualification->delete_qualification_award('Final');
+        }
+        else
+        {
+            
+            $award = $DB->get_record("block_bcgt_bspk_q_grade_vals", array("id" => $value));
+            if ($award)
+            {
+                $awardParams = new stdClass();
+                $awardParams->award = $award->grade;
+                $awardParams->type = 'Final';
+                $qualAward = new BespokeQualificationAward($award->id, $awardParams);
+                $qualification->update_qualification_award($qualAward);
+            }
+            
+        }
+        
+        echo "$('.finalAward_S{$studentID}_Q{$qualID}').parent().effect('highlight', {color: '#ccff66'}, 3000);";      
+        echo "$('.finalAward_S{$studentID}_Q{$qualID} .qualAwardSelect').val('{$value}');";
+        exit;
+        
+        
+    break;
     
     case 'add_criteria_comment':
         
-        if (!isset($params['studentID']) || !isset($params['qualID']) || !isset($params['criteriaID']) || !isset($params['comment']) || !isset($params['element'])) exit;
+        if (!isset($params['studentID']) || !isset($params['qualID']) || !isset($params['criteriaID']) || !isset($params['comment']) || !isset($params['element']) || !isset($params['imgID'])) exit;
                         
         $criteria = Criteria::get_correct_criteria_class(BespokeQualification::ID, $params['criteriaID']);
         if (!$criteria) exit;
@@ -174,29 +231,34 @@ switch($action)
         $criteria->load_student_information($params['studentID'], $params['qualID']);
         
         $params['comment'] = trim($params['comment']);
+        $params['comment'] = urldecode($params['comment']);
+        
+        // Datatables throws a major wobbly with even slightly weird characters, so going to ahve to remove anything that
+        // isn't simple
+        $params['comment'] = preg_replace("/[^a-z 0-9_\-\'\"\!\:\;\n\r\.\,\?\(\)\/]/i", "", $params['comment']);
+        
         if (empty($params['comment'])) $params['comment'] = null;
         
-        $criteria->add_comments(urldecode($params['comment']));
+        $criteria->add_comments($params['comment']);
         $criteria->save_students_comments($params['qualID']);
         
         if (is_null($params['comment'])){
-            echo "$('#{$params['element']}').attr('src', '{$CFG->wwwroot}/blocks/bcgt/plugins/bcgtbespoke/pix/comment_add.png');";
-            echo "$($('#{$params['element']}').parents('td')[0]).removeClass('hasComments');";
+            echo "$('#{$params['imgID']}').attr('src', '{$CFG->wwwroot}/blocks/bcgt/plugins/bcgtbespoke/pix/comment_add.png');";
+            echo "$($('#{$params['imgID']}').parents('td')[0]).removeClass('hasComments');";
         } else {
-            echo "$('#{$params['element']}').attr('src', '{$CFG->wwwroot}/blocks/bcgt/plugins/bcgtbespoke/pix/comment_edit.png');";
-            echo "$($('#{$params['element']}').parents('td')[0]).addClass('hasComments');";
+            echo "$('#{$params['imgID']}').attr('src', '{$CFG->wwwroot}/blocks/bcgt/plugins/bcgtbespoke/pix/comment_edit.png');";
+            echo "$($('#{$params['imgID']}').parents('td')[0]).addClass('hasComments');";
         }
         
-        $params['comment'] = urldecode($params['comment']);
+        $params['comment'] = urlencode($params['comment']);
         $params['comment'] = str_replace("'", "", $params['comment']);
         $params['comment'] = preg_replace('/\v+|\\\[rn]/','<br>',$params['comment']);
+        $params['comment'] = str_replace("+", " ", $params['comment']);
         
-        
-        echo "$('#{$params['element']}').removeClass('addComments').addClass('editComments');";
-        echo "$($('#{$params['element']}').parents('td')[0]).effect( 'highlight', {color: '#ccff66'}, 3000 );";
-        echo "$($('#{$params['element']}').siblings('.tooltipContent')[0]).html('{$params['comment']}');";
-        echo "cmt.reset();";
-        echo "cmt.cancel();";
+        echo "$('#{$params['imgID']}').removeClass('addComments').addClass('editComments');";
+        echo "$($('#{$params['imgID']}').parents('td')[0]).effect( 'highlight', {color: '#ccff66'}, 3000 );";
+        echo "$('#{$params['element']}').find('.dialogCommentText').val( decodeURIComponent('{$params['comment']}') );";
+        echo "$('#{$params['element']}').dialog('close');";
         echo "apply_grid_stuff();";
         
         exit;
@@ -206,7 +268,7 @@ switch($action)
     
     case 'add_unit_comment':
         
-        if (!isset($params['studentID']) || !isset($params['qualID']) || !isset($params['unitID']) || !isset($params['comment']) || !isset($params['element'])) exit;
+        if (!isset($params['studentID']) || !isset($params['qualID']) || !isset($params['unitID']) || !isset($params['comment']) || !isset($params['element']) || !isset($params['imgID'])) exit;
         
         $loadParams = new stdClass();
         $loadParams->loadLevel = Qualification::LOADLEVELUNITS;
@@ -217,6 +279,12 @@ switch($action)
         $unit->load_student_information($params['studentID'], $params['qualID'], $loadParams);
         
         $params['comment'] = trim($params['comment']);
+        $params['comment'] = urldecode($params['comment']);
+        
+        // Datatables throws a major wobbly with even slightly weird characters, so going to ahve to remove anything that
+        // isn't simple
+        $params['comment'] = preg_replace("/[^a-z 0-9_\-\'\"\!\:\;\n\r\.\,\?\(\)\/]/i", "", $params['comment']);
+        
         if (empty($params['comment'])) $params['comment'] = null;
                 
         $unit->update_comments($params['qualID'], urldecode($params['comment']));
@@ -234,23 +302,25 @@ switch($action)
         }
                
         if (is_null($params['comment'])){
-            echo "$('#{$params['element']}').attr('src', '{$CFG->wwwroot}/blocks/bcgt/plugins/bcgtbespoke/pix/comment_add.png');";
-            echo "$($($('#{$params['element']}').parents('td')[0]).siblings('td')[{$siblingTDNum}]).removeClass('hasComments');";
+            echo "$('#{$params['imgID']}').attr('src', '{$CFG->wwwroot}/blocks/bcgt/plugins/bcgtbespoke/pix/comment_add.png');";
+            echo "$($($('#{$params['imgID']}').parents('td')[0]).siblings('td')[{$siblingTDNum}]).removeClass('hasComments');";
+            echo "$($('#{$params['imgID']}').parents('td')[0]).removeClass('hasComments');";
         } else {
-            echo "$('#{$params['element']}').attr('src', '{$CFG->wwwroot}/blocks/bcgt/plugins/bcgtbespoke/pix/comment_edit.png');";
-            echo "$($($('#{$params['element']}').parents('td')[0]).siblings('td')[{$siblingTDNum}]).addClass('hasComments');";
+            echo "$('#{$params['imgID']}').attr('src', '{$CFG->wwwroot}/blocks/bcgt/plugins/bcgtbespoke/pix/comment_edit.png');";
+            echo "$($($('#{$params['imgID']}').parents('td')[0]).siblings('td')[{$siblingTDNum}]).addClass('hasComments');";
+            echo "$($('#{$params['imgID']}').parents('td')[0]).addClass('hasComments');";
         }
         
-        $params['comment'] = urldecode($params['comment']);
+        $params['comment'] = urlencode($params['comment']);
         $params['comment'] = str_replace("'", "", $params['comment']);
         $params['comment'] = preg_replace('/\v+|\\\[rn]/','<br>',$params['comment']);
+        $params['comment'] = str_replace("+", " ", $params['comment']);
         
         
-        echo "$('#{$params['element']}').removeClass('addUnitComments').addClass('editUnitComments');";
-        echo "$($('#{$params['element']}').parents('td')[0]).effect( 'highlight', {color: '#ccff66'}, 3000 );";
-        echo "$($('#{$params['element']}').siblings('.tooltipContent')[0]).html('{$params['comment']}');";
-        echo "cmt.reset();";
-        echo "cmt.cancel();";
+        echo "$('#{$params['imgID']}').removeClass('addComments').addClass('editComments');";
+        echo "$($('#{$params['imgID']}').parents('td')[0]).effect( 'highlight', {color: '#ccff66'}, 3000 );";
+        echo "$('#{$params['element']}').find('.dialogCommentText').val( decodeURIComponent('{$params['comment']}') );";
+        echo "$('#{$params['element']}').dialog('close');";
         echo "apply_grid_stuff();";
         
         exit;

@@ -189,6 +189,11 @@ JS;
                 $info .= "<table id='rangePopupTable'>";
                     $info .= "<tr class='lightpink'><th></th>";
                         for($i = 1; $i <= $sheet->numofobservations; $i++) $info .= "<th class='c'>{$i}</th>";
+                        
+                        // + 2 optional extra ones
+                        $info .= "<th class='c'></th>";
+                        $info .= "<th class='c'></th>";
+                        
                     $info .= "</tr>";
                     
                     // Now the ranges
@@ -202,6 +207,16 @@ JS;
                                     $check = $DB->get_record("block_bcgt_user_soff_sht_rgs", array("userid" => $params['studentID'], "bcgtqualificationid" => $params['qualID'], "bcgtsignoffsheetid" => $sheet->id, "bcgtsignoffrangeid" => $range->id, "observationnum" => $i, "value" => 1));
                                     $chkd = ($check) ? "checked" : "";
                                     $info .= "<td class='c'><input type='checkbox' onchange='updateSignOffRangeObservation({$params['studentID']}, {$params['qualID']}, {$params['unitID']}, {$sheet->id}, {$range->id}, {$i}, $(this));return false;' {$chkd} /></td>";
+                                }
+                                
+                                // + 2 optional ones
+                                $minus = CGHBNVQCriteria::OPTIONAL_NUM_OBSERVATIONS - ( CGHBNVQCriteria::OPTIONAL_NUM_OBSERVATIONS * 2 );
+                                for ($optNum = -1; $optNum >= $minus; $optNum--)
+                                {
+                                    $check = $DB->get_record("block_bcgt_user_soff_sht_rgs", array("userid" => $params['studentID'], "bcgtqualificationid" => $params['qualID'], "bcgtsignoffsheetid" => $sheet->id, "bcgtsignoffrangeid" => $range->id, "observationnum" => $optNum, "value" => 1));
+                                    $chkd = ($check) ? "checked" : "";
+                                    $info .= "<td class='c'><input type='checkbox' onchange='updateSignOffRangeObservation({$params['studentID']}, {$params['qualID']}, {$params['unitID']}, {$sheet->id}, {$range->id}, {$optNum}, $(this));return false;' {$chkd} /></td>";
+                                
                                 }
                                 
                             $info .= "</tr>";

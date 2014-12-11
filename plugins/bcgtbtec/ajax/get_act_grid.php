@@ -72,20 +72,23 @@ if($qualification)
     $qualification->set_student_flag($flag);
     $data = $qualification->get_act_grid_data($advancedMode, 
             $editing);
-    $output = array(
-		"iTotalRecords" => count($data),
-		"iTotalDisplayRecords" => count($data),
-		"aaData" => $data
-	);
-    if($showHTML)
-    {
-        echo bcgt_output_simple_grid_table($data);    
-    }
-    else
-    {
-        echo json_encode( $output );
-    }
-	
+//    $output = array(
+//		"iTotalRecords" => count($data),
+//		"iTotalDisplayRecords" => count($data),
+//		"aaData" => $data
+//	);
+//    if($showHTML)
+//    {
+//        echo bcgt_output_simple_grid_table($data);    
+//    }
+//    else
+//    {
+//        echo json_encode( $output );
+//    }
+//	
+    
+    echo $data;
+    
 }
 else {
     echo "No Qualification Found";

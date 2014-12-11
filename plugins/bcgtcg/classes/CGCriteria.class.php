@@ -64,12 +64,14 @@ class CGCriteria extends Criteria {
                 
         if (is_null($this->grading)){
             $get = $DB->get_record("block_bcgt_criteria_att", array("bcgtcriteriaid" => $this->id, "attribute" => "GRADING"));
-            if ($get) $this->grading = $get->value;
+            if ($get){
+                $this->grading = $get->value;
+            }
         }
         
         return $this->grading;
     }
-    
+        
     public function set_weighting($v){
         $this->weighting = $v;
     }
@@ -93,6 +95,7 @@ class CGCriteria extends Criteria {
         {
             case 'P':
             case 'DATE':    
+            case 'TEXT':
                 $records = $DB->get_records_select("block_bcgt_value", "bcgttypeid = ? AND specialval = 'A'", array($typeID), "ranking ASC", "*", 0, 1);
             break;
         
@@ -114,7 +117,7 @@ class CGCriteria extends Criteria {
         
     }
     
-    protected function get_non_met_values( $typeID = CGQualification::ID ){
+    public function get_non_met_values( $typeID = CGQualification::ID ){
         
         global $DB;
         
@@ -252,6 +255,9 @@ class CGCriteria extends Criteria {
         if ($value){
             if ($value->get_special_val() == 'L'){
                 $this->studentFlag = 'L';
+            } elseif ($valueID == -1){
+                // If we set it back to not attempted, clear any late flag
+                $this->studentFlag = null;
             }
         }
         
@@ -301,61 +307,83 @@ class CGCriteria extends Criteria {
         }
         
         $this->comments = iconv('UTF-8', 'ASCII//TRANSLIT', $this->comments); 
+                
+        $output .= "<div class='criteriaTDContent'>";
                                 
         // Simple, Non-Editing
         if(!$advancedMode && !$editing)
         {
             
-            $imageObj = CGQualification::get_simple_grid_images($value, $longValue);
-
-            $image = $imageObj->image;
-            $class = $imageObj->class;
-            
-            if ($this->studentFlag == 'L') $class .= ' wasLate ';
-            
-            $output .= "<span id='stCID_".$this->get_id()."_UID_".
-                    $unit->get_id()."_SID_".$this->studentID."_QID_".
-                    $this->qualID."' class='stuValue $class' title='title' criteriaID='{$this->id}' studentID='{$this->studentID}'><img src='".
-                    $image."'/></span>";
-            
-            if($this->grading == 'DATE')
+            if ($this->grading == 'TEXT')
             {
-                if ($this->dateSet > 0)
-                {
-                    if (ctype_digit($this->dateSet)) $output .= "<br><strong>".date('d M Y', $this->dateSet)."</strong>";
-                    else $output .= "<br><strong>{$this->dateSet}</strong>";
+                if (!empty($this->userDefinedValue)){
+                    $output .= "<span>{$this->userDefinedValue}</span>";
+                } else {
+                    $imageObj = CGQualification::get_grid_image($valueObj);
+                    $image = $imageObj->image;
+                    $class = $imageObj->class;
+                    $output .= "<span><img src='{$image}' class='stuValue {$class}' /></span>";
                 }
             }
-            
-            if (!is_null($this->comments) && $this->comments != ''){
-                $output .= "<div class='tooltipContent'>".nl2br( htmlentities($this->comments, ENT_QUOTES) )."</div>";
-            }
-            
+            else
+            {
+                
+                $imageObj = CGQualification::get_grid_image($valueObj);
+                $image = $imageObj->image;
+                $class = $imageObj->class;
 
+                if ($this->studentFlag == 'L') $class .= ' wasLate ';
+
+                $output .= "<span id='stCID_".$this->get_id()."_UID_".
+                        $unit->get_id()."_SID_".$this->studentID."_QID_".
+                        $this->qualID."' class='stuValue $class' criteriaID='{$this->id}' studentID='{$this->studentID}'><img src='".
+                        $image."'/></span>";
+
+                if($this->grading == 'DATE')
+                {
+                    if ($this->awardDate > 0)
+                    {
+                        if (ctype_digit($this->awardDate)) $output .= "<br><reallysmall>(".date('d M Y', $this->awardDate).")</reallysmall>";
+                        else $output .= "<br><reallysmall>({$this->awardDate})</reallysmall>";
+                    }
+                }
+                
+            }
+                       
         }
         // Advanced, non-editing
         elseif($advancedMode && !$editing)
         {
             
-            $class = '';
-            if ($this->studentFlag == 'L') $class .= ' wasLate ';
-            
-             $output .= "<span id='stCID_".$this->get_id()."_UID_".
-                    $unit->get_id()."_SID_".$this->studentID."_QID_".
-                    $this->qualID."' class='stuValue stuValue{$value} {$class}' title='title' criteriaID='{$this->id}' studentID='{$this->studentID}'>{$value}</span>";
-                    
-            if($this->grading == 'DATE')
+            if ($this->grading == 'TEXT')
             {
-                if ($this->dateSet > 0)
-                {
-                    if (ctype_digit($this->dateSet)) $output .= "<br>".date('d M Y', $this->dateSet);
-                    else $output .= "<br>{$this->dateSet}";
+                if (!empty($this->userDefinedValue)){
+                    $output .= "<span>{$this->userDefinedValue}</span>";
+                } else {
+                    $output .= "<span>{$value}</span>";
                 }
             }
+            else
+            {
+            
+                $class = '';
+                if ($this->studentFlag == 'L') $class .= ' wasLate ';
+
+                $output .= "<span id='stCID_".$this->get_id()."_UID_".
+                        $unit->get_id()."_SID_".$this->studentID."_QID_".
+                        $this->qualID."' class='stuValue stuValue{$value} {$class}' criteriaID='{$this->id}' studentID='{$this->studentID}'>{$value}</span>";
+
+                if($this->grading == 'DATE')
+                {
+                    if ($this->awardDate > 0)
+                    {
+                        if (ctype_digit($this->awardDate)) $output .= "<br><reallysmall>(".date('d M Y',$this->awardDate).")</reallysmall>";
+                        else $output .= "<br><reallysmall>({$this->awardDate})</reallysmall>";
+                    }
+                }
+            
+            }
                     
-             if (!is_null($this->comments) && $this->comments != ''){
-                 $output .= "<div class='tooltipContent'>".nl2br( htmlentities($this->comments, ENT_QUOTES) )."</div>";
-             }
 
         }
         // Advanced, editing
@@ -393,29 +421,25 @@ class CGCriteria extends Criteria {
                 }
             }
             
-            $output .= "</select>";
+            $output .= "</select>&nbsp;";
             
-            $username = htmlentities( $user->username, ENT_QUOTES );
-            $fullname = htmlentities( fullname($user), ENT_QUOTES );
-            $unitname = htmlentities( $unit->get_name(), ENT_QUOTES);
-            $critname = htmlentities($this->get_name(), ENT_QUOTES);  
+            $username = $this->student->username;
+            $fullname = fullname($this->student);
+            $unitname = bcgt_html($unit->get_name());
+            $critname = bcgt_html($this->name);
             
-            $studentComments = $this->comments;
-
-            if(!is_null($studentComments) && $studentComments != '')
-            { 
-                $output .= "<img id='C{$this->id}U{$unit->get_id()}S{$this->studentID}Q{$this->qualID}' criteriaid='{$this->id}' unitid='{$unit->get_id()}' studentid='{$this->studentID}' qualid='{$this->qualID}' username='{$username}' fullname='{$fullname}' unitname='{$unitname}' critname='{$critname}' grid='{$grid}' class='editComments' title='Click to Edit Comments' ".
-                        "alt='Click to Edit Comments' src='$CFG->wwwroot/blocks/bcgt/plugins/bcgtcg/pix/grid_symbols/comments.jpg'>";
-                $output .= "<div class='tooltipContent'>".nl2br( htmlspecialchars($studentComments, ENT_QUOTES) )."</div>";
+            // Change this so each thing has its own attribute, wil be easier
+            $commentImgID = "cmtCell_cID_".$this->get_id()."_uID_".$unit->get_id()."_SID_".$this->studentID.
+                            "_QID_".$this->qualID;
+        
+            if (!empty($this->comments))
+            {
+                $output .= "<img id='{$commentImgID}' criteriaid='{$this->id}' unitid='{$unit->get_id()}' studentid='{$this->studentID}' qualid='{$this->qualID}' username='{$username}' fullname='{$fullname}' unitname='{$unitname}' critname='{$critname}' grid='{$grid}' class='editComments' title='Click to Edit Comments'  src='{$CFG->wwwroot}/blocks/bcgt/plugins/bcgtcg/pix/comment_edit.png' alt='".get_string('editcomments', 'block_bcgt')."' style='width:20px;vertical-align:middle;'  />";
             }
             else
             {
-                $output .= "<img id='C{$this->id}U{$unit->get_id()}S{$this->studentID}Q{$this->qualID}' criteriaid='{$this->id}' unitid='{$unit->get_id()}' studentid='{$this->studentID}' qualid='{$this->qualID}' username='{$username}' fullname='{$fullname}' unitname='{$unitname}' critname='{$critname}' grid='{$grid}' class='addComments' title='Click to Add Comments' ".
-                        "alt='Click to Add Comments' src='$CFG->wwwroot/blocks/bcgt/plugins/bcgtcg/pix/grid_symbols/plus.png'>";
+                $output .= "<img id='{$commentImgID}' criteriaid='{$this->id}' unitid='{$unit->get_id()}' studentid='{$this->studentID}' qualid='{$this->qualID}' username='{$username}' fullname='{$fullname}' unitname='{$unitname}' critname='{$critname}' grid='{$grid}' class='addComments' title='Click to Add Comments'  src='{$CFG->wwwroot}/blocks/bcgt/plugins/bcgtcg/pix/comment_add.png' alt='".get_string('addcomment', 'block_bcgt')."' style='width:20px;vertical-align:middle;' />";
             }
-            
-            
-            
 
 
         }
@@ -423,11 +447,19 @@ class CGCriteria extends Criteria {
         else
         {
             
-            $class = '';
-            if ($this->studentFlag == 'L') $class .= ' wasLate ';
-                        
+            if ($this->grading == 'TEXT')
+            {
+                $output .= "<input class='criteriaUserDefinedValue' grid='{$grid}' criteriaid='{$this->get_id()}' unitid='{$unit->get_id()}' qualid='{$this->qualID}' studentid='{$user->id}' type='text' value='{$this->userDefinedValue}' />";
+            }
+            else
+            {
+            
+            
+                $class = '';
+                if ($this->studentFlag == 'L') $class .= ' wasLate ';
+
                 $values = $this->get_met_values();
-                                
+
                 // If there is only one pass value, use a checkbox, else use a select menu
                 if ($this->grading == 'P')
                 {
@@ -436,7 +468,13 @@ class CGCriteria extends Criteria {
                 }
                 elseif($this->grading == 'DATE')
                 {
-                    $date = (is_numeric($this->dateSet) && $this->dateSet > 0) ? date('d-m-Y', $this->dateSet) : date('d-m-Y', strtotime($this->dateSet));
+                    if (is_numeric($this->awardDate) && $this->awardDate > 0){
+                        $date = date('d-m-Y', $this->awardDate);
+                    } elseif (!is_numeric($this->awardDate) && !is_null($this->awardDate)){
+                        $date = date('d-m-Y', strtotime($this->awardDate)) . '!';
+                    } else {
+                        $date = '';
+                    }
                     $output .= "<input class='criteriaValueDate' grid='{$grid}' criteriaid='{$this->get_id()}' unitid='{$unit->get_id()}' qualid='{$this->qualID}' studentid='{$user->id}' type='text' name='metdate' value='{$date}' />";
                 }
                 else
@@ -452,10 +490,51 @@ class CGCriteria extends Criteria {
                     $output .= "</select>";
                 }
             
+            }
+                
         }
 
-        $output .= "<div id='criteriaTooltipContent_{$this->id}_{$this->studentID}' style='display:none;'>".$this->build_criteria_tooltip($this->id, $this->qualID, $this->studentID)."</div>";
+        $output .= "</div>";
+                
+
+        // Hidden div for adding a comment when it's enabled
+        $output .= "<div class='hiddenCriteriaCommentButton'>";
         
+            $username = $this->student->username;
+            $fullname = fullname($this->student);
+            $unitname = bcgt_html($unit->get_name());
+            $critname = bcgt_html($this->name);
+            
+            // Change this so each thing has its own attribute, wil be easier
+            $commentImgID = "cmtCell_cID_".$this->get_id()."_uID_".$unit->get_id()."_SID_".$this->studentID.
+                            "_QID_".$this->qualID;
+        
+            if (!empty($this->comments))
+            {
+                $output .= "<img id='{$commentImgID}' criteriaid='{$this->id}' unitid='{$unit->get_id()}' studentid='{$this->studentID}' qualid='{$this->qualID}' username='{$username}' fullname='{$fullname}' unitname='{$unitname}' critname='{$critname}' grid='{$grid}' class='editComments' title='Click to Edit Comments'  src='{$CFG->wwwroot}/blocks/bcgt/plugins/bcgtcg/pix/comment_edit.png' alt='".get_string('editcomments', 'block_bcgt')."' />";
+            }
+            else
+            {
+                $output .= "<img id='{$commentImgID}' criteriaid='{$this->id}' unitid='{$unit->get_id()}' studentid='{$this->studentID}' qualid='{$this->qualID}' username='{$username}' fullname='{$fullname}' unitname='{$unitname}' critname='{$critname}' grid='{$grid}' class='addComments' title='Click to Add Comments'  src='{$CFG->wwwroot}/blocks/bcgt/plugins/bcgtcg/pix/comment_add.png' alt='".get_string('addcomment', 'block_bcgt')."' />";
+            }
+            
+            
+            if ($editing)
+            {
+            
+                $output .= "<div class='popUpDiv bcgt_comments_dialog' id='dialog_{$this->studentID}_{$this->get_id()}_{$this->qualID}' qualID='{$this->qualID}' unitID='{$unit->get_id()}' critID='{$this->get_id()}' studentID='{$this->studentID}' grid='{$grid}' imgID='{$commentImgID}' title='Comments'>";
+                    $output .= "<span class='commentUserSpan'>Comments for {$fullname} : {$username}</span><br>";
+                    $output .= "<span class='commentUnitSpan'>{$unit->get_display_name()}</span><br>";
+                    $output .= "<span class='commentCriteriaSpan'>{$this->get_name()}</span><br><br><br>";
+                    $output .= "<textarea class='dialogCommentText' id='text_{$this->studentID}_{$this->get_id()}_{$this->qualID}'>".bcgt_html($this->comments)."</textarea>";
+                $output .= "</div>";
+            
+            }
+            
+        
+        $output .= "</div>";
+        
+        $output .= "<div class='criteriaContent'>".Criteria::build_criteria_tooltip($this->id, $this->qualID, $this->studentID)."</div>";
         
         return $output;
         

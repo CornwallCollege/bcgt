@@ -34,12 +34,12 @@ if(isset($_POST['studentsUnits']))
 $qualification = null;
 $url = '/blocks/bcgt/forms/edit_qual_stu.php';
 $PAGE->set_url($url, array());
-$PAGE->set_title(get_string('bcgtmydashboard', 'block_bcgt'));
+$PAGE->set_title(get_string('edituserquals', 'block_bcgt'));
 $PAGE->set_heading(get_string('bcgtmydashboard', 'block_bcgt'));
-$PAGE->set_pagelayout('login');
+$PAGE->set_pagelayout( bcgt_get_layout() );
 $PAGE->add_body_class(get_string('bcgtmydashboard', 'block_bcgt'));
-$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php','title');
-$PAGE->navbar->add(get_string('myDashboard', 'block_bcgt'),'my_dashboard.php?tab=dash','title');
+$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php?tab=track','title');
+//$PAGE->navbar->add(get_string('bcgtmydashboard', 'block_bcgt'),'my_dashboard.php?tab=dash','title');
 $PAGE->navbar->add(get_string('dashtabadm', 'block_bcgt'),'my_dashboard.php?tab=adm','title');
 $searchOn = optional_param('searchOn', '', PARAM_TEXT);
 $searchStud = optional_param('searchChoose', '', PARAM_TEXT);

@@ -50,6 +50,21 @@ class BTECCriteria extends Criteria {
         }
         //if the value is not attempted then set the flag to nothing
     }
+    
+    public function add_grading_form_select_option($val, $info, &$el){
+        $opts = array();
+        if ($info['met']){
+            $opts['class'] = "GT_MET";
+        }
+        $el->addOption($info['value'], $val, $opts);
+        
+    }
+    
+    public function get_grading_form_select($critinfo, &$mform){
+        $letter = substr($this->name, 0, 1);
+        return $mform->addElement('select', 'criteria['.$critinfo['qualID'].']['.$this->unitID.'][' . $this->id . ']', $this->get_name(), null, array("class" => "GT_{$letter}"));
+    }
+    
 }
 
 ?>

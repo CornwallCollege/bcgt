@@ -28,24 +28,33 @@ if($qualification)
     $award = $qualification->calculate_predicted_grade();
 }
 $minAward = 'N/A';
+$minUcas = 'N/A';
 if($award && $award->minAward)
 {
     $minAward = $award->minAward->get_award();
+    $minUcas = $award->minAward->get_ucasPoints();
 }
 $maxAward = 'N/A';
+$maxUcas = 'N/A';
 if($award && $award->maxAward)
 {
     $maxAward = $award->maxAward->get_award();
+    $maxUcas = $award->maxAward->get_ucasPoints();
 }
 $avgAward = 'N/A';
+$avgUcas = 'N/A';
 if($award && $award->averageAward)
 {
     $avgAward = $award->averageAward->get_award();
+    $avgUcas = $award->averageAward->get_ucasPoints();
 }
 $output = array(
 		"mingrade" => $minAward,
+        "minucas" => $minUcas,
 		"maxgrade" => $maxAward,
+        "maxucas" => $maxUcas,
         "avggrade" => $avgAward,
+        "avgucas" => $avgUcas,
 	);
 	echo json_encode( $output );
 

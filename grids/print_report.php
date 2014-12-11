@@ -79,9 +79,9 @@ else
 
 $url = '/blocks/bcgt/forms/print_grid.php';
 $PAGE->set_url($url, array());
-$PAGE->set_title(get_string('bcgtmydashboard', 'block_bcgt'));
+$PAGE->set_title(get_string('printgrid', 'block_bcgt'));
 $PAGE->set_heading(get_string('bcgtmydashboard', 'block_bcgt'));
-$PAGE->set_pagelayout('login');
+$PAGE->set_pagelayout( bcgt_get_layout() );
 $PAGE->add_body_class(get_string('bcgtmydashboard', 'block_bcgt'));
 $PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),$CFG->wwwroot.'/blocks/bcgt/forms/my_dashboard.php','title');
 

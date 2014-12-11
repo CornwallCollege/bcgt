@@ -23,6 +23,13 @@ class QualWeighting {
     protected $success;
     protected $summary;
     
+    protected $weightingPercentage = array(100, 90, 75, 60, 40, 25, 10, 0);
+    
+    //| seperated list of levels that will be supported. 
+    CONST BCGT_WEIGHTINGS_LEVELS = "3";
+    CONST BCGT_WEIGHTING_CONSTANT_ATT_NAME = "ALPS_WEIGHTING_CONSTANT";
+    CONST BCGT_WEIGHTING_MULTIPLIER_ATT_NAME = "ALPS_MULTIPLIER_CONSTANT";
+    
     public function QualWeighting($id = -1, $params = null)
     {
         $this->id = $id;
@@ -41,6 +48,56 @@ class QualWeighting {
         {
             $this->extract_params($params);
         }
+    }
+    
+    public function is_family_using_weigtings($family)
+    {
+        $families = get_config('bcgt', 'alpsweightedfamilies');
+        if($families)
+        {
+            $familiesArray = explode(',',$families);
+            if($familiesArray)
+            {
+                if(in_array($family, $familiesArray))
+                {
+                    return true;
+                } 
+            }
+        }
+        return false;
+    }
+    
+    public function can_family_have_weighted_target_grades($family)
+    {
+        $families = get_config('bcgt', 'alpsweightedfamiliestargets');
+        if($families)
+        {
+            $familiesArray = explode(',',$families);
+            if($familiesArray)
+            {
+                if(in_array($family, $familiesArray))
+                {
+                    return true;
+                } 
+            }
+        }
+        return false;
+    }
+    
+    public function get_alps_temperature($qualID, $coefficientScore)
+    {
+        $coefficient = null;
+        global $DB;
+        $sql = "SELECT * FROM {block_bcgt_qual_weighting} WHERE bcgtqualificationid = ? 
+            AND coefficient < ? ORDER BY coefficient ASC";
+        $records = $DB->get_records_sql($sql, array($qualID, $coefficientScore));
+        if($records)
+        {
+            //this will come back as: all of the coefficents that are less than the score
+            //in ASC order. So the end record is the highest that is smaller
+            $coefficient = end($records);
+        }
+        return $coefficient;
     }
     
     public function get_headers()
@@ -236,6 +293,63 @@ class QualWeighting {
         $weighting->save(true);
     }
     
+    public function get_coefficients_for_user($userID)
+    {
+        global $DB;
+        $sql = "SELECT weighting.id, qual.name, qual.additionalname 
+            level.trackinglevel, family.family, subtype.subtype, type.type 
+            FROM {block_bcgt_qual_weighting} weighting 
+            JOIN {block_bcgt_user_qual} userqual ON userqual.bcgtqualificationid = weighting.bcgtqualificationid
+            JOIN {block_bcgt_qualification} qual ON qual.id = userqual.bcgtqualificationid 
+            JOIN {block_bcgt_target_qual} targetqual ON targetqual.id = qual.bcgttargetqualid 
+            JOIN {block_bcgt_type} type ON type.id = targetqual.bcgttypeid 
+            JOIN {block_bcgt_type_family} typefamily ON typefamily.id = type.bcgttypefamilyid 
+            JOIN {block_bcgt_subtype} subtype ON subtype.id = targetqual.bcgtsubtypeid 
+            JOIN {block_bcgt_level} level ON level.id = targetqual.bcgtlevelid
+            WHERE userqual.userid = ?";
+        $records = $DB->get_records_sql($sql, array($userID));
+        
+        return $records;
+    }
+    
+    public function get_coefficients_for_users_quals($userID)
+    {
+        global $DB;
+        $retval = array();
+        //get all of the users quals
+        $quals = bcgt_get_users_quals($userID);
+        if($quals)
+        {
+            foreach($quals AS $qual)
+            {
+                $stdObj = new stdClass();
+                $coefficients = $this->get_all_coefficients_for_qual($qual->id);
+                $stdObj->qual = $qual;
+                $stdObj->coefficients = $coefficients;
+                $retval[] = $stdObj; 
+            }
+        }
+        return $retval;
+    }
+    
+    public function get_coefficients_for_qual_summary($qualID)
+    {
+        $retval = array();
+        $stdObj = new stdClass();
+        $coefficients = $this->get_all_coefficients_for_qual($qualID);
+        $stdObj->qual = bcgt_get_qual($qualID);
+        $stdObj->coefficients = $coefficients;
+        $retval[] = $stdObj; 
+        return $retval;
+    }
+    
+    public function get_all_coefficients_for_qual($qualID)
+    {
+        global $DB;
+        $sql = "SELECT * FROM {block_bcgt_qual_weighting} WHERE bcgtqualificationid = ? ORDER BY number ASC";
+        return $DB->get_records_sql($sql, array($qualID));
+    }
+    
     public function get_coefficient_for_qual($qualID)
     {
         global $DB;
@@ -244,7 +358,7 @@ class QualWeighting {
         $record = $DB->get_record_sql($sql, array($qualID, ''));
         if(!$record)
         {
-            $defaultAplsPercentage = get_config('bcgt', 'aleveldefaultalpsperc');
+            $defaultAplsPercentage = get_config('bcgt', 'defaultalpsperc');
             if($defaultAplsPercentage)
             {
                 $sql = "SELECT * FROM {block_bcgt_qual_weighting} WHERE bcgtqualificationid = ? AND 
@@ -297,6 +411,87 @@ class QualWeighting {
         $DB->update_record('block_bcgt_qual_weighting', $params);
     }
     
+    public function get_precentage_from_number($number)
+    {
+        return $this->weightingPercentage[($number - 1)];
+    }
+    
+    public function get_constant($targetQualID)
+    {
+        $record = $this->retrieve_constant($targetQualID);
+        if($record)
+        {
+            return $record->value;
+        }
+        return 0;
+    }
+    
+    public function get_multiplier($targetQualID)
+    {
+        $record = $this->retrieve_multiplier($targetQualID);
+        if($record)
+        {
+            return $record->value;
+        }
+        return 100;
+    }
+    
+    
+    
+    protected function retrieve_constant($targetQualID)
+    {
+        global $DB;
+        $sql = "SELECT * FROM {block_bcgt_target_qual_att} WHERE name = ? AND bcgttargetqualid = ?";
+        $record = $DB->get_record_sql($sql, array(QualWeighting::BCGT_WEIGHTING_CONSTANT_ATT_NAME, $targetQualID));
+        return $record;
+    }
+    
+    protected function retrieve_multiplier($targetQualID)
+    {
+        global $DB;
+        $sql = "SELECT * FROM {block_bcgt_target_qual_att} WHERE name = ? AND bcgttargetqualid = ?";
+        $record = $DB->get_record_sql($sql, array(QualWeighting::BCGT_WEIGHTING_MULTIPLIER_ATT_NAME, $targetQualID));
+        return $record;
+    }
+    
+    public function save_constant($targetQualID, $constant)
+    {
+        global $DB;
+        $record = $this->retrieve_constant($targetQualID);
+        if($record)
+        {
+            $record->value = $constant;
+            $DB->update_record('block_bcgt_target_qual_att', $record);
+        }
+        else
+        {
+            $record = new stdClass();
+            $record->bcgttargetqualid = $targetQualID;
+            $record->name = QualWeighting::BCGT_WEIGHTING_CONSTANT_ATT_NAME;
+            $record->value = $constant;
+            $DB->insert_record('block_bcgt_target_qual_att', $record);
+        }
+    }
+    
+    public function save_multiplier($targetQualID, $multiplier)
+    {
+        global $DB;
+        $record = $this->retrieve_multiplier($targetQualID);
+        if($record)
+        {
+            $record->value = $multiplier;
+            $DB->update_record('block_bcgt_target_qual_att', $record);
+        }
+        else
+        {
+            $record = new stdClass();
+            $record->bcgttargetqualid = $targetQualID;
+            $record->name = QualWeighting::BCGT_WEIGHTING_MULTIPLIER_ATT_NAME;
+            $record->value = $multiplier;
+            $DB->insert_record('block_bcgt_target_qual_att', $record);
+        }
+    }
+    
     /**
      * Gets the params from the object passed in and puts them onto 
      * the target grade objectl. 
@@ -306,7 +501,15 @@ class QualWeighting {
     {                
         $this->bcgtqualificationid = $params->bcgtqualificationid;
         $this->coefficient = $params->coefficient;
-        $this->percentage = $params->percentage;
+        if(isset($params->percentage))
+        {
+            $this->percentage = $params->percentage;
+        }
+        else
+        {
+            $percentage = $this->get_precentage_from_number($params->number);
+            $this->percentage = $percentage;
+        }
         $this->number = $params->number;
     }
     

@@ -47,9 +47,11 @@ if(isset($_POST['editstudentsunits']))
 }
 
 if (isset($_POST['copy']) && $qualID > 0){
-    
     Qualification::copy_qual($qualID);
-    
+}
+
+if (isset($_POST['exportspec']) && $qualID > 0){
+    redirect('export_spec.php?qID='.$qualID);
 }
 
 $PAGE->set_context($context);
@@ -59,10 +61,10 @@ $url = '/blocks/bcgt/forms/my_dashboard.php';
 $PAGE->set_url($url, array('page' => $tab));
 $PAGE->set_title(get_string('selectqual', 'block_bcgt'));
 $PAGE->set_heading(get_string('selectqual', 'block_bcgt'));
-$PAGE->set_pagelayout('login');
-$PAGE->add_body_class(get_string('myDashboard', 'block_bcgt'));
-$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php','title');
-$PAGE->navbar->add(get_string('myDashboard', 'block_bcgt'),'my_dashboard.php?tab=dash','title');
+$PAGE->set_pagelayout( bcgt_get_layout() );
+$PAGE->add_body_class(get_string('bcgtmydashboard', 'block_bcgt'));
+$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php?tab=track','title');
+//$PAGE->navbar->add(get_string('bcgtmydashboard', 'block_bcgt'),'my_dashboard.php?tab=dash','title');
 $PAGE->navbar->add(get_string('dashtabadm', 'block_bcgt'),'my_dashboard.php?tab=adm','title');
 $PAGE->navbar->add('',$url.'?page='.$tab,'title');
 
@@ -209,8 +211,11 @@ echo'<h2 class="bcgt_form_heading">'.get_string('selectqual', 'block_bcgt').'</h
                     echo '<input type="submit" disabled="disabled" name="viewCourses" value="View Courses" class="bcgtFormButton" />';
                     echo '<input type="submit" disabled="disabled" name="select" value="Add to Course" class="bcgtFormButton" />';
                     echo '<input type="submit" name="editstudentsunits" value="Edit Students Units" class="bcgtFormButton" />';
+                    echo "<br>";
+                    echo '<input type="submit" name="exportspec" value="Export Specification" class="bcgtFormButton" />';
 			    echo '</form>';
-                            
+                echo "<br>";            
+                
                         echo '<h3 class="subTitle"><a href="edit_qual.php?">Add a new Qualification</a></h3>';
                         echo '<h3 class="menuLink"><a href="my_dashboard.php">Back to Menu</a></h3>';
                         

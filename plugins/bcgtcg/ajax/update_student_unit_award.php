@@ -25,11 +25,13 @@ require_login();
 require_cg();
 $PAGE->set_context($context);
 
-$studentID = required_param('sID', PARAM_INT);
-$qualID = required_param('qID', PARAM_INT);
-$value = required_param('value', PARAM_TEXT);
-$unitID = required_param('uID', PARAM_INT);
-$grid = required_param('grid', PARAM_TEXT);
+$params = $_POST['params'];
+$studentID = $params['sID'];
+$qualID = $params['qID'];
+$unitID = $params['uID'];
+$value = $params['value'];
+$grid = $params['grid'];
+
 
 if($grid == 'student')
 {

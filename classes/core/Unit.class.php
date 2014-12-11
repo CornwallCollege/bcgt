@@ -23,6 +23,7 @@ abstract class Unit {
 	protected $unitTypeID;
 
 	protected $levelID;
+    protected $subTypeID;
 	//this is the level object.
 	protected $level;
 	//user values
@@ -32,6 +33,7 @@ abstract class Unit {
 	protected $studentID;
         
     protected $comments;
+    protected $studentComments;
         
     protected $userDefinedValue;
     protected $valueID;
@@ -73,7 +75,7 @@ abstract class Unit {
                 }
                 else
                	{
-                	$this->levelID = -1;;
+                	$this->levelID = -1;
                 }              
                 $level = Unit::retrieve_level($unitID);
                 if($level)
@@ -85,6 +87,13 @@ abstract class Unit {
                 {
                 	$this->level = false;
                 }
+                
+                if (isset($unit->bcgtsubtypeid) && $unit->bcgtsubtypeid != ''){
+                    $this->subTypeID = $unit->bcgtsubtypeid;
+                } else {
+                    $this->subTypeID = -1;
+                }
+                
                 $this->pathwaytypeid = $unit->pathwaytypeid;
                 if($loadParams && $loadParams->loadLevel && $loadParams->loadLevel >= Qualification::LOADLEVELCRITERIA)
                 {
@@ -376,7 +385,16 @@ abstract class Unit {
     {
         $this->comments = $comment;
     }
+    
+    public function set_student_comments($comment)
+    {
+        $this->studentComments = $comment;
+    }
 
+    public function get_student_comments(){
+        return $this->studentComments;
+    }
+    
     public function get_specific_award_type()
     {
         return $this->specificAwardType;
@@ -435,6 +453,19 @@ abstract class Unit {
     }
       
     /**
+     * Get the name of the group this unit is in, on this qual
+     * @param type $qualID
+     */
+    public function get_unit_group($qualID){
+        
+        global $DB;
+        
+        $record = $DB->get_record("block_bcgt_qual_units", array("bcgtqualificationid" => $qualID, "bcgtunitid" => $this->id));
+        return ($record && !is_null($record->groupname)) ? $record->groupname : false;
+        
+    }
+    
+    /**
      * This is frmo the edit unit form page, it sets $rules to an array of rule IDs
      * @param type $rules 
      */
@@ -461,10 +492,10 @@ abstract class Unit {
     {
         
         $output = "";
-        $output .= $this->get_uniqueID() . " ";
+        //$output .= $this->get_uniqueID() . " ";
         $output .= $this->get_name();
         
-        if ($this->level){
+        if ($this->level && $this->level->get_id() > 0){
             $output .= " (L{$this->level->get_level_number()})";
         }
         
@@ -541,6 +572,7 @@ abstract class Unit {
              
             // Get the comments on the student's unit as well
             $this->set_comments($this->retrieve_comments());
+            $this->studentComments = $this->retrieve_student_comments();
             //TODO qual specific:     
             //
             //TODO put a loadLevel param into this. 
@@ -624,7 +656,7 @@ abstract class Unit {
 	 * Gets the used criteria names from this unit. 
 	 * @return multitype:
 	 */
-	protected function get_used_criteria_names()
+	public function get_used_criteria_names()
 	{
         global $CFG;
         
@@ -640,6 +672,14 @@ abstract class Unit {
         
 		return $usedCriteriaNames;
 	}
+    
+    public function get_unit_award_points($bcgtTypeAwardID, $bcgtLevelID)
+    {
+        global $DB;
+		$sql = "SELECT * FROM {block_bcgt_unit_points} 
+            WHERE bcgtlevelid = ? AND bcgttypeawardid = ?";
+		return $DB->get_record_sql($sql, array($bcgtLevelID, $bcgtTypeAwardID));
+    }
     
     protected static function get_quals_roles($unitID, $search = '', $userID = -1, $roles = array(), $courseID = -1)
     {
@@ -658,7 +698,7 @@ abstract class Unit {
             $sql .= " JOIN {block_bcgt_user_qual} userqual ON userqual.bcgtqualificationid = qual.id 
                 JOIN {role} role ON role.id = userqual.roleid ";
         }
-        if($courseID != -1)
+        if($courseID != -1 && $courseID != SITEID)
         {
             $sql .= " JOIN {block_bcgt_course_qual} coursequal ON coursequal.bcgtqualificationid = qual.id";
         }
@@ -687,7 +727,7 @@ abstract class Unit {
             $sql .= ') AND userqual.userid = ?';
             $params[] = $userID;
         }
-        if($courseID != -1)
+        if($courseID != -1 && $courseID != SITEID)
         {
             $sql .= " AND coursequal.courseid = ?";
             $params[] = $courseID;
@@ -711,7 +751,7 @@ abstract class Unit {
         {
             $sql .= " JOIN {block_bcgt_user_qual} userqual ON userqual.bcgtqualificationid = qual.id";
         }
-        if($courseID != -1)
+        if($courseID != -1 && $courseID != SITEID)
         {
             $sql .= " JOIN {block_bcgt_course_qual} coursequal ON coursequal.bcgtqualificationid = qual.id";
         }
@@ -728,7 +768,7 @@ abstract class Unit {
             $params[] = $roleID;
             $params[] = $userID;
         }
-        if($courseID != -1)
+        if($courseID != -1 && $courseID != SITEID)
         {
             $sql .= " AND coursequal.courseid = ?";
             $params[] = $courseID;
@@ -900,6 +940,9 @@ abstract class Unit {
 		$studentsUnitRecord = $this->student_doing_unit($qualID);
 		if($studentsUnitRecord)
 		{
+            
+            $this->insert_students_unit_history($qualID, $studentsUnitRecord->id);
+            
 			$id = $studentsUnitRecord->id;
 			$stdObj = new stdClass();
 			$stdObj->id = $id;
@@ -918,6 +961,8 @@ abstract class Unit {
             {
             	$stdObj->bcgtvalueid = $this->value->get_id();
             }
+            
+            
 			$DB->update_record('block_bcgt_user_unit', $stdObj);
             // Log
             $awardTypeID = -1;
@@ -1123,7 +1168,7 @@ abstract class Unit {
         // Find all ranges on sheet and see if there is a value for each of them
         foreach($sheet->ranges as $range)
         {
-            $check = $DB->get_records("block_bcgt_user_soff_sht_rgs", array("userid" => $this->studentID, "bcgtqualificationid" => $this->qualID, "bcgtsignoffsheetid" => $sheet->id, "bcgtsignoffrangeid" => $range->id, "value" => 1));
+            $check = $DB->get_records_select("block_bcgt_user_soff_sht_rgs", "userid = ? AND bcgtqualificationid = ? AND bcgtsignoffsheetid = ? AND bcgtsignoffrangeid = ? AND value = ? AND observationnum > ?", array($this->studentID, $this->qualID, $sheet->id, $range->id, 1, 0));
             if(!$check) return false;
         }
 
@@ -1327,7 +1372,7 @@ abstract class Unit {
         
         // Firstly create an archive of ourself, then delete self
         $DB->execute(" INSERT INTO {block_bcgt_unit_history} (bcgtunitsid, uniqueid, name, credits, weighting, bcgttypeid, bcgtlevelid, bcgtunittypeid, details, aestheticname, specificawardtype, pathwaytypeid)
-                       SELECT * FROM {block_bcgt_unit} WHERE id = ? ", array($this->id) );
+                       SELECT id, uniqueid, name, credits, weighting, bcgttypeid, bcgtlevelid, bcgtunittypeid, details, aestheticname, specificawardtype, pathwaytypeid FROM {block_bcgt_unit} WHERE id = ? ", array($this->id) );
         
         $DB->delete_records("block_bcgt_unit", array("id" => $this->id));
         
@@ -1336,7 +1381,7 @@ abstract class Unit {
         // Archive and delete the links between this unit and any quals
         $DB->execute( "INSERT INTO {block_bcgt_qual_units_his}
                        (bcgtqualificationunitid, bcgtqualificationid, bcgtunitsid)
-                       SELECT * FROM {block_bcgt_qual_units} WHERE bcgtunitid = ?", array($this->id) );
+                       SELECT id, bcgtqualificationid, bcgtunitid FROM {block_bcgt_qual_units} WHERE bcgtunitid = ?", array($this->id) );
         
         $DB->delete_records("block_bcgt_qual_units", array("bcgtunitid" => $this->id));
 
@@ -1344,7 +1389,7 @@ abstract class Unit {
         
         // Archive & delete any user_unit records for this unit
         $DB->execute( "INSERT INTO {block_bcgt_user_unit_his} 
-                       (bcgtuserunitid, userid, bcgtqualificationid, bcgtunitid, bcgttypeawardid, comments, dateupdated, userdefinedvalue, bcgtvalueid, setbyuserid, updatedbyuserid, dateset) 
+                       (bcgtuserunitid, userid, bcgtqualificationid, bcgtunitid, bcgttypeawardid, comments, dateupdated, userdefinedvalue, bcgtvalueid, setbyuserid, updatedbyuserid, dateset, studentcomments) 
                        SELECT * FROM {block_bcgt_user_unit} WHERE bcgtunitid = ?", array($this->id) );
         
         $DB->delete_records("block_bcgt_user_unit", array("bcgtunitid" => $this->id));
@@ -1455,6 +1500,26 @@ abstract class Unit {
 		return false;
     }
     
+    public function update_student_comments($qualID, $comments)
+    {
+        global $DB;
+        
+        $sql = "SELECT * FROM {block_bcgt_user_unit} AS userunit 
+		WHERE userunit.userid = ? AND bcgtqualificationid = ? 
+		AND bcgtunitid = ?";
+		$userUnit = $DB->get_record_sql($sql, array($this->studentID, $qualID, $this->id));
+		if($userUnit)
+		{
+			$id = $userUnit->id;
+			$obj = new stdClass();
+			$obj->id = $id;
+			$obj->studentcomments = $comments;
+			return $DB->update_record('block_bcgt_user_unit', $obj);
+		}
+		return false;
+    }
+    
+    
     public static function get_unit_edit_form_menu($familyID, $disabled, $unitID, $typeID)
 	{
 		$unitClass = Unit::get_plugin_class($familyID);
@@ -1562,7 +1627,7 @@ abstract class Unit {
 	{
         global $CFG;
 		$retval = "<div id='unitName$this->id' class='tooltipContent'>".
-                "<div><h3>$this->name</h3><table><tr><th>".get_string('criteriaName','block_bcgt')."</th>".
+                "<div><h3>$this->name</h3><table><tr><th>".get_string('criterianame','block_bcgt')."</th>".
                 "<th>".get_string('criteriaDetails','block_bcgt')."</th></tr>";
 		if($this->criterias)
 		{
@@ -1628,6 +1693,23 @@ abstract class Unit {
             return "";
         }
         return $check->comments;
+    }
+    
+    protected function retrieve_student_comments()
+    {
+        global $DB;
+        $checks = $DB->get_records_select("block_bcgt_user_unit", 
+                "userid = ? AND bcgtqualificationid = ? AND bcgtunitid = ?",  
+                array($this->studentID,$this->qualID,$this->id));
+        $check = new stdClass();
+        if($checks)
+        {
+            $check = end($checks);
+        }
+        if(!isset($check->id) || is_null($check->id) || $check->studentcomments == ""){
+            return "";
+        }
+        return $check->studentcomments;
     }
     
     /**
@@ -1916,7 +1998,7 @@ abstract class Unit {
 		global $DB;
 		$sql = "INSERT INTO {block_bcgt_user_unit_his} 
 		(bcgtuserunitid, userid, bcgtqualificationid, bcgtunitid, bcgttypeawardid, 
-		comments, dateupdated, userdefinedvalue, bcgtvalueid, setbyuserid, updatedbyuserid, dateset) 
+		comments, dateupdated, userdefinedvalue, bcgtvalueid, setbyuserid, updatedbyuserid, dateset, studentcomments) 
 		SELECT * FROM {block_bcgt_user_unit} WHERE bcgtunitid = ?";
         $params = array($this->id);
         if($studentID != -1)
@@ -1937,7 +2019,7 @@ abstract class Unit {
         global $DB;
 		$sql = "INSERT INTO {block_bcgt_user_unit_his} 
 		(bcgtuserunitid, userid, bcgtqualificationid, bcgtunitid, bcgttypeawardid, 
-		comments, dateupdated, userdefinedvalue, bcgtvalueid, setbyuserid, updatedbyuserid, dateset) 
+		comments, dateupdated, userdefinedvalue, bcgtvalueid, setbyuserid, updatedbyuserid, dateset, studentcomments) 
 		SELECT * FROM {block_bcgt_user_unit} WHERE id = ?";
         $params = array($id);
 		return $DB->execute($sql, $params);
@@ -1988,8 +2070,8 @@ abstract class Unit {
     }
     
     public function display_percentage_completed()
-    {
-
+    {       
+        
         $percent = $this->get_percent_completed();
 
         $bar = '<div class="c"><small id="U'.$this->get_id().'S'.$this->studentID.'PercentText">'.$percent.'%</small></div>
@@ -2201,7 +2283,38 @@ abstract class Unit {
     //        $familyID = -1, $params = null, $loadLevel = Qualification::LOADLEVELUNITS);
     
     public function process_create_update_unit_form(){
-        return true;
+        
+        $name = optional_param('name', NULL, PARAM_TEXT);
+        $unique = optional_param('unique', NULL, PARAM_TEXT);
+        
+        $name = trim($name);
+        $unique = trim($unique);
+        
+        $this->processed_errors = '';
+        
+        // External Code
+        if ($this->has_unique_id()){
+            if (is_null($unique) || empty($unique)){
+                $this->processed_errors .= get_string('error:uniquecode', 'block_bcgt') . '<br>';
+            }
+        }
+        
+        // Name
+        if (is_null($name) || empty($name)){
+            $this->processed_errors .= get_string('error:name', 'block_bcgt') . '<br>';
+        }
+        
+        if (!empty($this->processed_errors)){
+            return false;
+        }
+        
+        $this->uniqueID = $unique;
+        $this->name = $name;
+        
+        unset($this->processed_errors);
+        
+        return true;        
+        
     }
     
     public function get_processed_errors(){
@@ -2210,6 +2323,15 @@ abstract class Unit {
     
     public function print_grid($qualID){
         echo "Coming soon";
+    }
+    
+    public function order_criteria_ids($criteria)
+    {
+        global $CFG, $DB;
+        require_once $CFG->dirroot . '/blocks/bcgt/classes/sorters/CriteriaSorter.class.php';
+        $sorter = new CriteriaSorter();
+        usort($criteria, array($sorter, "ComparisonSimpleArray"));
+        return $criteria;
     }
     
 }

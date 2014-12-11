@@ -224,8 +224,10 @@ JS;
         $retval .= "</table>";
         
         // Qual Comment
-        if ($this->comments == '') $this->comments = 'N/A';
-        $retval .= "<div id='qualComment'><br><fieldset><legend><h2>Qualification Comments</h2></legend><br>".nl2br( htmlentities($this->comments, ENT_QUOTES) )."</fieldset></div>";
+        if ($this->comments != ''){
+            if ($this->comments == '') $this->comments = 'N/A';
+            $retval .= "<div id='qualComment'><br><fieldset><legend><h2>Qualification Comments</h2></legend><br>".nl2br( htmlentities($this->comments, ENT_QUOTES) )."</fieldset></div>";
+        }
         
         if($this->has_final_grade() && $studentView && !$editing)
 		{
@@ -280,7 +282,7 @@ JS;
             $tName = str_replace(" ", "_", htmlentities($criteriaName, ENT_QUOTES));
             
             if ($max > 1){
-                $output .= "<th class='toggleTD_{$tName}' colspan='{$max}' defaultcolspan='{$max}'><a class='taskName' href='#' onclick='toggleOverallTasks(\"{$tName}\");return false;'>{$criteriaName}</a></th>";
+                $output .= "<th class='toggleTD_{$tName}' colspan='{$max}' defaultcolspan='{$max}'>{$criteriaName}</th>";
             } else {
                 $output .= "<th colspan='{$max}' defaultcolspan='{$max}'>{$criteriaName}</th>";
             }
@@ -607,41 +609,46 @@ JS;
                                 
                 $retval .= "<tr>";
                 
-                // Unit Comment
-                $getComments = $unit->get_comments();
+                $retval .= "<td>";
                 
-                $cellID = "cmtCell_U_{$unit->get_id()}_S_{$user->id}_Q_{$this->get_id()}";
+                    $comments = $unit->get_comments();
+                        
+                    if ($editing)
+                    {
                 
-		        
-                $username = htmlentities( $user->username, ENT_QUOTES );
-                $fullname = htmlentities( fullname($user), ENT_QUOTES );
-                $unitname = htmlentities( $unit->get_name(), ENT_QUOTES);
-                $critname = "N/A";   
-                
-                $retval .= "<td title='title'>";
 
-                if($advancedMode && $editing)
-                {
+                        $username = $this->student->username;
+                        $fullname = fullname($this->student);
+                        $unitname = bcgt_html($unit->get_name());
+                        $critname = "N/A";
+                        $cellID = "cmtCell_U_{$unit->get_id()}_S_{$this->studentID}_Q_{$this->id}";
 
-                    if(!empty($getComments))
-                    {                
-                        $retval .= "<img id='{$cellID}' username='{$username}' fullname='{$fullname}' unitname='{$unitname}' critname='{$critname}' qualid='{$this->id}' unitid='{$unit->get_id()}' studentid='{$this->studentID}' grid='stud' type='button' class='editCommentsUnit' title='Click to Edit Unit Comments' src='{$CFG->wwwroot}/blocks/bcgt/plugins/bcgtbtec/pix/grid_symbols/comments.jpg' />";
-                        $retval .= "<div class='tooltipContent'>".nl2br( htmlspecialchars($getComments, ENT_QUOTES) )."</div>";
+                        if (!empty($comments))
+                        {
+                            $retval .= "<img id='{$cellID}' criteriaid='-1' unitid='{$unit->get_id()}' studentid='{$this->studentID}' qualid='{$this->id}' username='{$username}' fullname='{$fullname}' unitname='{$unitname}' critname='{$critname}' grid='student' class='editCommentsUnit' title='Click to Edit Comments'  src='{$CFG->wwwroot}/blocks/bcgt/plugins/bcgtcg/pix/comment_edit.png' alt='".get_string('editcomments', 'block_bcgt')."' />";
+                        }
+                        else
+                        {
+                            $retval .= "<img id='{$cellID}' criteriaid='-1' unitid='{$unit->get_id()}' studentid='{$this->studentID}' qualid='{$this->id}' username='{$username}' fullname='{$fullname}' unitname='{$unitname}' critname='{$critname}' grid='student' class='addCommentsUnit' title='Click to Add Comments'  src='{$CFG->wwwroot}/blocks/bcgt/plugins/bcgtcg/pix/comment_add.png' alt='".get_string('addcomment', 'block_bcgt')."' />";
+                        }
+
+                        //$retval .= "<span class='tooltipContent' style='display:none !important;'>".bcgt_html($this->comments, true)."</span>";
+                        $retval .= "<div class='popUpDiv bcgt_unit_comments_dialog' id='dialog_S{$this->studentID}_U{$unit->get_id()}_Q{$this->id}' qualID='{$this->id}' unitID='{$unit->get_id()}' critID='-1' studentID='{$this->studentID}' grid='student' imgID='{$cellID}' title='Comments'>";
+                            $retval .= "<span class='commentUserSpan'>Comments for {$fullname} : {$username}</span><br>";
+                            $retval .= "<span class='commentUnitSpan'>{$unit->get_display_name()}</span><br>";
+                            $retval .= "<span class='commentCriteriaSpan'>N/A</span><br><br><br>";
+                            $retval .= "<textarea class='dialogCommentText' id='text_S{$this->studentID}_U{$unit->get_id()}_Q{$this->id}'>".bcgt_html($comments)."</textarea>";
+                        $retval .= "</div>";
+                    
                     }
                     else
-                    {                        
-                        $retval .= "<img id='{$cellID}' username='{$username}' fullname='{$fullname}' unitname='{$unitname}' critname='{$critname}' qualid='{$this->id}' unitid='{$unit->get_id()}' studentid='{$this->studentID}' grid='stud' type='button' class='addCommentsUnit' title='Click to Add Unit Comment' src='{$CFG->wwwroot}/blocks/bcgt/plugins/bcgtbtec/pix/grid_symbols/plus.png' />";
+                    {
+                        if ($comments != ''){
+                            $retval .= "<div class='viewSomething hand'><img src='{$CFG->wwwroot}/blocks/bcgt/plugins/bcgtcg/pix/comment-icon.png' height='12' width='12' unitid='1098' /></div><div class='thatSomething' style='display:none;'>".bcgt_html($comments, true)."</div>";
+                        }
                     }
 
-                }
-                else
-                {
-                    if(!empty($getComments)){
-                        $retval .= "<img src='{$CFG->wwwroot}/blocks/bcgt/plugins/bcgtbtec/pix/grid_symbols/comment-icon.png' class='showCommentsUnit' />";
-                        $retval .= "<div class='tooltipContent'>".nl2br( htmlspecialchars($getComments, ENT_QUOTES) )."</div>";
-                    }
-                    
-                }
+
                 
                 $retval .= "</td>";
                 
@@ -676,6 +683,8 @@ JS;
                     $retval .= "<a target='_blank' class='editing_update editUnit' href='{$CFG->wwwroot}/blocks/bcgt/forms/edit_unit.php?unitID=".$unit->get_id()."' title = 'Update Unit'>
 					<img class='iconsmall editUnit' alt='Update Unit' src='".$OUTPUT->pix_url("t/edit", "core")."'/></a>";
 				}
+                
+                $retval .= " <img src='".$CFG->wwwroot."/blocks/bcgt/pix/info.png' height='12' width='12' class='uNToolTipInfo hand' unitID='{$unit->get_id()}' /><div class='unitInfoContent' title='{$unit->get_display_name()}'>{$unit->build_unit_details_table()}</div>";
                 
                 $retval .= "<div id='unitTooltipContent_{$unit->get_id()}_{$this->studentID}' style='display:none;'>".$unit->build_unit_details_table()."</div>";
                 
@@ -756,7 +765,8 @@ JS;
                 // Signoff column
                 if($studentView && $unit->get_signoff_sheets())
                 {
-                    $retval .= "<td class='signOffTD' title='t'>".$unit->get_sign_off_td($editing, $advancedMode)."</td>";
+                    $c = ($editing) ? 'Edit' : 'NonEdit';
+                    $retval .= "<td class='signOffTD criteriaValue{$c}' title='t'>".$unit->get_sign_off_td($editing, $advancedMode)."</td>";
                 }
                 else
                 {
@@ -959,5 +969,16 @@ JS;
         echo "Not yet available";
     }
     
+    public function export_specification(){
+        return false;
+    }
+    
+    public function export_studentt_grid($qualID)
+    {
+        header_remove('Content-Disposition');
+        header('Content-type: text/html');
+        echo 'Not supported for this qualification type';
+        exit;
+    }
     
 }

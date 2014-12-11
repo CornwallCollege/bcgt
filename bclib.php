@@ -126,8 +126,8 @@ function logAction($mod, $element, $log, $student, $qual, $unit, $course, $value
     $obj->element = $element;
     $obj->log = $log;
     $obj->studentid = $student;
-    $obj->qualid = $qual;
-    $obj->unitid = $unit;
+    $obj->bcgtqualificationid = $qual;
+    $obj->bcgtunitid = $unit;
     $obj->courseid = $course;
     $obj->valueid = $value;
     $obj->valueid2 = $value2;

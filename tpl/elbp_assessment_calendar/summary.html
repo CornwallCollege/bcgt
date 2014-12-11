@@ -1,0 +1,39 @@
+<?php if(!defined('ELBP')) exit; ?>
+
+<table class="elbp_summary_table">
+    <tbody>
+      <tr>
+          
+          <td class="elbp_summary_title" style="background-image:url('<?= $CFG->wwwroot ?><?= $obj->getPath() ?>pix/<?= $obj->getName() ?>/icon.png');">
+            <?= get_string('myassessmentcalendar', 'block_bcgt') ?>
+          </td>
+        
+      </tr>
+    </tbody>
+  </table>
+
+<p><small><?= get_string('activeassessments', 'block_bcgt') ?></small></p>
+
+<table class="elbp_summary_table">
+    <tbody>
+            
+      <tr>
+          <th><?= get_string('assessment', 'block_bcgt') ?></th>
+          <th><?= get_string('duedate', 'block_bcgt') ?></th>
+      </tr>
+      
+      <?php if($activeAssessments): ?>
+          <?php foreach($activeAssessments as $ass): ?>
+          <tr>
+              <td><?= $ass->modinstancetitle ?></td>
+              <td><?= date('M jS, H:i', $ass->modduetime) ?></td>
+          </tr>
+          <?php endforeach; ?>
+      <?php else: ?>
+      <tr>
+          <td colspan='2'><?= $string['noresults'] ?></td>
+      </tr>
+      <?php endif; ?>
+      
+    </tbody>
+  </table>

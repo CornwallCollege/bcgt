@@ -118,6 +118,8 @@ class Level{
 			case (Level::level5ID):
 				return "L5";
 				break;
+            case (Level::level12ID):
+                return "L1&2";
 			default:
                 return "";
             break;

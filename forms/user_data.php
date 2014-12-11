@@ -37,9 +37,9 @@ $url = '/blocks/bcgt/forms/user_access.php';
 $PAGE->set_url($url, array());
 $PAGE->set_title(get_string('useraccess', 'block_bcgt'));
 $PAGE->set_heading(get_string('useraccess', 'block_bcgt'));
-$PAGE->set_pagelayout('login');
+$PAGE->set_pagelayout( bcgt_get_layout() );
 $PAGE->add_body_class(get_string('useraccess', 'block_bcgt'));
-$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php','title');
+$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php?tab=track','title');
 $PAGE->navbar->add(get_string('admin', 'block_bcgt'),'my_dashboard.php?tab=adm','title');
 $PAGE->navbar->add(get_string('useraccess', 'block_bcgt'),'','title');
 

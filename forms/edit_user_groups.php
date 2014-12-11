@@ -44,14 +44,14 @@ if($uID != $USER->id)
     require_capability('block/bcgt:manageusersgroups', $context);
 }
 $url = '/blocks/bcgt/forms/edit_user_groups.php';
-$urlGroups = '/blocks/bcgt/forms/my_dashboard.php?tab=group';
+$urlGroups = '/blocks/bcgt/forms/my_dashboard.php?tab=group&cID='.$cID;
 $PAGE->set_url($url, array());
 $PAGE->set_title(get_string('grouppreferences', 'block_bcgt'));
 $PAGE->set_heading(get_string('grouppreferences', 'block_bcgt'));
-$PAGE->set_pagelayout('login');
+$PAGE->set_pagelayout( bcgt_get_layout() );
 $PAGE->add_body_class(get_string('grouppreferences', 'block_bcgt'));
 $PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),$urlGroups,'title');
-$PAGE->navbar->add(get_string('grouppreferences', 'block_bcgt'),'','title');
+$PAGE->navbar->add(get_string('grouppreferences', 'block_bcgt'),null,'title');
 
 $jsModule = array(
     'name'     => 'block_bcgt',

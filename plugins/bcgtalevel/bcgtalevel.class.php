@@ -5,7 +5,7 @@ class bcgtalevel extends bcgt {
     const NAME = 'bcgtalevel';
     const TITLE = 'ALEVEL';
     
-    const VERSION = 2013090200;  
+    const VERSION = 2014030601;  
     
     function bcgtalevel()
     {

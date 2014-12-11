@@ -235,7 +235,7 @@ if($grid == 'student' || $grid == 'act')
             $unitAwardRank = 0;
             $qualAwardID = -1;
             $qualAwardValue = "N/A";
-
+            $qualAwardUcas = 'N/A';
             if($award)
             {
                 $unitAwardID = $award->get_id();
@@ -250,6 +250,7 @@ if($grid == 'student' || $grid == 'act')
                     $qualAwardID = $qualAward->averageAward->get_id();
                     $qualAwardValue = $qualAward->averageAward->get_award();
                     $qualAwardType = $qualAward->averageAward->get_type();
+                    $qualAwardUcas = $qualAward->averageAward->get_ucasPoints();
                 }
                 if(isset($qualAward->minAward))
                 {
@@ -257,6 +258,7 @@ if($grid == 'student' || $grid == 'act')
                     $jsonQualAward->awardid = $qualAward->minAward->get_id();
                     $jsonQualAward->awardvalue = $qualAward->minAward->get_award();
                     $jsonQualAward->awardtype = $qualAward->minAward->get_type();
+                    $jsonQualAward->ucaspoints = $qualAward->minAward->get_ucasPoints();
                     $retval->minqualaward = $jsonQualAward;
 
                 }
@@ -266,6 +268,7 @@ if($grid == 'student' || $grid == 'act')
                     $jsonQualAward->awardid = $qualAward->maxAward->get_id();
                     $jsonQualAward->awardvalue = $qualAward->maxAward->get_award();
                     $jsonQualAward->awardtype = $qualAward->maxAward->get_type();
+                    $jsonQualAward->ucaspoints = $qualAward->maxAward->get_ucasPoints();
                     $retval->maxqualaward = $jsonQualAward;
                 }
             }
@@ -283,6 +286,7 @@ if($grid == 'student' || $grid == 'act')
             $jsonQualAward->awardid = $qualAwardID;
             $jsonQualAward->awardvalue = $qualAwardValue;
             $jsonQualAward->awardtype = $qualAwardType;
+            $jsonQualAward->ucaspoints = $qualAwardUcas;
 
             $retval->qualaward = $jsonQualAward;
             $retval->time = date('H:i:s');
@@ -392,16 +396,20 @@ function process_bcgt_btec_uit_criteria_check($qualID, $unitID, $value, $student
                 if(array_key_exists($studentID, $studentArray))
                 {
                     $studentObject = $studentArray[$studentID];
-                    $studentUnit = $studentObject->unit;
-                    if($studentUnit)
+                    if (isset($studentObject->unit))
                     {
-                        $studentUnitFound = true;
+                        $studentUnit = $studentObject->unit;
+                        if($studentUnit)
+                        {
+                            $studentUnitFound = true;
+                        }
                     }
                 }
             }
         }
          
     }
+        
     //will be used later
     $loadParams = new stdClass();
     $loadParams->loadLevel = Qualification::LOADLEVELALL;
@@ -414,6 +422,7 @@ function process_bcgt_btec_uit_criteria_check($qualID, $unitID, $value, $student
             $studentUnit->load_student_information($studentID, $qualID, $loadParams);
         }
     }
+       
     if($studentUnit)
     {
         $criteria = $studentUnit->get_single_criteria($criteriaID);
@@ -434,6 +443,7 @@ function process_bcgt_btec_uit_criteria_check($qualID, $unitID, $value, $student
             $criteria->set_user($user);
             $criteria->set_date();
             $subCritUpdated = $criteria->update_students_value($valueID);
+            $criteria->set_flag();
             $criteria->save_student($qualID, true); # Save straight away so we can check the parent and loop through all children's awards         
             //need to know if the above is met or unmet for the simple grid
             //we need to check if all sub criteria have been marked 
@@ -562,16 +572,19 @@ function process_bcgt_btec_uit_criteria_check($qualID, $unitID, $value, $student
                     $qualAwardID = $qualAward->averageAward->get_id();
                     $qualAwardValue = $qualAward->averageAward->get_award();
                     $qualAwardType = $qualAward->averageAward->get_type();
+                    $qualAwardUcas = $qualAward->averageAward->get_ucasPoints();
                 }
                 elseif(isset($qualAward->targetgrade))
                 {
                     $qualAwardID = $qualAward->id;
                     $qualAwardValue = $qualAward->targetgrade;
                     $qualAwardType = $qualAward->type;
+                    $qualAwardUcas = $qualAward->ucaspoints;
                 }
             }
 
             $qualAwardType = 'Predicted';
+            $qualAwardUcas = 0;
 
             $jsonUnitAward = new stdClass();
             $jsonUnitAward->unitid = $unitID;
@@ -584,11 +597,13 @@ function process_bcgt_btec_uit_criteria_check($qualID, $unitID, $value, $student
             $jsonQualAward->awardid = $qualAwardID;
             $jsonQualAward->awardvalue = $qualAwardValue;
             $jsonQualAward->awardtype = $qualAwardType;
+            $jsonQualAward->ucaspoints = $qualAwardUcas;
+            
 
             $retval->qualaward = $jsonQualAward;
             $retval->time = date('H:i:s');
         }   
-         
+                 
         if(array_key_exists($unitID, $sessionUnits))
         {
             $unitObject = $sessionUnits[$unitID];
@@ -611,6 +626,7 @@ function process_bcgt_btec_uit_criteria_check($qualID, $unitID, $value, $student
             $unitObject->unit = Unit::get_unit_class_id($unitID, $loadParams);
             $qualArray = array();
         }
+                        
         if(array_key_exists($qualID, $qualArray))
         {
             $studentArray = $qualArray[$qualID];
@@ -619,6 +635,7 @@ function process_bcgt_btec_uit_criteria_check($qualID, $unitID, $value, $student
         {
             $studentArray = array();
         }
+                
         if(array_key_exists($studentID, $studentArray))
         {
             $studentObject = $studentArray[$studentID];

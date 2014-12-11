@@ -60,12 +60,15 @@ if($qualification)
 {
     $data = $qualification->get_class_grid_data($advancedMode, 
             $editing);
-    $output = array(
-		"iTotalRecords" => count($data),
-		"iTotalDisplayRecords" => count($data),
-		"aaData" => $data
-	);
-	echo json_encode( $output );
+//    $output = array(
+//		"iTotalRecords" => count($data),
+//		"iTotalDisplayRecords" => count($data),
+//		"aaData" => $data
+//	);
+//	echo json_encode( $output );
+    
+    echo $data;
+    
 }
 else {
     echo "No Qualification Found";

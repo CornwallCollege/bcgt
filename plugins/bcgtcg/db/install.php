@@ -14,262 +14,262 @@ function xmldb_bcgtcg_install()
     require_once($CFG->dirroot.'/blocks/bcgt/plugins/bcgtcg/classes/CGQualification.class.php');
     require_once($CFG->dirroot.'/blocks/bcgt/plugins/bcgtcg/classes/CGUnit.class.php');
     // ---------------------- The Family ---------------------------
-//    $family = new stdClass();
-//    $family->id = 4;
-//    $family->family = 'CG';
-//    $family->classfolderlocation = '/blocks/bcgt/plugins/bcgtcg/classes';
-//    $family->pluginname = 'bcgtcg';
-//    $DB->insert_record_raw('block_bcgt_type_family', $family, false, false, true);
+    $family = new stdClass();
+    $family->id = 4;
+    $family->family = 'CG';
+    $family->classfolderlocation = '/blocks/bcgt/plugins/bcgtcg/classes';
+    $family->pluginname = 'bcgtcg';
+    $DB->insert_record_raw('block_bcgt_type_family', $family, false, false, true);
     
     //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
-    $DB->execute("INSERT INTO {block_bcgt_type_family} (id,family,classfolderlocation,pluginname) 
-        VALUES (4,'CG','/blocks/bcgt/plugins/bcgtcg/classes','bcgtcg')");
+//    $DB->execute("INSERT INTO {block_bcgt_type_family} (id,family,classfolderlocation,pluginname) 
+//        VALUES (4,'CG','/blocks/bcgt/plugins/bcgtcg/classes','bcgtcg')");
     
     // Pathways - Depts
-//    $record = new stdClass();
-//    $record->id = 1;
-//    $record->pathway = 'General'; # General CG that don't need specific classes
-//    $record->bcgttypefamilyid = $family->id;
-//    $DB->insert_record_raw('block_bcgt_pathway_dep', $record, false, false, true);
+    $record = new stdClass();
+    $record->id = 1;
+    $record->pathway = 'General'; # General CG that don't need specific classes
+    $record->bcgttypefamilyid = $family->id;
+    $DB->insert_record_raw('block_bcgt_pathway_dep', $record, false, false, true);
+    
+//    //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
+//    $DB->execute("INSERT INTO {block_bcgt_pathway_dep} (id,pathway,bcgttypefamilyid) 
+//        VALUES (1,'General', 4)");
+    
+    $record = new stdClass();
+    $record->id = 2;
+    $record->pathway = 'Hair & Beauty';
+    $record->bcgttypefamilyid = $family->id;
+    $DB->insert_record_raw('block_bcgt_pathway_dep', $record, false, false, true);
     
     //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
-    $DB->execute("INSERT INTO {block_bcgt_pathway_dep} (id,pathway,bcgttypefamilyid) 
-        VALUES (1,'General', 4)");
-    
-//    $record = new stdClass();
-//    $record->id = 2;
-//    $record->pathway = 'Hair & Beauty';
-//    $record->bcgttypefamilyid = $family->id;
-//    $DB->insert_record_raw('block_bcgt_pathway_dep', $record, false, false, true);
-    
-    //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
-    $DB->execute("INSERT INTO {block_bcgt_pathway_dep} (id,pathway,bcgttypefamilyid) 
-        VALUES (2,'Hair & Beauty', 4)");
+//    $DB->execute("INSERT INTO {block_bcgt_pathway_dep} (id,pathway,bcgttypefamilyid) 
+//        VALUES (2,'Hair & Beauty', 4)");
         
     
 //    // Pathway - Types
-//    $record = new stdClass();
-//    $record->id = 1;
-//    $record->pathwaytype = 'VRQ';
-//    $DB->insert_record_raw('block_bcgt_pathway_type', $record, false, false, true);
+    $record = new stdClass();
+    $record->id = 1;
+    $record->pathwaytype = 'VRQ';
+    $DB->insert_record_raw('block_bcgt_pathway_type', $record, false, false, true);
     
     //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
-    $DB->execute("INSERT INTO {block_bcgt_pathway_type} (id,pathwaytype) 
-        VALUES (1,'VRQ')");
+//    $DB->execute("INSERT INTO {block_bcgt_pathway_type} (id,pathwaytype) 
+//        VALUES (1,'VRQ')");
     
-//    $record = new stdClass();
-//    $record->id = 2;
-//    $record->pathwaytype = 'NVQ';
-//    $DB->insert_record_raw('block_bcgt_pathway_type', $record, false, false, true);
-    
-    //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
-    $DB->execute("INSERT INTO {block_bcgt_pathway_type} (id,pathwaytype) 
-        VALUES (2,'NVQ')");
-    
-//    $record = new stdClass();
-//    $record->id = 3;
-//    $record->pathwaytype = 'General';
-//    $DB->insert_record_raw('block_bcgt_pathway_type', $record, false, false, true);
+    $record = new stdClass();
+    $record->id = 2;
+    $record->pathwaytype = 'NVQ';
+    $DB->insert_record_raw('block_bcgt_pathway_type', $record, false, false, true);
     
     //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
-    $DB->execute("INSERT INTO {block_bcgt_pathway_type} (id,pathwaytype) 
-        VALUES (3,'General')");
+//    $DB->execute("INSERT INTO {block_bcgt_pathway_type} (id,pathwaytype) 
+//        VALUES (2,'NVQ')");
+    
+    $record = new stdClass();
+    $record->id = 3;
+    $record->pathwaytype = 'General';
+    $DB->insert_record_raw('block_bcgt_pathway_type', $record, false, false, true);
+    
+    //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
+//    $DB->execute("INSERT INTO {block_bcgt_pathway_type} (id,pathwaytype) 
+//        VALUES (3,'General')");
     
 //    // Pathway - Dept/Types
-//    $record = new stdClass();
-//    $record->id = 1;
-//    $record->bcgtpathwaydepid = 2; #HB
-//    $record->bcgtpathwaytypeid = 1; # VRQ
-//    $DB->insert_record_raw('block_bcgt_pathway_dep_type', $record, false, false, true);
+    $record = new stdClass();
+    $record->id = 1;
+    $record->bcgtpathwaydepid = 2; #HB
+    $record->bcgtpathwaytypeid = 1; # VRQ
+    $DB->insert_record_raw('block_bcgt_pathway_dep_type', $record, false, false, true);
+    
+//    //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
+//    $DB->execute("INSERT INTO {block_bcgt_pathway_dep_type} (id,bcgtpathwaydepid,bcgtpathwaytypeid) 
+//        VALUES (1,2,1)");
+    
+    $record = new stdClass();
+    $record->id = 2;
+    $record->bcgtpathwaydepid = 2; #HB
+    $record->bcgtpathwaytypeid = 2; # NVQ
+    $DB->insert_record_raw('block_bcgt_pathway_dep_type', $record, false, false, true);
     
     //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
-    $DB->execute("INSERT INTO {block_bcgt_pathway_dep_type} (id,bcgtpathwaydepid,bcgtpathwaytypeid) 
-        VALUES (1,2,1)");
+//    $DB->execute("INSERT INTO {block_bcgt_pathway_dep_type} (id,bcgtpathwaydepid,bcgtpathwaytypeid) 
+//        VALUES (2,2,2)");
     
-//    $record = new stdClass();
-//    $record->id = 2;
-//    $record->bcgtpathwaydepid = 2; #HB
-//    $record->bcgtpathwaytypeid = 2; # NVQ
-//    $DB->insert_record_raw('block_bcgt_pathway_dep_type', $record, false, false, true);
-    
-    //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
-    $DB->execute("INSERT INTO {block_bcgt_pathway_dep_type} (id,bcgtpathwaydepid,bcgtpathwaytypeid) 
-        VALUES (2,2,2)");
-    
-//    $record = new stdClass();
-//    $record->id = 3;
-//    $record->bcgtpathwaydepid = 1; #General
-//    $record->bcgtpathwaytypeid = 3; # General
-//    $DB->insert_record_raw('block_bcgt_pathway_dep_type', $record, false, false, true);
+    $record = new stdClass();
+    $record->id = 3;
+    $record->bcgtpathwaydepid = 1; #General
+    $record->bcgtpathwaytypeid = 3; # General
+    $DB->insert_record_raw('block_bcgt_pathway_dep_type', $record, false, false, true);
     
     //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
-    $DB->execute("INSERT INTO {block_bcgt_pathway_dep_type} (id,bcgtpathwaydepid,bcgtpathwaytypeid) 
-        VALUES (3,1,3)");
+//    $DB->execute("INSERT INTO {block_bcgt_pathway_dep_type} (id,bcgtpathwaydepid,bcgtpathwaytypeid) 
+//        VALUES (3,1,3)");
     
     // Sub types
-//    $record = new stdClass();
-//    $record->id = 14;
-//    $record->subtype = 'VRQ';
-//    $record->subtypeshort = 'VRQ';
-//    $DB->insert_record_raw('block_bcgt_subtype', $record, false, false, true);
+    $record = new stdClass();
+    $record->id = 14;
+    $record->subtype = 'VRQ';
+    $record->subtypeshort = 'VRQ';
+    $DB->insert_record_raw('block_bcgt_subtype', $record, false, false, true);
+    
+//    //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
+//    $DB->execute("INSERT INTO {block_bcgt_subtype} (id,subtype,subtypeshort) 
+//        VALUES (14,'VRQ','VRQ')");
+    
+    $record = new stdClass();
+    $record->id = 15;
+    $record->subtype = 'NVQ';
+    $record->subtypeshort = 'NVQ';
+    $DB->insert_record_raw('block_bcgt_subtype', $record, false, false, true);
     
     //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
-    $DB->execute("INSERT INTO {block_bcgt_subtype} (id,subtype,subtypeshort) 
-        VALUES (14,'VRQ','VRQ')");
-    
-//    $record = new stdClass();
-//    $record->id = 15;
-//    $record->subtype = 'NVQ';
-//    $record->subtypeshort = 'NVQ';
-//    $DB->insert_record_raw('block_bcgt_subtype', $record, false, false, true);
-    
-    //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
-    $DB->execute("INSERT INTO {block_bcgt_subtype} (id,subtype,subtypeshort) 
-        VALUES (15,'NVQ','NVQ')");
+//    $DB->execute("INSERT INTO {block_bcgt_subtype} (id,subtype,subtypeshort) 
+//        VALUES (15,'NVQ','NVQ')");
     
     
     // Pathway - Subtypes
         // Hair & Beauty (Dip VRQ, Award VRQ, Cert VRQ, Dip NVQ, Cert NVQ)
-//        $record = new stdClass();
-//        $record->id = 1;
-//        $record->bcgtsubtypeid = 3; # Diploma
-//        $record->bcgtpathwaydeptypeid = 1; # HB VRQ
-//        $DB->insert_record_raw('block_bcgt_pathway_subtype', $record, false, false, true);
+        $record = new stdClass();
+        $record->id = 1;
+        $record->bcgtsubtypeid = 3; # Diploma
+        $record->bcgtpathwaydeptypeid = 1; # HB VRQ
+        $DB->insert_record_raw('block_bcgt_pathway_subtype', $record, false, false, true);
         
         //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
-        $DB->execute("INSERT INTO {block_bcgt_pathway_subtype} (id,bcgtsubtypeid,bcgtpathwaydeptypeid) 
-        VALUES (1,3,1)");
+//        $DB->execute("INSERT INTO {block_bcgt_pathway_subtype} (id,bcgtsubtypeid,bcgtpathwaydeptypeid) 
+//        VALUES (1,3,1)");
         
-//        $record = new stdClass();
-//        $record->id = 2;
-//        $record->bcgtsubtypeid = 6; # Award
-//        $record->bcgtpathwaydeptypeid = 1; # HB VRQ
-//        $DB->insert_record_raw('block_bcgt_pathway_subtype', $record, false, false, true);
+        $record = new stdClass();
+        $record->id = 2;
+        $record->bcgtsubtypeid = 6; # Award
+        $record->bcgtpathwaydeptypeid = 1; # HB VRQ
+        $DB->insert_record_raw('block_bcgt_pathway_subtype', $record, false, false, true);
         
-        //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
-        $DB->execute("INSERT INTO {block_bcgt_pathway_subtype} (id,bcgtsubtypeid,bcgtpathwaydeptypeid) 
-        VALUES (2,6,1)");
+//        //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
+//        $DB->execute("INSERT INTO {block_bcgt_pathway_subtype} (id,bcgtsubtypeid,bcgtpathwaydeptypeid) 
+//        VALUES (2,6,1)");
         
-//        $record = new stdClass();
-//        $record->id = 3;
-//        $record->bcgtsubtypeid = 5; # Cert
-//        $record->bcgtpathwaydeptypeid = 1; # HB VRQ
-//        $DB->insert_record_raw('block_bcgt_pathway_subtype', $record, false, false, true);
+        $record = new stdClass();
+        $record->id = 3;
+        $record->bcgtsubtypeid = 5; # Cert
+        $record->bcgtpathwaydeptypeid = 1; # HB VRQ
+        $DB->insert_record_raw('block_bcgt_pathway_subtype', $record, false, false, true);
         
-        //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
-        $DB->execute("INSERT INTO {block_bcgt_pathway_subtype} (id,bcgtsubtypeid,bcgtpathwaydeptypeid) 
-        VALUES (3,5,1)");
+//        //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
+//        $DB->execute("INSERT INTO {block_bcgt_pathway_subtype} (id,bcgtsubtypeid,bcgtpathwaydeptypeid) 
+//        VALUES (3,5,1)");
         
-//        $record = new stdClass();
-//        $record->id = 4;
-//        $record->bcgtsubtypeid = 3; # Dip
-//        $record->bcgtpathwaydeptypeid = 2; # HB NVQ
-//        $DB->insert_record_raw('block_bcgt_pathway_subtype', $record, false, false, true);
+        $record = new stdClass();
+        $record->id = 4;
+        $record->bcgtsubtypeid = 3; # Dip
+        $record->bcgtpathwaydeptypeid = 2; # HB NVQ
+        $DB->insert_record_raw('block_bcgt_pathway_subtype', $record, false, false, true);
         
-        //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
-        $DB->execute("INSERT INTO {block_bcgt_pathway_subtype} (id,bcgtsubtypeid,bcgtpathwaydeptypeid) 
-        VALUES (4,3,2)");
+//        //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
+//        $DB->execute("INSERT INTO {block_bcgt_pathway_subtype} (id,bcgtsubtypeid,bcgtpathwaydeptypeid) 
+//        VALUES (4,3,2)");
         
-//        $record = new stdClass();
-//        $record->id = 5;
-//        $record->bcgtsubtypeid = 5; # Cert
-//        $record->bcgtpathwaydeptypeid = 2; # HB NVQ
-//        $DB->insert_record_raw('block_bcgt_pathway_subtype', $record, false, false, true);
+        $record = new stdClass();
+        $record->id = 5;
+        $record->bcgtsubtypeid = 5; # Cert
+        $record->bcgtpathwaydeptypeid = 2; # HB NVQ
+        $DB->insert_record_raw('block_bcgt_pathway_subtype', $record, false, false, true);
         
-        //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
-        $DB->execute("INSERT INTO {block_bcgt_pathway_subtype} (id,bcgtsubtypeid,bcgtpathwaydeptypeid) 
-        VALUES (5,5,2)");
+//        //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
+//        $DB->execute("INSERT INTO {block_bcgt_pathway_subtype} (id,bcgtsubtypeid,bcgtpathwaydeptypeid) 
+//        VALUES (5,5,2)");
         
-//        // General (Dip, Cert, Award)
-//        $record = new stdClass();
-//        $record->id = 6;
-//        $record->bcgtsubtypeid = 3; # Dip
-//        $record->bcgtpathwaydeptypeid = 3; # General
-//        $DB->insert_record_raw('block_bcgt_pathway_subtype', $record, false, false, true);
+        // General (Dip, Cert, Award)
+        $record = new stdClass();
+        $record->id = 6;
+        $record->bcgtsubtypeid = 3; # Dip
+        $record->bcgtpathwaydeptypeid = 3; # General
+        $DB->insert_record_raw('block_bcgt_pathway_subtype', $record, false, false, true);
         
-        //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
-        $DB->execute("INSERT INTO {block_bcgt_pathway_subtype} (id,bcgtsubtypeid,bcgtpathwaydeptypeid) 
-        VALUES (6,3,3)");
+//        //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
+//        $DB->execute("INSERT INTO {block_bcgt_pathway_subtype} (id,bcgtsubtypeid,bcgtpathwaydeptypeid) 
+//        VALUES (6,3,3)");
         
-//        $record = new stdClass();
-//        $record->id = 7;
-//        $record->bcgtsubtypeid = 5; # Cert
-//        $record->bcgtpathwaydeptypeid = 3; # General
-//        $DB->insert_record_raw('block_bcgt_pathway_subtype', $record, false, false, true);
+        $record = new stdClass();
+        $record->id = 7;
+        $record->bcgtsubtypeid = 5; # Cert
+        $record->bcgtpathwaydeptypeid = 3; # General
+        $DB->insert_record_raw('block_bcgt_pathway_subtype', $record, false, false, true);
         
-        //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
-        $DB->execute("INSERT INTO {block_bcgt_pathway_subtype} (id,bcgtsubtypeid,bcgtpathwaydeptypeid) 
-        VALUES (7,5,3)");
+//        //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
+//        $DB->execute("INSERT INTO {block_bcgt_pathway_subtype} (id,bcgtsubtypeid,bcgtpathwaydeptypeid) 
+//        VALUES (7,5,3)");
         
-//        $record = new stdClass();
-//        $record->id = 8;
-//        $record->bcgtsubtypeid = 6; # Award
-//        $record->bcgtpathwaydeptypeid = 3; # General
-//        $DB->insert_record_raw('block_bcgt_pathway_subtype', $record, false, false, true);
+        $record = new stdClass();
+        $record->id = 8;
+        $record->bcgtsubtypeid = 6; # Award
+        $record->bcgtpathwaydeptypeid = 3; # General
+        $DB->insert_record_raw('block_bcgt_pathway_subtype', $record, false, false, true);
         
-        //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
-        $DB->execute("INSERT INTO {block_bcgt_pathway_subtype} (id,bcgtsubtypeid,bcgtpathwaydeptypeid) 
-        VALUES (8,6,3)");
+//        //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
+//        $DB->execute("INSERT INTO {block_bcgt_pathway_subtype} (id,bcgtsubtypeid,bcgtpathwaydeptypeid) 
+//        VALUES (8,6,3)");
         
-//        $record = new stdClass();
-//        $record->id = 9;
-//        $record->bcgtsubtypeid = 14; # VRQ
-//        $record->bcgtpathwaydeptypeid = 3; # General
-//        $DB->insert_record_raw('block_bcgt_pathway_subtype', $record, false, false, true);
+        $record = new stdClass();
+        $record->id = 9;
+        $record->bcgtsubtypeid = 14; # VRQ
+        $record->bcgtpathwaydeptypeid = 3; # General
+        $DB->insert_record_raw('block_bcgt_pathway_subtype', $record, false, false, true);
         
-        //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
-        $DB->execute("INSERT INTO {block_bcgt_pathway_subtype} (id,bcgtsubtypeid,bcgtpathwaydeptypeid) 
-        VALUES (9,14,3)");
+//        //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
+//        $DB->execute("INSERT INTO {block_bcgt_pathway_subtype} (id,bcgtsubtypeid,bcgtpathwaydeptypeid) 
+//        VALUES (9,14,3)");
         
-//        $record = new stdClass();
-//        $record->id = 10;
-//        $record->bcgtsubtypeid = 15; # NVQ
-//        $record->bcgtpathwaydeptypeid = 3; # General
-//        $DB->insert_record_raw('block_bcgt_pathway_subtype', $record, false, false, true);
+        $record = new stdClass();
+        $record->id = 10;
+        $record->bcgtsubtypeid = 15; # NVQ
+        $record->bcgtpathwaydeptypeid = 3; # General
+        $DB->insert_record_raw('block_bcgt_pathway_subtype', $record, false, false, true);
         
-        //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
-        $DB->execute("INSERT INTO {block_bcgt_pathway_subtype} (id,bcgtsubtypeid,bcgtpathwaydeptypeid) 
-        VALUES (10,15,3)");
+//        //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
+//        $DB->execute("INSERT INTO {block_bcgt_pathway_subtype} (id,bcgtsubtypeid,bcgtpathwaydeptypeid) 
+//        VALUES (10,15,3)");
     
     // ---------------------- The Types ---------------------------
     //one for each
         
     // General CG
-//    $record = new stdClass();
-//    $record->id = 9;
-//    $record->type = 'CG';
-//    $record->bcgttypefamilyid = $family->id;
-//    $record->bcgtpathwaydeptid = 1;
-//    $record->bcgtpathwaytypeid = 3;
-//    $DB->insert_record_raw('block_bcgt_type', $record, false, false, true); 
+    $record = new stdClass();
+    $record->id = 9;
+    $record->type = 'CG';
+    $record->bcgttypefamilyid = $family->id;
+    $record->bcgtpathwaydeptid = 1;
+    $record->bcgtpathwaytypeid = 3;
+    $DB->insert_record_raw('block_bcgt_type', $record, false, false, true); 
     
-    //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
-        $DB->execute("INSERT INTO {block_bcgt_type} (id,type,bcgttypefamilyid,bcgtpathwaydeptid,bcgtpathwaytypeid) 
-        VALUES (9,'CG',4,1,3)");
+//    //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
+//        $DB->execute("INSERT INTO {block_bcgt_type} (id,type,bcgttypefamilyid,bcgtpathwaydeptid,bcgtpathwaytypeid) 
+//        VALUES (9,'CG',4,1,3)");
         
-//    $record = new stdClass();
-//    $record->id = 10;
-//    $record->type = 'CG HB VRQ';
-//    $record->bcgttypefamilyid = $family->id;
-//    $record->bcgtpathwaydeptid = 2;
-//    $record->bcgtpathwaytypeid = 1;
-//    $DB->insert_record_raw('block_bcgt_type', $record, false, false, true);
+    $record = new stdClass();
+    $record->id = 10;
+    $record->type = 'CG HB VRQ';
+    $record->bcgttypefamilyid = $family->id;
+    $record->bcgtpathwaydeptid = 2;
+    $record->bcgtpathwaytypeid = 1;
+    $DB->insert_record_raw('block_bcgt_type', $record, false, false, true);
     
-    //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
-        $DB->execute("INSERT INTO {block_bcgt_type} (id,type,bcgttypefamilyid,bcgtpathwaydeptid,bcgtpathwaytypeid) 
-        VALUES (10,'CG HB VRQ',4,2,1)");
+//    //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
+//        $DB->execute("INSERT INTO {block_bcgt_type} (id,type,bcgttypefamilyid,bcgtpathwaydeptid,bcgtpathwaytypeid) 
+//        VALUES (10,'CG HB VRQ',4,2,1)");
     
-//    $record = new stdClass();
-//    $record->id = 11;
-//    $record->type = 'CG HB NVQ';
-//    $record->bcgttypefamilyid = $family->id;
-//    $record->bcgtpathwaydeptid = 2;
-//    $record->bcgtpathwaytypeid = 2;
-//    $DB->insert_record_raw('block_bcgt_type', $record, false, false, true);
+    $record = new stdClass();
+    $record->id = 11;
+    $record->type = 'CG HB NVQ';
+    $record->bcgttypefamilyid = $family->id;
+    $record->bcgtpathwaydeptid = 2;
+    $record->bcgtpathwaytypeid = 2;
+    $DB->insert_record_raw('block_bcgt_type', $record, false, false, true);
 
-   //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
-        $DB->execute("INSERT INTO {block_bcgt_type} (id,type,bcgttypefamilyid,bcgtpathwaydeptid,bcgtpathwaytypeid) 
-        VALUES (11,'CG HB NVQ',4,2,2)");
+//   //THIS HAS BEEN CHANGED TO THE BELOW DUE TO AN ERROR IN moodle 2.2 core code. THE below should fix this.
+//        $DB->execute("INSERT INTO {block_bcgt_type} (id,type,bcgttypefamilyid,bcgtpathwaydeptid,bcgtpathwaytypeid) 
+//        VALUES (11,'CG HB NVQ',4,2,2)");
     
     
     
@@ -847,8 +847,35 @@ function xmldb_bcgtcg_install()
     
 
     // ---------------------- The Target Quals ---------------------------
+        
+        $record = $DB->get_record("block_bcgt_level", array("trackinglevel" => "Entry Level 3"));
+        if (!$record)
+        {
+            $ins = new stdClass();
+            $ins->id = 8;
+            $ins->trackinglevel = "Entry Level 3";
+            $EL3ID = $DB->insert_record("block_bcgt_level", $ins);
+        }
+        else
+        {
+            $EL3ID = $record->id;
+        }
+        
+        
     
-        // HB VRQ (L1 Dip, L1 Cert, L1 Award, L2 Dip, L3 Dip)
+        // HB VRQ
+        // 
+            // Diploma
+        
+            $record = new stdClass();
+            $record->bcgtlevelid = $EL3ID; # Entry L3
+            $record->bcgttypeid = 10; # HB VRQ
+            $record->bcgtsubtypeid = 3; # Dip
+            $record->previoustargetqualid = -1; //if it has a disticnt previous one. 
+            //e.g ASlevel to A2 Level
+            $ID_HB_VRQ_EL3_DIP = $DB->insert_record('block_bcgt_target_qual', $record); 
+            
+            
             $record = new stdClass();
             $record->bcgtlevelid = 1; # L1
             $record->bcgttypeid = 10; # HB VRQ
@@ -856,6 +883,41 @@ function xmldb_bcgtcg_install()
             $record->previoustargetqualid = -1; //if it has a disticnt previous one. 
             //e.g ASlevel to A2 Level
             $ID_HB_VRQ_L1_DIP = $DB->insert_record('block_bcgt_target_qual', $record); 
+            
+            $record = new stdClass();
+            $record->bcgtlevelid = 2; # L2
+            $record->bcgttypeid = 10; # HB VRQ
+            $record->bcgtsubtypeid = 3; # Dip
+            $record->previoustargetqualid = -1; //if it has a disticnt previous one. 
+            //e.g ASlevel to A2 Level
+            $ID_HB_VRQ_L2_DIP = $DB->insert_record('block_bcgt_target_qual', $record); 
+
+            $record = new stdClass();
+            $record->bcgtlevelid = 3; #L3
+            $record->bcgttypeid = 10; # HB VRQ
+            $record->bcgtsubtypeid = 3; # Dip
+            $record->previoustargetqualid = -1; //if it has a disticnt previous one. 
+            //e.g ASlevel to A2 Level
+            $ID_HB_VRQ_L3_DIP = $DB->insert_record('block_bcgt_target_qual', $record); 
+            
+            
+            $record = new stdClass();
+            $record->bcgtlevelid = 4; #L4
+            $record->bcgttypeid = 10; # HB VRQ
+            $record->bcgtsubtypeid = 3; # Dip
+            $record->previoustargetqualid = -1; //if it has a disticnt previous one. 
+            //e.g ASlevel to A2 Level
+            $ID_HB_VRQ_L4_DIP = $DB->insert_record('block_bcgt_target_qual', $record); 
+            
+            
+            // Certificate
+            $record = new stdClass();
+            $record->bcgtlevelid = $EL3ID; # Entry L3
+            $record->bcgttypeid = 10; # HB VRQ
+            $record->bcgtsubtypeid = 5; # Cert
+            $record->previoustargetqualid = -1; //if it has a disticnt previous one. 
+            //e.g ASlevel to A2 Level
+            $ID_HB_VRQ_EL3_CERT = $DB->insert_record('block_bcgt_target_qual', $record); 
 
             $record = new stdClass();
             $record->bcgtlevelid = 1; # L1
@@ -866,38 +928,63 @@ function xmldb_bcgtcg_install()
             $ID_HB_VRQ_L1_CERT = $DB->insert_record('block_bcgt_target_qual', $record); 
             
             $record = new stdClass();
+            $record->bcgtlevelid = 2; # L2
+            $record->bcgttypeid = 10; # HB VRQ
+            $record->bcgtsubtypeid = 5; # Cert
+            $record->previoustargetqualid = -1; //if it has a disticnt previous one. 
+            //e.g ASlevel to A2 Level
+            $ID_HB_VRQ_L2_CERT = $DB->insert_record('block_bcgt_target_qual', $record); 
+            
+            // NEW
+            $record = new stdClass();
+            $record->bcgtlevelid = 3; #L3
+            $record->bcgttypeid = 10; # HB VRQ
+            $record->bcgtsubtypeid = 5; # Cert
+            $record->previoustargetqualid = -1; //if it has a disticnt previous one. 
+            //e.g ASlevel to A2 Level
+            $ID_HB_VRQ_L3_CERT = $DB->insert_record('block_bcgt_target_qual', $record); 
+            
+            
+            // Award
+            $record = new stdClass();
+            $record->bcgtlevelid = $EL3ID; # Entry L3
+            $record->bcgttypeid = 10; # HB VRQ
+            $record->bcgtsubtypeid = 6; # Award
+            $record->previoustargetqualid = -1; //if it has a disticnt previous one. 
+            //e.g ASlevel to A2 Level
+            $ID_HB_VRQ_EL3_AW = $DB->insert_record('block_bcgt_target_qual', $record);
+            
+            $record = new stdClass();
             $record->bcgtlevelid = 1; # L1
             $record->bcgttypeid = 10; # HB VRQ
             $record->bcgtsubtypeid = 6; # Award
             $record->previoustargetqualid = -1; //if it has a disticnt previous one. 
             //e.g ASlevel to A2 Level
             $ID_HB_VRQ_L1_AW = $DB->insert_record('block_bcgt_target_qual', $record); 
-
+             
+            // L2 Award
             $record = new stdClass();
-            $record->bcgtlevelid = 2;
+            $record->bcgtlevelid = 2; # L2
             $record->bcgttypeid = 10; # HB VRQ
-            $record->bcgtsubtypeid = 3; # Dip
+            $record->bcgtsubtypeid = 6; # Award
             $record->previoustargetqualid = -1; //if it has a disticnt previous one. 
             //e.g ASlevel to A2 Level
-            $ID_HB_VRQ_L2_DIP = $DB->insert_record('block_bcgt_target_qual', $record); 
-
-            $record = new stdClass();
-            $record->bcgtlevelid = 3;
-            $record->bcgttypeid = 10; # HB VRQ
-            $record->bcgtsubtypeid = 3; # Dip
-            $record->previoustargetqualid = -1; //if it has a disticnt previous one. 
-            //e.g ASlevel to A2 Level
-            $ID_HB_VRQ_L3_DIP = $DB->insert_record('block_bcgt_target_qual', $record); 
+            $ID_HB_VRQ_L2_AW = $DB->insert_record('block_bcgt_target_qual', $record); 
             
-            // NEW
+            // L3 Award
             $record = new stdClass();
-            $record->bcgtlevelid = 3;
+            $record->bcgtlevelid = 3; # L3
             $record->bcgttypeid = 10; # HB VRQ
-            $record->bcgtsubtypeid = 5; # Cert
+            $record->bcgtsubtypeid = 6; # Award
             $record->previoustargetqualid = -1; //if it has a disticnt previous one. 
             //e.g ASlevel to A2 Level
-            $ID_HB_VRQ_L3_CERT = $DB->insert_record('block_bcgt_target_qual', $record); 
-            // NEW
+            $ID_HB_VRQ_L3_AW = $DB->insert_record('block_bcgt_target_qual', $record); 
+            
+            
+            
+            
+            
+            
     
     
         // HB NVQ
@@ -989,7 +1076,7 @@ function xmldb_bcgtcg_install()
             
             // Awards
             $record = new stdClass();
-            $record->bcgtlevelid = 1; # L2
+            $record->bcgtlevelid = 1; # L1
             $record->bcgttypeid = 9; # General
             $record->bcgtsubtypeid = 6; # Award
             $record->previoustargetqualid = -1; //if it has a disticnt previous one. 
@@ -1005,15 +1092,46 @@ function xmldb_bcgtcg_install()
             $ID_GENERAL_L2_AWARD = $DB->insert_record('block_bcgt_target_qual', $record); 
             
             $record = new stdClass();
-            $record->bcgtlevelid = 3; # L2
-            $record->bcgttypeid = 9; # General
+            $record->bcgtlevelid = 3; # L3
+            $record->bcgttypeid = 9; # Generel
             $record->bcgtsubtypeid = 6; # Award
             $record->previoustargetqualid = -1; //if it has a disticnt previous one. 
             //e.g ASlevel to A2 Level
             $ID_GENERAL_L3_AWARD = $DB->insert_record('block_bcgt_target_qual', $record); 
             
             
+            // NVQ
+            $record = new stdClass();
+            $record->bcgtlevelid = 1; # L1
+            $record->bcgttypeid = 9; # General
+            $record->bcgtsubtypeid = 15; # NVQ
+            $record->previoustargetqualid = -1; //if it has a disticnt previous one. 
+            //e.g ASlevel to A2 Level
+            $ID_GENERAL_L1_NVQ = $DB->insert_record('block_bcgt_target_qual', $record);
             
+            $record = new stdClass();
+            $record->bcgtlevelid = 2; # L2
+            $record->bcgttypeid = 9; # General
+            $record->bcgtsubtypeid = 15; # NVQ
+            $record->previoustargetqualid = -1; //if it has a disticnt previous one. 
+            //e.g ASlevel to A2 Level
+            $ID_GENERAL_L2_NVQ = $DB->insert_record('block_bcgt_target_qual', $record);
+            
+            $record = new stdClass();
+            $record->bcgtlevelid = 3; # L3
+            $record->bcgttypeid = 9; # General
+            $record->bcgtsubtypeid = 15; # NVQ
+            $record->previoustargetqualid = -1; //if it has a disticnt previous one. 
+            //e.g ASlevel to A2 Level
+            $ID_GENERAL_L3_NVQ = $DB->insert_record('block_bcgt_target_qual', $record);
+            
+            $record = new stdClass();
+            $record->bcgtlevelid = 4; # L4
+            $record->bcgttypeid = 9; # General
+            $record->bcgtsubtypeid = 15; # NVQ
+            $record->previoustargetqualid = -1; //if it has a disticnt previous one. 
+            //e.g ASlevel to A2 Level
+            $ID_GENERAL_L4_NVQ = $DB->insert_record('block_bcgt_target_qual', $record);
             
             
             
@@ -1033,6 +1151,33 @@ function xmldb_bcgtcg_install()
     // ---------------------- The Target Quals Grades ---------------------------
     //e.g. overal for the qual family
     
+        // HB VRQ, EL3, Dip - PMD
+            $record = new stdClass();
+            $record->bcgttargetqualid = $ID_HB_VRQ_EL3_DIP;      
+            $record->targetgrade = 'Pass';
+            $DB->insert_record('block_bcgt_target_breakdown', $record);
+            
+            
+        // HB VRQ, EL3, Cert - PMD
+            $record = new stdClass();
+            $record->bcgttargetqualid = $ID_HB_VRQ_EL3_CERT;      
+            $record->targetgrade = 'Pass';
+            $DB->insert_record('block_bcgt_target_breakdown', $record);
+            
+            
+        // HB VRQ, EL3, Award - PMD
+            $record = new stdClass();
+            $record->bcgttargetqualid = $ID_HB_VRQ_EL3_AW;      
+            $record->targetgrade = 'Pass';
+            $DB->insert_record('block_bcgt_target_breakdown', $record);
+            
+           
+                        
+            
+            
+            
+            
+            
         // HB VRQ, L1, Dip - PMD
             $record = new stdClass();
             $record->bcgttargetqualid = $ID_HB_VRQ_L1_DIP;      
@@ -1146,6 +1291,53 @@ function xmldb_bcgtcg_install()
             $DB->insert_record('block_bcgt_target_breakdown', $record);
             
             
+        // HB VRQ L3 Dip - PMD
+            $record = new stdClass();
+            $record->bcgttargetqualid = $ID_HB_VRQ_L4_DIP;      
+            $record->targetgrade = 'Pass';
+            $record->unitsscorelower = 1; //Units score if needed
+            $record->unitsscoreupper = 1.5;
+            $DB->insert_record('block_bcgt_target_breakdown', $record);
+            
+            $record = new stdClass();
+            $record->bcgttargetqualid = $ID_HB_VRQ_L4_DIP;      
+            $record->targetgrade = 'Merit';
+            $record->unitsscorelower = 1.6; //Units score if needed
+            $record->unitsscoreupper = 2.5;
+            $DB->insert_record('block_bcgt_target_breakdown', $record);
+            
+            $record = new stdClass();
+            $record->bcgttargetqualid = $ID_HB_VRQ_L4_DIP;      
+            $record->targetgrade = 'Distinction';
+            $record->unitsscorelower = 2.6; //Units score if needed
+            $record->unitsscoreupper = 3;
+            $DB->insert_record('block_bcgt_target_breakdown', $record);
+            
+            
+            
+        // HB VRQ L2 Cert - PMD
+            $record = new stdClass();
+            $record->bcgttargetqualid = $ID_HB_VRQ_L2_CERT;      
+            $record->targetgrade = 'Pass';
+            $record->unitsscorelower = 1; //Units score if needed
+            $record->unitsscoreupper = 1.5;
+            $DB->insert_record('block_bcgt_target_breakdown', $record);
+            
+            $record = new stdClass();
+            $record->bcgttargetqualid = $ID_HB_VRQ_L2_CERT;      
+            $record->targetgrade = 'Merit';
+            $record->unitsscorelower = 1.6; //Units score if needed
+            $record->unitsscoreupper = 2.5;
+            $DB->insert_record('block_bcgt_target_breakdown', $record);
+
+            $record = new stdClass();
+            $record->bcgttargetqualid = $ID_HB_VRQ_L2_CERT;      
+            $record->targetgrade = 'Distinction';
+            $record->unitsscorelower = 2.6; //Units score if needed
+            $record->unitsscoreupper = 3;
+            $DB->insert_record('block_bcgt_target_breakdown', $record);
+            
+            
         // HB VRQ L3 Cert - PMD
             $record = new stdClass();
             $record->bcgttargetqualid = $ID_HB_VRQ_L3_CERT;      
@@ -1168,8 +1360,56 @@ function xmldb_bcgtcg_install()
             $record->unitsscoreupper = 3;
             $DB->insert_record('block_bcgt_target_breakdown', $record);
             
+            
+        // HB VRQ L2 Award - PMD
+            $record = new stdClass();
+            $record->bcgttargetqualid = $ID_HB_VRQ_L2_AW;      
+            $record->targetgrade = 'Pass';
+            $record->unitsscorelower = 1; //Units score if needed
+            $record->unitsscoreupper = 1.5;
+            $DB->insert_record('block_bcgt_target_breakdown', $record);
+            
+            $record = new stdClass();
+            $record->bcgttargetqualid = $ID_HB_VRQ_L2_AW;      
+            $record->targetgrade = 'Merit';
+            $record->unitsscorelower = 1.6; //Units score if needed
+            $record->unitsscoreupper = 2.5;
+            $DB->insert_record('block_bcgt_target_breakdown', $record);
+            
+            $record = new stdClass();
+            $record->bcgttargetqualid = $ID_HB_VRQ_L2_AW;      
+            $record->targetgrade = 'Distinction';
+            $record->unitsscorelower = 2.6; //Units score if needed
+            $record->unitsscoreupper = 3;
+            $DB->insert_record('block_bcgt_target_breakdown', $record);
+            
     
+        // HB VRQ L3 Award - PMD
+            $record = new stdClass();
+            $record->bcgttargetqualid = $ID_HB_VRQ_L3_AW;      
+            $record->targetgrade = 'Pass';
+            $record->unitsscorelower = 1; //Units score if needed
+            $record->unitsscoreupper = 1.5;
+            $DB->insert_record('block_bcgt_target_breakdown', $record);
+            
+            $record = new stdClass();
+            $record->bcgttargetqualid = $ID_HB_VRQ_L3_AW;      
+            $record->targetgrade = 'Merit';
+            $record->unitsscorelower = 1.6; //Units score if needed
+            $record->unitsscoreupper = 2.5;
+            $DB->insert_record('block_bcgt_target_breakdown', $record);
+            
+            $record = new stdClass();
+            $record->bcgttargetqualid = $ID_HB_VRQ_L3_AW;      
+            $record->targetgrade = 'Distinction';
+            $record->unitsscorelower = 2.6; //Units score if needed
+            $record->unitsscoreupper = 3;
+            $DB->insert_record('block_bcgt_target_breakdown', $record);
+            
         
+            
+            
+            
         // HB NVQ - Only Pass for L1 L2 & L3
             $record = new stdClass();
             $record->bcgttargetqualid = $ID_HB_NVQ_L1_CERT;     
@@ -1390,6 +1630,95 @@ function xmldb_bcgtcg_install()
             $record->unitsscorelower = 2.6; //Units score if needed
             $record->unitsscoreupper = 3;
             $DB->insert_record('block_bcgt_target_breakdown', $record);
+            
+            
+        // General L1 NVQ
+            $record = new stdClass();
+            $record->bcgttargetqualid = $ID_GENERAL_L1_NVQ;      
+            $record->targetgrade = 'Pass';
+            $record->unitsscorelower = 1; //Units score if needed
+            $record->unitsscoreupper = 1.5;
+            $DB->insert_record('block_bcgt_target_breakdown', $record);
+            
+            $record = new stdClass();
+            $record->bcgttargetqualid = $ID_GENERAL_L1_NVQ;      
+            $record->targetgrade = 'Merit';
+            $record->unitsscorelower = 1.6; //Units score if needed
+            $record->unitsscoreupper = 2.5;
+            $DB->insert_record('block_bcgt_target_breakdown', $record);
+            
+            $record = new stdClass();
+            $record->bcgttargetqualid = $ID_GENERAL_L1_NVQ;      
+            $record->targetgrade = 'Distinction';
+            $record->unitsscorelower = 2.6; //Units score if needed
+            $record->unitsscoreupper = 3;
+            $DB->insert_record('block_bcgt_target_breakdown', $record);
+          
+        // General L2 NVQ
+            $record = new stdClass();
+            $record->bcgttargetqualid = $ID_GENERAL_L2_NVQ;      
+            $record->targetgrade = 'Pass';
+            $record->unitsscorelower = 1; //Units score if needed
+            $record->unitsscoreupper = 1.5;
+            $DB->insert_record('block_bcgt_target_breakdown', $record);
+            
+            $record = new stdClass();
+            $record->bcgttargetqualid = $ID_GENERAL_L2_NVQ;      
+            $record->targetgrade = 'Merit';
+            $record->unitsscorelower = 1.6; //Units score if needed
+            $record->unitsscoreupper = 2.5;
+            $DB->insert_record('block_bcgt_target_breakdown', $record);
+            
+            $record = new stdClass();
+            $record->bcgttargetqualid = $ID_GENERAL_L2_NVQ;      
+            $record->targetgrade = 'Distinction';
+            $record->unitsscorelower = 2.6; //Units score if needed
+            $record->unitsscoreupper = 3;
+            $DB->insert_record('block_bcgt_target_breakdown', $record);
+            
+        // General L3 NVQ
+            $record = new stdClass();
+            $record->bcgttargetqualid = $ID_GENERAL_L3_NVQ;      
+            $record->targetgrade = 'Pass';
+            $record->unitsscorelower = 1; //Units score if needed
+            $record->unitsscoreupper = 1.5;
+            $DB->insert_record('block_bcgt_target_breakdown', $record);
+            
+            $record = new stdClass();
+            $record->bcgttargetqualid = $ID_GENERAL_L3_NVQ;      
+            $record->targetgrade = 'Merit';
+            $record->unitsscorelower = 1.6; //Units score if needed
+            $record->unitsscoreupper = 2.5;
+            $DB->insert_record('block_bcgt_target_breakdown', $record);
+            
+            $record = new stdClass();
+            $record->bcgttargetqualid = $ID_GENERAL_L3_NVQ;      
+            $record->targetgrade = 'Distinction';
+            $record->unitsscorelower = 2.6; //Units score if needed
+            $record->unitsscoreupper = 3;
+            $DB->insert_record('block_bcgt_target_breakdown', $record);
+            
+        // General L4 NVQ
+            $record = new stdClass();
+            $record->bcgttargetqualid = $ID_GENERAL_L4_NVQ;      
+            $record->targetgrade = 'Pass';
+            $record->unitsscorelower = 1; //Units score if needed
+            $record->unitsscoreupper = 1.5;
+            $DB->insert_record('block_bcgt_target_breakdown', $record);
+            
+            $record = new stdClass();
+            $record->bcgttargetqualid = $ID_GENERAL_L4_NVQ;      
+            $record->targetgrade = 'Merit';
+            $record->unitsscorelower = 1.6; //Units score if needed
+            $record->unitsscoreupper = 2.5;
+            $DB->insert_record('block_bcgt_target_breakdown', $record);
+            
+            $record = new stdClass();
+            $record->bcgttargetqualid = $ID_GENERAL_L4_NVQ;      
+            $record->targetgrade = 'Distinction';
+            $record->unitsscorelower = 2.6; //Units score if needed
+            $record->unitsscoreupper = 3;
+            $DB->insert_record('block_bcgt_target_breakdown', $record);    
             
         
     

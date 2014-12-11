@@ -14,30 +14,31 @@ M.mod_bcgtalevel.aleveliniteditqual = function(Y) {
         self.location='edit_qual.php?fID='+familyID+'&tID='+typeID+'&qID='+qualID+'&level='+levelID+'&subtype='+subTypeID;
     });
     
-    var addUnit = Y.one('#addUnit');
-    addUnit.on('click', function(e){
-        e.preventDefault();
-        //increment the number of units
-        var noUnits = Y.one('#noUnits');
-        var number = noUnits.get('value');
-        var newRowCount = parseInt(number) + 1;
-        noUnits.set('value', newRowCount);
-        //add a new row to the table
-        $('#aleveleUnitsTable tr:last').after('<tr><td><input type=\"text\" name=\"unitName'+newRowCount+'\" value=\"Unit'+newRowCount+'\"/></td><td><input type=\"text\" name=\"unitUMS'+newRowCount+'\"/></td><td><input type=\"button\" value=\"X\" class=\"removeUnit\" name=\"removeUnit\"/></td><td><input type=\"hidden\" value=\"_'+newRowCount+'\" name=\"unitID'+newRowCount+'\"/></td></tr>');
-        
-        add_units_ass(newRowCount);
-        applyTT();
-    });
+//    var addUnit = Y.one('#addUnit');
+//    addUnit.on('click', function(e){
+//        e.preventDefault();
+//        //increment the number of units
+//        var noUnits = Y.one('#noUnits');
+//        var number = noUnits.get('value');
+//        var newRowCount = parseInt(number) + 1;
+//        noUnits.set('value', newRowCount);
+//        //add a new row to the table
+//        $('#aleveleUnitsTable tr:last').after('<tr><td><input type=\"text\" name=\"unitName'+newRowCount+'\" value=\"Unit'+newRowCount+'\"/></td><td><input type=\"text\" name=\"unitUMS'+newRowCount+'\"/></td><td><input type=\"button\" value=\"X\" class=\"removeUnit\" name=\"removeUnit\"/></td><td><input type=\"hidden\" value=\"_'+newRowCount+'\" name=\"unitID'+newRowCount+'\"/></td></tr>');
+//        
+//        add_units_ass(newRowCount);
+//        applyTT();
+//    });
     
-    $('.addAss').click(function(e){
-        e.preventDefault();
-        var newValue = $('#noAss').val();
-        var newRowCount = parseInt(newValue) + 1;
-        $('#alevelAssTable tr:last').after('<tr><td><input type=\"text\" name=\"assName'+newRowCount+'\" value=\"Ass'+newRowCount+'\"/></td><td><input type=\"text\" class=\"bcgt_datepicker\" name=\"assDate'+newRowCount+'\"/></td><td><select id=\"assUnit'+newRowCount+'\" class=\"assUnit\" name=\"assUnit'+newRowCount+'\"><option value=\"-1\">No Unit</option></select></td><td><input type=\"button\" value=\"X\" class=\"removeAss\" name=\"removeAss\"/></td><td><input type=\"hidden\" value=\"_'+newRowCount+'\" name=\"assID'+newRowCount+'\"/></td></tr>');
-        $('#noAss').val(newRowCount);
-        applyTT();
-        add_select_options(newRowCount);
-    });	
+//    $('.addAss').click(function(e){
+//        e.preventDefault();
+//        var newValue = $('#noAss').val();
+//        var newRowCount = parseInt(newValue) + 1;
+//        $('#alevelAssTable tr:last').after('<tr><td><input type=\"text\" name=\"assName'+newRowCount+'\" value=\"Ass'+newRowCount+'\"/></td><td><input type=\"text\" class=\"bcgt_datepicker\" name=\"assDate'+newRowCount+'\"/></td><td><select id=\"assUnit'+newRowCount+'\" class=\"assUnit\" name=\"assUnit'+newRowCount+'\"><option value=\"-1\">No Unit</option></select></td><td><input type=\"button\" value=\"X\" class=\"removeAss\" name=\"removeAss\"/></td><td><input type=\"hidden\" value=\"_'+newRowCount+'\" name=\"assID'+newRowCount+'\"/></td></tr>');
+//        $('#noAss').val(newRowCount);
+//        applyTT();
+//        add_select_options(newRowCount);
+//    });	
+    
     
     $('.addWeight').click(function(e){
         e.preventDefault();
@@ -281,6 +282,10 @@ M.mod_bcgtalevel.initstudentgrid = function(Y, qualID, studentID, grid) {
         };
         
         draw_ALEVEL_student_table(studentID, grid);
+
+        apply_alps_stu_grid_calls(Y);
+
+
     } );
     
     var viewsimple = Y.one('#viewsimple');
@@ -540,8 +545,12 @@ M.mod_bcgtalevel.initclassgrid = function(Y, qualID) {
         self.location='class_grid.php?qID='+qualID+'&g=se';
     });
     
+    $(document).ready(function() {
+       
+       apply_alps_class_grid_calls(Y);
+       
+    });
+    
     apply_student_grid_TT(-1);
 }
-
-
 

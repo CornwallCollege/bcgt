@@ -29,10 +29,10 @@ $url = '/blocks/bcgt/forms/calculate_user_values.php';
 $PAGE->set_url($url, array());
 $PAGE->set_title(get_string('calculatetargetgrade', 'block_bcgt'));
 $PAGE->set_heading(get_string('calculatetargetgrade', 'block_bcgt'));
-$PAGE->set_pagelayout('login');
+$PAGE->set_pagelayout( bcgt_get_layout() );
 $PAGE->add_body_class('calculatetargetgrade');
-$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php','title');
-$PAGE->navbar->add(get_string('myDashboard', 'block_bcgt'),'my_dashboard.php?tab=dash','title');
+$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php?tab=track','title');
+//$PAGE->navbar->add(get_string('bcgtmydashboard', 'block_bcgt'),'my_dashboard.php?tab=dash','title');
 $PAGE->navbar->add(get_string('dashtabadm', 'block_bcgt'),'my_dashboard.php?tab=adm','title');
 $PAGE->navbar->add(get_string('unittests', 'block_bcgt'));
 $jsModule = array(

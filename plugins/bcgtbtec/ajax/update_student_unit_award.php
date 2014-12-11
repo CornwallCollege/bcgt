@@ -120,6 +120,7 @@ if($grid == 'student')
             $retval->qualid = $qualID;
             $qualAwardID = -1;
             $qualAwardValue = "N/A";
+            $qualAwardUcas = 'N/A';
             if($qualAward)
             {
                 if(isset($qualAward->averageAward))
@@ -127,6 +128,7 @@ if($grid == 'student')
                     $qualAwardID = $qualAward->averageAward->get_id();
                     $qualAwardValue = $qualAward->averageAward->get_award();
                     $qualAwardType = $qualAward->averageAward->get_type();
+                    $qualAwardUcas = $qualAward->averageAward->get_ucasPoints();
                 }
                 if(isset($qualAward->minAward))
                 {
@@ -134,6 +136,7 @@ if($grid == 'student')
                     $jsonQualAward->awardid = $qualAward->minAward->get_id();
                     $jsonQualAward->awardvalue = $qualAward->minAward->get_award();
                     $jsonQualAward->awardtype = $qualAward->minAward->get_type();
+                    $jsonQualAward->ucaspoints = $qualAward->minAward->get_ucasPoints();
                     $retval->minqualaward = $jsonQualAward;
 
                 }
@@ -143,6 +146,7 @@ if($grid == 'student')
                     $jsonQualAward->awardid = $qualAward->maxAward->get_id();
                     $jsonQualAward->awardvalue = $qualAward->maxAward->get_award();
                     $jsonQualAward->awardtype = $qualAward->maxAward->get_type();
+                    $jsonQualAward->ucaspoints = $qualAward->maxAward->get_ucasPoints();
                     $retval->maxqualaward = $jsonQualAward;
                 }
             }
@@ -154,6 +158,7 @@ if($grid == 'student')
             $jsonQualAward->awardid = $qualAwardID;
             $jsonQualAward->awardvalue = $qualAwardValue;
             $jsonQualAward->awardtype = $qualAwardType;
+            $jsonQualAward->ucaspoints = $qualAwardUcas;
 
             $retval->qualaward = $jsonQualAward;
             $retval->time = date('H:i:s');
@@ -298,6 +303,7 @@ elseif($grid == 'unit')
             $retval->studentid = $studentID;
             $qualAwardID = -1;
             $qualAwardValue = "N/A";
+            $qualAwardUcas = 0;
             if($qualAward)
             {
                 if(isset($qualAward->averageAward))
@@ -305,12 +311,14 @@ elseif($grid == 'unit')
                     $qualAwardID = $qualAward->averageAward->get_id();
                     $qualAwardValue = $qualAward->averageAward->get_award();
                     $qualAwardType = $qualAward->averageAward->get_type();
+                    $qualAwardUcas = $qualAward->averageAward->get_ucasPoints();
                 }
                 elseif(isset($qualAward->targetgrade))
                 {
                     $qualAwardID = $qualAward->id;
                     $qualAwardValue = $qualAward->targetgrade;
                     $qualAwardType = $qualAward->type;
+                    $qualAwardUcas = $qualAward->ucaspoints;
                 }
             }
 
@@ -321,6 +329,7 @@ elseif($grid == 'unit')
             $jsonQualAward->awardid = $qualAwardID;
             $jsonQualAward->awardvalue = $qualAwardValue;
             $jsonQualAward->awardtype = $qualAwardType;
+            $jsonQualAward->ucaspoints = $qualAwardUcas;
 
             $retval->qualaward = $jsonQualAward;
             $retval->time = date('H:i:s');
@@ -443,6 +452,7 @@ elseif($grid == 'class')
             $retval->qualid = $qualID;
             $qualAwardID = -1;
             $qualAwardValue = "N/A";
+            $qualAwardUcas = 0;
             if($qualAward)
             {
                 if(isset($qualAward->averageAward))
@@ -450,6 +460,7 @@ elseif($grid == 'class')
                     $qualAwardID = $qualAward->averageAward->get_id();
                     $qualAwardValue = $qualAward->averageAward->get_award();
                     $qualAwardType = $qualAward->averageAward->get_type();
+                    $qyalAwardUcas = $qualAward->averageAward->get_ucasPoints();
                 }
             }
 
@@ -459,7 +470,8 @@ elseif($grid == 'class')
             $jsonQualAward->awardid = $qualAwardID;
             $jsonQualAward->awardvalue = $qualAwardValue;
             $jsonQualAward->awardtype = $qualAwardType;
-
+            $jsonQualAward->ucaspoints = $qualAwardUcas;
+            
             $retval->qualaward = $jsonQualAward;
             $retval->time = date('H:i:s');
             

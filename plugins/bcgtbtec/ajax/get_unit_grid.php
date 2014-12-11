@@ -28,6 +28,8 @@ $courseID = optional_param('cID', -1, PARAM_INT);
 $sCourseID = optional_param('scID', -1, PARAM_INT);
 $groupingID = optional_param('grID', -1, PARAM_INT);
 $showHTML = optional_param('html', false, PARAM_BOOL);
+$regGroupID = optional_param('regGrpID', false, PARAM_INT);
+
 $advancedMode = false;
 if($grid == 'a' || $grid == 'ae')
 {
@@ -50,6 +52,12 @@ if(array_key_exists($unitID, $sessionUnits))
     $unitObject = $sessionUnits[$unitID];
     $unit = $unitObject->unit;
 }
+if(!$unit)
+{
+    $loadParams = new stdClass();
+    $loadParams->loadLevel = Qualification::LOADLEVELALL;
+    $unit = Unit::get_unit_class_id($unitID, $loadParams);
+}
 if($unit)
 {
     $unit->set_grid_disabled($lock);
@@ -59,25 +67,28 @@ if($unit)
     //above, (e.g. Flat is late to denote if we are showing late)
     if($qualID != -1)
     {
-        $data = $unit->get_unit_grid_data($qualID, $advancedMode, $editing, $sCourseID);
+        $data = $unit->get_unit_grid_data($qualID, $advancedMode, $editing, $courseID);
     }
     else
     {
-        $data = $unit->get_unit_grid_full_data($advancedMode, $editing, $sCourseID);
+        $data = $unit->get_unit_grid_full_data($advancedMode, $editing, $courseID);
     }
-    $output = array(
-		"iTotalRecords" => count($data),
-		"iTotalDisplayRecords" => count($data),
-		"aaData" => $data
-	);
-	if($showHTML)
-    {
-        echo bcgt_output_simple_grid_table($data);    
-    }
-    else
-    {
-        echo json_encode( $output );
-    }
+//    $output = array(
+//		"iTotalRecords" => count($data),
+//		"iTotalDisplayRecords" => count($data),
+//		"aaData" => $data
+//	);
+//	if($showHTML)
+//    {
+//        echo bcgt_output_simple_grid_table($data);    
+//    }
+//    else
+//    {
+//        echo json_encode( $output );
+//    }
+    
+    echo $data;
+    
 }
 else
 {

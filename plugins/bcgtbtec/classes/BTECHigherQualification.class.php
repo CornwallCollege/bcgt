@@ -155,6 +155,24 @@ class BTECHigherQualification extends BTECQualification {
         return false;
     }
 	
-	
+	public function get_extra_rows_for_export_spec(&$obj, $unit, $rowNum) {
+        
+        $rowNum = parent::get_extra_rows_for_export_spec($obj, $unit, $rowNum);
+        
+        if ($unit->get_unit_type_id() == 1){
+            $type = 'Core Unit';
+        } elseif ($unit->get_unit_type_id() == 2){
+            $type = 'APL Unit';
+        } else {
+            $type = '';
+        }
+        
+        $obj->getActiveSheet()->setCellValue("A{$rowNum}", "Unit Type");
+        $obj->getActiveSheet()->setCellValue("B{$rowNum}", $type);
+        $rowNum++;
+        
+        return $rowNum;
+        
+    }
 	
 }

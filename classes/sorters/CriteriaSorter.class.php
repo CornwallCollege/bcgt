@@ -139,6 +139,45 @@ class CriteriaSorter
 			return 1;
 		}
 	}
+    
+    
+    /**
+     * @param type $obj1
+     * @param type $obj2
+     * @return type
+     */
+    function ComparisonSimple($obj1, $obj2)
+    {
+        $A = ( preg_match("/^[a-z]0/i", $obj1) && strlen($obj1) <> strlen($obj2) ) ? preg_replace("/0/", "", $obj1, 1) : $obj1;
+        $B = ( preg_match("/^[a-z]0/i", $obj2) && strlen($obj2) <> strlen($obj1) ) ? preg_replace("/0/", "", $obj2, 1) : $obj2;
+        return ( strnatcasecmp($A, $B) == 0 ) ? 0 : (  strnatcasecmp($A, $B) > 0 ) ? 1 : -1;
+    }
+    
+    
+    /**
+     * @param type $obj1
+     * @param type $obj2
+     * @return type
+     */
+    function ComparisonSimpleObject($obj1, $obj2)
+    {
+        $A = ( preg_match("/^[a-z]0/i", $obj1->get_name()) && strlen($obj1->get_name()) <> strlen($obj2->get_name()) ) ? preg_replace("/0/", "", $obj1->get_name(), 1) : $obj1->get_name();
+        $B = ( preg_match("/^[a-z]0/i", $obj2->get_name()) && strlen($obj2->get_name()) <> strlen($obj1->get_name()) ) ? preg_replace("/0/", "", $obj2->get_name(), 1) : $obj2->get_name();
+        return ( strnatcasecmp($A, $B) == 0 ) ? 0 : (  strnatcasecmp($A, $B) > 0 ) ? 1 : -1;
+    }
+    
+     /**
+     * @param type $obj1
+     * @param type $obj2
+     * @return type
+     */
+    function ComparisonSimpleArray($obj1, $obj2)
+    {
+        $A = ( preg_match("/^[a-z]0/i", $obj1['name']) && strlen($obj1['name']) <> strlen($obj2['name']) ) ? preg_replace("/0/", "", $obj1['name'], 1) : $obj1['name'];
+        $B = ( preg_match("/^[a-z]0/i", $obj2['name']) && strlen($obj2['name']) <> strlen($obj1['name']) ) ? preg_replace("/0/", "", $obj2['name'], 1) : $obj2['name'];
+        return ( strnatcasecmp($A, $B) == 0 ) ? 0 : (  strnatcasecmp($A, $B) > 0 ) ? 1 : -1;
+    }
+    
 
 }
 ?>

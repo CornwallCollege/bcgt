@@ -89,15 +89,19 @@ if(isset($_POST['menu']))
 {
     redirect('my_dashboard.php?tab=adm');
 }
+if(isset($_POST['groupUnits']))
+{
+    redirect('group_units.php?qID=' . $qualID);
+}
 
 $url = '/blocks/bcgt/forms/edit_qual_units.php';
 $PAGE->set_url($url, array());
 $PAGE->set_title(get_string('editqualunits', 'block_bcgt'));
 $PAGE->set_heading(get_string('editqualunits', 'block_bcgt'));
-$PAGE->set_pagelayout('login');
+$PAGE->set_pagelayout( bcgt_get_layout() );
 $PAGE->add_body_class(get_string('editqualunits', 'block_bcgt'));
-$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php','title');
-$PAGE->navbar->add(get_string('myDashboard', 'block_bcgt'),'my_dashboard.php?tab=dash','title');
+$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php?tab=track','title');
+//$PAGE->navbar->add(get_string('bcgtmydashboard', 'block_bcgt'),'my_dashboard.php?tab=dash','title');
 $PAGE->navbar->add(get_string('dashtabadm', 'block_bcgt'),'my_dashboard.php?tab=adm','title');
 
 $jsModule = array(
@@ -205,6 +209,11 @@ echo'<h2 class="formheading">Qualification Units</h2>';
 					echo '<input id="unitSearch" name="search" type="submit" value="'.get_string('search','block_bcgt').'" class="bcgtFormButon" /><br />';
 	          	echo '</div>';
 			echo '</div>';
+            
+			echo '<input type="submit" name="groupUnits" value="'.get_string('groupunits','block_bcgt').'" class="bcgtFormButton" />';
+            
+            echo '<br><br>';
+            
 			echo '<input type="submit" name="addNewUnit" value="'.get_string('addnewunit','block_bcgt').'" class="bcgtFormButton" />';
 			echo '<input type="submit" name="qualPicker" value="'.get_string('qualpicker','block_bcgt').'" class="bcgtFormButton"/>';
 			echo '<input type="submit" name="menu" value="'.get_string('backmenu','block_bcgt').'" class="bcgtFormButton" />';

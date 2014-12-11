@@ -36,6 +36,11 @@ else
     $context = context_course::instance($COURSE->id);
 }
 require_login();
+
+if(!has_capability('block/bcgt:manageactivitylinks', $context)){
+    print_error('invalid access');
+}
+
 $PAGE->set_context($context);
 $studentID = optional_param('sID', -1, PARAM_INT);
 $firstname = '';
@@ -48,10 +53,19 @@ if($user)
 }
 $url = '/blocks/bcgt/grids/ass_grid.php';
 $PAGE->set_url($url, array());
-$PAGE->set_title(get_string('bcgtstudentassgrid', 'block_bcgt'));
+$PAGE->set_title(get_string('assessmenttracker', 'block_bcgt'));
 $PAGE->set_heading(get_string('bcgtstudentassgrid', 'block_bcgt'));
-$PAGE->set_pagelayout('login');
+$PAGE->set_pagelayout( bcgt_get_layout() );
 $PAGE->add_body_class(get_string('bcgtstudentassgrid', 'block_bcgt'));
+if($courseID != 1)
+{
+    global $DB;
+    $course = $DB->get_record_sql("SELECT * FROM {course} WHERE id = ?", array($courseID));
+    if($course)
+    {
+        $PAGE->navbar->add($course->shortname,$CFG->wwwroot.'/course/view.php?id='.$courseID,'title');
+    }
+}
 $PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),$CFG->wwwroot.'/blocks/bcgt/forms/my_dashboard.php?&cID='.$courseID,'title');
 $link1 = null;
 if(has_capability('block/bcgt:viewclassgrids', $context))

@@ -1404,4 +1404,16 @@ function xmldb_block_bcgtalevel_upgrade($oldversion = 0)
             }
         }
     }
+    
+    //somehow some colleges have their data wrong. Lets reload after recreating the whole 
+    //process using a new csv import
+    if($oldversion < 2014030601)
+    {
+        global $CFG;
+        $breakdown = new Breakdown(-1, null);
+        $breakdown->import_csv($CFG->dirroot.'/blocks/bcgt/plugins/bcgtalevel/data/Alevelbreakdowns.csv');
+        
+        $targetGrade = new TargetGrade(-1, null);
+        $targetGrade->import_csv($CFG->dirroot.'/blocks/bcgt/plugins/bcgtalevel/data/Alevelgrades.csv');
+    }
 }

@@ -17,10 +17,11 @@ class BTECDashTab extends DashTab{
     
     public static function bcgt_get_plugin_tabs($tabFocus)
     {
+        $courseID = optional_param('cID', SITEID, PARAM_INT);
         global $CFG;
         $class='last';
         return'<li class="'.$class.'">'.
-        '<a href="'.$CFG->wwwroot.'/blocks/bcgt/forms/my_dashboard.php?tab=BTEC">'.
+        '<a href="'.$CFG->wwwroot.'/blocks/bcgt/forms/my_dashboard.php?tab=BTEC&cID='.$courseID.'>'.
         '<span>BTEC</span></a></li>';
     }
     

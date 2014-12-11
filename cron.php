@@ -55,6 +55,10 @@ function process_assignments_cron()
         
         //this will check for WNS
         bcgt_cron_process_assignments_frequency_wns($starttime, time());
+        
+        // Check for ones which have been graded
+        bcgt_cron_process_assignments_frequency_graded($starttime, time());
+        
     }
     else
     {
@@ -100,6 +104,38 @@ function bcgt_cron_process_assignments_frequency_inlate($startTime, $finishTime)
     }
     mtrace("BCGT: Finished checking for any work submitted (or Late) assignment values");
 }
+
+
+function bcgt_cron_process_assignments_frequency_graded($startTime, $finishTime)
+{
+    
+    global $CFG;
+    require_once $CFG->dirroot . '/lib/gradelib.php';
+    
+    mtrace("BCGT: Checking for any assignments graded");
+    mtrace("BCGT: Check between: ".date("d m y - H:i", $startTime)." and ".date("d m y - H:i", $finishTime));
+
+    //get the mods we are linking to:
+    $modules = get_mod_linking();
+    foreach($modules AS $mod)
+    {
+        if($mod->checkforautotracking)
+        {
+            if (isset($mod->gradetablename) && !is_null($mod->gradetablename) 
+                    && isset($mod->gradetimefname) && !is_null($mod->gradetimefname) 
+                    && isset($mod->gradegradefname) && !is_null($mod->gradegradefname) 
+                    && isset($mod->grademodinstancefname) && !is_null($mod->grademodinstancefname))
+            {
+                
+                bcgt_process_mod_graded($mod, $startTime, $finishTime);
+                
+            }
+        }
+    }
+    mtrace("BCGT: Finished checking for any assignments graded");
+}
+
+
 
 function bcgt_find_deadline_submission_mods($tableName, $dbField, $startCheck, $finishTime)
 {
@@ -172,6 +208,92 @@ function bcgt_process_mod_wns($modName, $modTable, $modDueField, $courseField,
     }
 }
 
+function bcgt_process_mod_graded($mod, $startTime, $finishTime)
+{
+    
+    global $DB;
+    mtrace("BCGT: Finding all {$mod->modname} mod submissions which have been graded in the alloted time");
+        
+    // Find grades between times
+    $grades = $DB->get_records_select("{$mod->gradetablename}", "{$mod->gradetimefname} <= ? AND {$mod->gradetimefname} >= ?", array($finishTime, $startTime));
+    if ($grades)
+    {
+                
+        $gradeModInstanceField = $mod->grademodinstancefname;
+        $modGradingScaleField = $mod->modgradingscalefname;
+        $modCourseField = $mod->modtablecoursefname;
+        $gradeField = $mod->gradegradefname;
+        $gradeUserField = $mod->gradeuserfname;
+        $modTitleField = $mod->modtitlefname;
+        
+        foreach($grades as $grade)
+        {
+        
+            // Find the assignment linked to this grade
+            $ass = bcgt_get_mod($mod->modtablename, $grade->$gradeModInstanceField);
+            if ($ass)
+            {
+                                
+                $courseModule = get_coursemodule_from_instance($mod->modname, $ass->id, $ass->$modCourseField);
+                if (!$courseModule)
+                {
+                    mtrace("No $courseModule found for courseid: $mod->$modCourseField type = {$mod->modname} AND instance = $ass->id");
+                    continue;
+                }
+                
+                $user = $DB->get_record("user", array("id" => $grade->$gradeUserField));
+                if (!$user)
+                {
+                    mtrace("BCGT: NO User found: {$grade->$gradeUserField}");
+                    continue;
+                }
+                                                
+                // Find the grading scale
+                $scaleID = -($ass->$modGradingScaleField); // Moodle store it as negative, since they are retarded
+                $scale = $DB->get_record("scale", array("id" => $scaleID));
+                
+                if ($scale && in_array($scale->name, explode(",", Qualification::SUPPORTED_GRADE_SCALES)))
+                {
+                    
+                    $project = new Project();
+                    
+                    if($project->is_course_mod_attached_qual($courseModule->id)){
+                        
+                        mtrace("This {$mod->modname} is attached to a qualification");
+                        
+                        // Get a grade_items object so we can work out the grade frmo the decimal
+                        $item = $DB->get_record("grade_items", array("itemtype" => "mod", "itemmodule" => $mod->modname, "iteminstance" => $ass->id));
+                        
+                        $grade_item = new grade_item($item);
+                        $gradeValue = grade_format_gradevalue($grade->$gradeField, $grade_item);
+                        
+                        if (!$gradeValue){
+                            mtrace("BCGT: cannot find valid grade value from this grading ({$grade->$gradeField})");
+                            continue;
+                        }
+                        
+                        mtrace("BCGT: Updating {$user->id} ({$user->username}) {$mod->modname}: {$ass->$modTitleField} with grade: {$gradeValue}");
+                        $project->update_users_qual_cron_grading($user->id, $courseModule->id, $scale->name, $gradeValue); 
+                        
+                        
+                    }
+                    
+                }
+                
+                
+            }
+            
+            
+        
+        }
+        
+    }
+    
+}
+
+
+
+
 function bcgt_process_mod_inlate($modName, $submissionTable, $submissionModifiedField, 
         $submissionUserField, $modTable, $submissionModIDField, $modDueField, 
         $modCourseField, $startTime, $finishTime)
@@ -235,7 +357,7 @@ function bcgt_process_mod_inlate($modName, $submissionTable, $submissionModified
                     
                 }
                 mtrace("BCGT: Updating $user->id($user->username) Course: ($course->shortname) $modName: $mod->name to $action");
-                            $project->update_users_qual_cron($user->id, $courseModule->id, $action); 
+                $project->update_users_qual_cron($user->id, $courseModule->id, $action); 
             }
             
         }
@@ -245,6 +367,8 @@ function bcgt_process_mod_inlate($modName, $submissionTable, $submissionModified
         mtrace("Found no submissions");
     }
 }
+
+
 
 function bcgt_get_mod($modTable, $modID)
 {
@@ -260,4 +384,28 @@ function bcgt_find_submission_mod_user($tableName, $dbUserField, $userID, $dbMod
     return $DB->get_record_sql($sql, array($userID, $modID));
 }
 
-?>
+function process_alps_cron()
+{
+    global $CFG, $DB;
+    require_once($CFG->dirroot.'/blocks/bcgt/classes/core/Alps.class.php');
+    //need to do a time check?
+    $lastCronDB = $DB->get_record_sql('SELECT lastcron FROM {block} WHERE name = ?', array('bcgt'));
+    $lastCron = $lastCronDB->lastcron;
+    $lastCronHour = date('H', $lastCron);
+    $hour = date('H');
+ 
+    $time = get_config('bcgt', 'alpscrontime');
+    mtrace("Time to check = $time AND hour now = $hour");
+    //if the hour is the same as when we want to do the check
+    //and the last time that we ran it wasnt in the same hour:
+    if($hour == $time && $hour != $lastCronHour)
+    {
+        //then we can run the report
+        set_time_limit(0);
+        
+        $alps = new Alps();
+        $alps->perform_report_calculations(true);
+    }
+    
+}
+

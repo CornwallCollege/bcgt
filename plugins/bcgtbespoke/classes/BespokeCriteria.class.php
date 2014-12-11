@@ -56,11 +56,63 @@ class BespokeCriteria extends Criteria {
         return $this->grading;
     }
     
+    public function get_grading_name(){
+        
+        global $DB;
+        
+        $name = '';
+        
+        if ($this->grading)
+        {
+            $record = $DB->get_record("block_bcgt_bspk_crit_grading", array("id" => $this->grading));
+            if ($record)
+            {
+                $name = $record->name;
+            }
+        }
+        
+        return $name;
+        
+    }
+    
     public function get_grading_info(){
         global $DB;
         if (!$this->grading || $this->grading < 1) return false;
         return $DB->get_records("block_bcgt_bspk_c_grade_vals", array("critgradingid" => $this->grading), "rangelower DESC");
     }
+    
+    public function get_grading_serialized_object(){
+        
+        global $DB;
+        
+        if ($this->grading)
+        {
+            
+            $grading = $DB->get_record("block_bcgt_bspk_crit_grading", array("id" => $this->grading));
+            if ($grading)
+            {
+                
+                $grading->vals = array();
+                
+                $vals = $DB->get_records("block_bcgt_bspk_c_grade_vals", array("critgradingid" => $grading->id));
+                if ($vals)
+                {
+                    
+                    foreach($vals as $val)
+                    {
+                        $grading->vals[] = $val;
+                    }
+                    
+                }
+                
+            }
+            
+        }
+                
+        return serialize($grading);
+        
+    }
+    
     
     public function get_grading_met_info(){
         global $DB;
@@ -109,7 +161,7 @@ class BespokeCriteria extends Criteria {
                 FROM {block_bcgt_user_criteria} c
                 INNER JOIN {block_bcgt_criteria} criteria ON criteria.id = c.bcgtcriteriaid
                 INNER JOIN {block_bcgt_bespoke_criteria} bc ON bc.bcgtcritid = c.bcgtcriteriaid
-                LEFT JOIN {block_bcgt_bspk_c_grade_vals} bv ON bv.id = bc.gradingstructureid
+                LEFT JOIN {block_bcgt_bspk_c_grade_vals} bv ON bv.id = c.bcgtvalueid
                 WHERE c.bcgtcriteriaid = ?
                 AND c.bcgtqualificationid = ?
                 AND c.userid = ?";
@@ -119,6 +171,7 @@ class BespokeCriteria extends Criteria {
 			$sql .= " AND criteria.bcgtunitid = ?";
             $params[] = $unitID;
 		}        
+                
 		return $DB->get_record_sql($sql, $params);
 	}
     
@@ -127,7 +180,7 @@ class BespokeCriteria extends Criteria {
         
         global $DB;
         
-        return $DB->get_records_select("block_bcgt_bspk_c_grade_vals", "critgradingid IS NULL OR critgradingid = ?", array($this->grading), "met DESC, rangelower ASC, shortgrade ASC");
+        return $DB->get_records_select("block_bcgt_bspk_c_grade_vals", "critgradingid IS NULL OR critgradingid = ?", array($this->grading), "met DESC, points ASC, rangelower ASC, shortgrade ASC");
         
     }
     
@@ -157,9 +210,12 @@ class BespokeCriteria extends Criteria {
         $output = "";
         
         $this->comments = iconv('UTF-8', 'ASCII//TRANSLIT', $this->comments); 
-        
+                
         $class = ($this->comments && !empty($this->comments)) ? 'hasComments' : '';
-        $output .= "<td id='C_{$this->id}U_{$unit->get_id()}Q_{$qual->get_id()}S_{$this->studentID}' class='val {$class}' title='' criteriaID='{$this->id}' unitID='{$unit->get_id()}' qualID='{$qual->get_id()}' studentID='{$this->studentID}'>";
+                
+        $w = ($editing) ? 100 : 40;
+        
+        $output .= "<td style='width:{$w}px;min-width:{$w}px;max-width:{$w}px;' id='C_{$this->id}U_{$unit->get_id()}Q_{$qual->get_id()}S_{$this->studentID}' class='val {$class}' title='' criteriaID='{$this->id}' unitID='{$unit->get_id()}' qualID='{$qual->get_id()}' studentID='{$this->studentID}'>";
         
         $output .= "<div class='criteriaTDContent'>";
         
@@ -173,10 +229,19 @@ class BespokeCriteria extends Criteria {
                 
                     $output .= "<option value=''></option>";
                     
+                    $break = false;
+                    
                     if ($possibleValues)
                     {
                         foreach($possibleValues as $val)
                         {
+                            
+                            if ($val->met == 0 && !$break)
+                            {
+                                $output .= "<option value='' disabled='disabled'>------------</option>";
+                                $break = true;
+                            }
+                            
                             $sel = ($valueObj && $valueObj->get_id() == $val->id) ? 'selected' : '';
                             $output .= "<option value='{$val->id}' {$sel}>{$val->shortgrade} - {$val->grade}</option>";
                         }
@@ -207,17 +272,33 @@ class BespokeCriteria extends Criteria {
             $fullname = fullname($this->student);
             $unitname = bcgt_html($unit->get_name());
             $critname = bcgt_html($this->name);
+            
+            // Change this so each thing has its own attribute, wil be easier
+            $commentImgID = "cmtCell_cID_".$this->get_id()."_uID_".$unit->get_id()."_SID_".$this->studentID.
+                            "_QID_".$this->qualID;
         
             if (!empty($this->comments))
             {
-                $output .= "<img id='C{$this->id}U{$unit->get_id()}S{$this->studentID}Q{$this->qualID}' criteriaid='{$this->id}' unitid='{$unit->get_id()}' studentid='{$this->studentID}' qualid='{$this->qualID}' username='{$username}' fullname='{$fullname}' unitname='{$unitname}' critname='{$critname}' grid='{$grid}' class='editComments' title='Click to Edit Comments'  src='{$CFG->wwwroot}/blocks/bcgt/plugins/bcgtbespoke/pix/comment_edit.png' alt='".get_string('editcomments', 'block_bcgt')."' />";
+                $output .= "<img id='{$commentImgID}' criteriaid='{$this->id}' unitid='{$unit->get_id()}' studentid='{$this->studentID}' qualid='{$this->qualID}' username='{$username}' fullname='{$fullname}' unitname='{$unitname}' critname='{$critname}' grid='{$grid}' class='editComments' title='Click to Edit Comments'  src='{$CFG->wwwroot}/blocks/bcgt/plugins/bcgtbespoke/pix/comment_edit.png' alt='".get_string('editcomments', 'block_bcgt')."' />";
             }
             else
             {
-                $output .= "<img id='C{$this->id}U{$unit->get_id()}S{$this->studentID}Q{$this->qualID}' criteriaid='{$this->id}' unitid='{$unit->get_id()}' studentid='{$this->studentID}' qualid='{$this->qualID}' username='{$username}' fullname='{$fullname}' unitname='{$unitname}' critname='{$critname}' grid='{$grid}' class='addComments' title='Click to Add Comments'  src='{$CFG->wwwroot}/blocks/bcgt/plugins/bcgtbespoke/pix/comment_add.png' alt='".get_string('addcomment', 'block_bcgt')."' />";
+                $output .= "<img id='{$commentImgID}' criteriaid='{$this->id}' unitid='{$unit->get_id()}' studentid='{$this->studentID}' qualid='{$this->qualID}' username='{$username}' fullname='{$fullname}' unitname='{$unitname}' critname='{$critname}' grid='{$grid}' class='addComments' title='Click to Add Comments'  src='{$CFG->wwwroot}/blocks/bcgt/plugins/bcgtbespoke/pix/comment_add.png' alt='".get_string('addcomment', 'block_bcgt')."' />";
             }
             
-            $output .= "<span class='tooltipContent' style='display:none !important;'>".bcgt_html($this->comments, true)."</span>";
+            
+            if ($editing)
+            {
+            
+                $output .= "<div class='popUpDiv bcgt_comments_dialog' id='dialog_{$this->studentID}_{$this->get_id()}_{$this->qualID}' qualID='{$this->qualID}' unitID='{$unit->get_id()}' critID='{$this->get_id()}' studentID='{$this->studentID}' grid='{$grid}' imgID='{$commentImgID}' title='Comments'>";
+                    $output .= "<span class='commentUserSpan'>Comments for {$fullname} : {$username}</span><br>";
+                    $output .= "<span class='commentUnitSpan'>{$unit->get_display_name()}</span><br>";
+                    $output .= "<span class='commentCriteriaSpan'>{$this->get_name()}</span><br><br><br>";
+                    $output .= "<textarea class='dialogCommentText' id='text_{$this->studentID}_{$this->get_id()}_{$this->qualID}'>".bcgt_html($this->comments)."</textarea>";
+                $output .= "</div>";
+            
+            }
+            
         
         $output .= "</div>";
         
@@ -240,7 +321,7 @@ class BespokeCriteria extends Criteria {
             $output .= "<strong>{$qual->get_display_name()}</strong><br>";
             $output .= "<span>{$unit->get_name()}</span><br>";
             $output .= "<h3>{$this->name}</h3><br>";
-            $output .= "<p>".bcgt_html($this->details, true)."</p>";
+            $output .= "<p style='text-align:left;'>".bcgt_html($this->details, true)."</p>";
             
             if ($this->comments)
             {
@@ -296,6 +377,7 @@ class BespokeCriteria extends Criteria {
         $this->qualID = $qualID;
         $this->student = $DB->get_record("user", array("id" => $studentID));
 		$studentCriteria = $this->get_students_value($studentID, $qualID, $unitID);
+                
 //        $studentGrade = $this->get_students_grade($studentID, $qualID, $unitID); 
 //        $studentTargetGrade = $this->get_students_target_grade($studentID, $qualID, $unitID);
         if($studentCriteria)
@@ -316,10 +398,12 @@ class BespokeCriteria extends Criteria {
 			if($studentCriteria->dateset)
 			{
 				$this->dateSet = date('d M Y', $studentCriteria->dateset);	
+                $this->dateSetUnix = $studentCriteria->dateset;
 			}
 			if($studentCriteria->dateupdated)
 			{
 				$this->dateUpdated = date('d M Y', $studentCriteria->dateupdated);
+                $this->dateUpdatedUnix = $studentCriteria->dateupdated;
 			}
 			$this->setByUserID = $studentCriteria->setbyuserid;
 			$this->updatedByUserId = $studentCriteria->updatedbyuserid;
@@ -328,6 +412,12 @@ class BespokeCriteria extends Criteria {
                 $this->targetDate = $studentCriteria->targetdate;
             }
             $this->studentFlag = (isset($studentCriteria->flag)) ? $studentCriteria->flag : false;
+            
+            if(isset($studentCriteria->awarddate))
+            {
+                $this->awardDate = $studentCriteria->awarddate;
+            }
+            
 		}
 
 		if($loadSubCriteria && $subCriteria = $this->get_sub_criteria())

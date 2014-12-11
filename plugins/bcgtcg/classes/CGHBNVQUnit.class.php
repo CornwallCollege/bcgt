@@ -1183,7 +1183,7 @@ class CGHBNVQUnit extends CGUnit {
                 $tName = str_replace(" ", "_", htmlentities($criteriaName, ENT_QUOTES));
 
                 if ($max > 1){
-                    $header .= "<th class='toggleTD_{$tName}' colspan='{$max}' defaultcolspan='{$max}'><a class='taskName' href='#' onclick='toggleOverallTasks(\"{$tName}\");return false;'>{$criteriaName}</a></th>";
+                    $header .= "<th class='toggleTD_{$tName}' colspan='{$max}' defaultcolspan='{$max}'>{$criteriaName}</th>";
                 } else {
                     $header .= "<th colspan='{$max}' defaultcolspan='{$max}'>{$criteriaName}</th>";
                 }
@@ -1625,6 +1625,9 @@ class CGHBNVQUnit extends CGUnit {
         }
         $late = optional_param('late', false, PARAM_BOOL);
         $grid = optional_param('g', 's', PARAM_TEXT);
+        $page = optional_param('page', 1, PARAM_INT);
+
+                
         $retval .= '<input type="hidden" id="grid" name="g" value="'.$grid.'"/>';
         $advancedMode = false;
         $editing = false;
@@ -1659,7 +1662,7 @@ class CGHBNVQUnit extends CGUnit {
         );
         //
         
-        $PAGE->requires->js_init_call('M.mod_bcgtcg.inithbvrqunitgrid', array($qualID, $this->id), true, $jsModule);
+        $PAGE->requires->js_init_call('M.mod_bcgtcg.inithbvrqunitgrid', array($qualID, $this->id, $page), true, $jsModule);
         require_once($CFG->dirroot.'/blocks/bcgt/lib.php');
         load_javascript(true);
         $retval .= "<link rel='stylesheet' type='text/css' href='{$CFG->wwwroot}/blocks/bcgt/css/start/jquery-ui-1.10.3.custom.min.css' />";
@@ -1674,8 +1677,33 @@ class CGHBNVQUnit extends CGUnit {
         
         $retval .= "<br style='clear:both;' /><br>";
         
+        
+        $pageRecords = get_config('bcgt','pagingnumber');
+        if ($pageRecords < 1 || $pageRecords > 10){
+            $pageRecords = 10;
+        }
+        
+        $studentsArray = get_users_on_unit_qual($this->id, $qualID);
+        $totalNoStudents = count($studentsArray);
+        $noPages = ceil($totalNoStudents/$pageRecords);
+
+        $retval .= '<div class="bcgt_pagination c">'.get_string('pagenumber', 'block_bcgt').' : ';
+
+                for ($i = 1; $i <= $noPages; $i++)
+                {
+                    $class = ($i == $page) ? 'active' : '';
+                    $retval .= "<a class='unitgridpage pageNumber {$class}' page='{$i}' href='{$CFG->wwwroot}/blocks/bcgt/grids/unit_grid.php?uID={$this->id}&qID={$qualID}&page={$i}&g={$grid}'>{$i}</a>";
+                }
+
+        $retval .= '</div>';
+        $retval .= '<input type="hidden" name="pageInput" id="pageInput" value="'.$page.'"/>';
+        
+        
+        
+        $retval .= "<p id='loading' class='c'><img src='{$CFG->wwwroot}/blocks/bcgt/pix/ajax-loader.gif' alt='loading...' /></p>";
+        
         //the grid -> ajax
-        $retval .= '<div id="cgUnitGrid">';
+        $retval .= '<div id="CGUnitGrid">';
         
         
         $retval .= "<div id='unitGridDiv' class='unitGridDiv ".
@@ -1740,10 +1768,22 @@ class CGHBNVQUnit extends CGUnit {
             $unitAwards = Unit::get_possible_unit_awards($this->get_typeID());
         }
         
-                        
+              
+        $page = optional_param('page', 1, PARAM_INT);
+        if ($page < 1){
+            $page = 1;
+        }
+        
+        $limit = get_config('bcgt','pagingnumber');
+        if ($limit < 1 || $limit > 10){
+            $limit = 10;
+        }
+        
+        $limitFrom = ($page - 1) * $limit;
+        
         
         //load the students that are on this unit for this qual. 
-        $studentsArray = get_users_on_unit_qual($this->id, $qualID);
+        $studentsArray = get_users_on_unit_qual($this->id, $qualID, -1, -1, $limit, $limitFrom);
         
         if ($studentsArray)
         {
@@ -1770,57 +1810,51 @@ class CGHBNVQUnit extends CGUnit {
                 $retval .= "<tr class='{$rowClass} setStudent' studentID='{$student->id}'>";
                 
                 
-                // First column is for unit comment
-                $getComments = $this->get_comments();
+                $retval .= "<td>";
                 
-                $cellID = "cmtCell_U_{$this->get_id()}_S_{$student->id}_Q_{$qualID}";
+                    $comments = $this->comments;
+                    
+                    if ($editing)
+                    {
                 
-		        
-                $username = htmlentities( $student->username, ENT_QUOTES );
-                $fullname = htmlentities( fullname($student), ENT_QUOTES );
-                $unitname = htmlentities( $this->get_name(), ENT_QUOTES);
-                $critname = "N/A";   
-                
-                $retval .= "<td title='title'>";
+                        $username = $student->username;
+                        $fullname = fullname($student->id);
+                        $unitname = bcgt_html($this->get_name());
+                        $critname = "N/A";
+                        $cellID = "cmtCell_U_{$this->get_id()}_S_{$this->studentID}_Q_{$qualID}";
 
-                if($advancedMode && $editing)
-                {
+                        if (!empty($comments))
+                        {
+                            $retval .= "<img id='{$cellID}' criteriaid='-1' unitid='{$this->get_id()}' studentid='{$student->id}' qualid='{$qualID}' username='{$username}' fullname='{$fullname}' unitname='{$unitname}' critname='{$critname}' grid='student' class='editCommentsUnit' title='Click to Edit Comments'  src='{$CFG->wwwroot}/blocks/bcgt/plugins/bcgtcg/pix/comment_edit.png' alt='".get_string('editcomments', 'block_bcgt')."' />";
+                        }
+                        else
+                        {
+                            $retval .= "<img id='{$cellID}' criteriaid='-1' unitid='{$this->get_id()}' studentid='{$student->id}' qualid='{$qualID}' username='{$username}' fullname='{$fullname}' unitname='{$unitname}' critname='{$critname}' grid='student' class='addCommentsUnit' title='Click to Add Comments'  src='{$CFG->wwwroot}/blocks/bcgt/plugins/bcgtcg/pix/comment_add.png' alt='".get_string('addcomment', 'block_bcgt')."' />";
+                        }
 
-                    if(!empty($getComments))
-                    {                
-                        $retval .= "<img id='{$cellID}' username='{$username}' fullname='{$fullname}' unitname='{$unitname}' critname='{$critname}' qualid='{$qualID}' unitid='{$this->id}' studentid='{$this->studentID}' grid='stud' type='button' class='editCommentsUnit' title='Click to Edit Unit Comments' src='{$CFG->wwwroot}/blocks/bcgt/plugins/bcgtbtec/pix/grid_symbols/comments.jpg' />";
-                        $retval .= "<div class='tooltipContent'>".nl2br( htmlspecialchars($getComments, ENT_QUOTES) )."</div>";
+                        //$retval .= "<span class='tooltipContent' style='display:none !important;'>".bcgt_html($this->comments, true)."</span>";
+                        $retval .= "<div class='popUpDiv bcgt_unit_comments_dialog' id='dialog_S{$student->id}_U{$this->get_id()}_Q{$qualID}' qualID='{$qualID}' unitID='{$this->get_id()}' critID='-1' studentID='{$student->id}' grid='student' imgID='{$cellID}' title='Comments'>";
+                            $retval .= "<span class='commentUserSpan'>Comments for {$fullname} : {$username}</span><br>";
+                            $retval .= "<span class='commentUnitSpan'>{$this->get_display_name()}</span><br>";
+                            $retval .= "<span class='commentCriteriaSpan'>N/A</span><br><br><br>";
+                            $retval .= "<textarea class='dialogCommentText' id='text_S{$student->id}_U{$this->get_id()}_Q{$qualID}'>".bcgt_html($comments)."</textarea>";
+                        $retval .= "</div>";
+
                     }
                     else
-                    {                        
-                        $retval .= "<img id='{$cellID}' username='{$username}' fullname='{$fullname}' unitname='{$unitname}' critname='{$critname}' qualid='{$qualID}' unitid='{$this->id}' studentid='{$this->studentID}' grid='stud' type='button' class='addCommentsUnit' title='Click to Add Unit Comment' src='{$CFG->wwwroot}/blocks/bcgt/plugins/bcgtbtec/pix/grid_symbols/plus.png' />";
+                    {
+                        if ($comments != ''){
+                            $retval .= "<div class='viewSomething hand'><img src='{$CFG->wwwroot}/blocks/bcgt/plugins/bcgtcg/pix/comment-icon.png' height='12' width='12' unitid='1098' /></div><div class='thatSomething' style='display:none;'>".bcgt_html($comments, true)."</div>";
+                        }
                     }
 
-                }
-                else
-                {
-                    if(!empty($getComments)){
-                        $retval .= "<img src='{$CFG->wwwroot}/blocks/bcgt/plugins/bcgtbtec/pix/grid_symbols/comment-icon.png' class='showCommentsUnit' />";
-                        $retval .= "<div class='tooltipContent'>".nl2br( htmlspecialchars($getComments, ENT_QUOTES) )."</div>";
-                    }
-                    
-                }
                 
                 $retval .= "</td>";
                 
                 
-                
                 // Next columns are the default ones like picture, name, etc...
-                $cols = $this->build_unit_grid_students_details($student, $qualID, array(), $context);
-                if ($cols)
-                {
-                    foreach($cols as $col)
-                    {
-                        $retval .= "<td>{$col}</td>";
-                    }
-                }
-                
-                                
+                $retval .= $this->build_unit_grid_students_details($student, $qualID, array(), $context);
+                                                
                 // Unit award
                 $award = 'N/S';
 				$rank = 'nr';
@@ -1874,7 +1908,8 @@ class CGHBNVQUnit extends CGUnit {
                 // Signoff Sheet
                 if($this->get_signoff_sheets())
                 {
-                    $retval .= "<td class='signOffTD' title='t'>".$this->get_sign_off_td($editing, $advancedMode)."</td>";
+                    $c = ($editing) ? 'Edit' : 'NonEdit';
+                    $retval .= "<td class='signOffTD criteriaValue{$c}'>".$this->get_sign_off_td($editing, $advancedMode)."</td>";
                 }
                 else
                 {
@@ -1956,7 +1991,7 @@ class CGHBNVQUnit extends CGUnit {
         }
         
         // Tooltip
-        $output .= "<div class='signoffTooltip c'>";
+        $output .= "<div class='criteriaContent'>";
             $output .= "<small>".fullname($this->student)." ({$this->student->username})</small><br><br>";
             
             // Loop through the sheets and just say whether completed or not, as would get too large otherwise
@@ -2039,7 +2074,22 @@ class CGHBNVQUnit extends CGUnit {
         return true;
         
     }
+ 
     
+    public function export_unit_grid($qualID)
+    {
+        header_remove('Content-Disposition');
+        header('Content-type: text/html');
+        echo 'Not supported for this qualification type';
+        exit;
+    }
+    
+    public function import_unit_grid($qualID, $file, $confirm = false){
+        header_remove('Content-Disposition');
+        header('Content-type: text/html');
+        echo 'Not supported for this qualification type';
+        exit;
+    }
     
     
 }

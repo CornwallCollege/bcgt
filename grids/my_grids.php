@@ -39,10 +39,19 @@ $url = '/blocks/bcgt/grids/my_grids.php';
 $PAGE->set_url($url, array());
 $PAGE->set_title(get_string('mytrackingsheet', 'block_bcgt'));
 $PAGE->set_heading(get_string('mytrackingsheet', 'block_bcgt'));
-$PAGE->set_pagelayout('login');
+$PAGE->set_pagelayout( bcgt_get_layout() );
 $PAGE->add_body_class(get_string('gridselect', 'block_bcgt'));
-$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'','title');
-$PAGE->navbar->add(get_string('mytrackingsheet', 'block_bcgt'),'','title');
+if($courseID != 1)
+{
+    global $DB;
+    $course = $DB->get_record_sql("SELECT * FROM {course} WHERE id = ?", array($courseID));
+    if($course)
+    {
+        $PAGE->navbar->add($course->shortname,$CFG->wwwroot.'/course/view.php?id='.$courseID,'title');
+    }
+}
+$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php','title');
+$PAGE->navbar->add(get_string('mytrackingsheet', 'block_bcgt'),null,'title');
 
 $jsModule = array(
     'name'     => 'block_bcgt',

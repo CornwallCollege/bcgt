@@ -20,7 +20,7 @@ class TargetGrade {
     protected $lowerscore;
     protected $ranking;
     
-    public function TargetGrade($id, $params = null)
+    public function TargetGrade($id = -1, $params = null)
     {
         $this->id = $id;
         if($id != -1)
@@ -60,13 +60,20 @@ class TargetGrade {
         return $this->id;
     }
     
+    public function get_all_target_grades($targetQualID)
+    {
+        global $DB;
+        $sql = "SELECT * FROM {block_bcgt_target_grades} grades WHERE grades.bcgttargetqualid = ?";
+        return $DB->get_records_sql($sql, array($targetQualID));
+    }
+    
     /**
      * Saves the Target Grade into the database. 
      * It either updates or inserts. 
      */
     public function save()
     {
-        if($this->id != -1)
+        if($this->id && $this->id != -1)
         {
             $this->update_target_grade();
         }
@@ -91,13 +98,32 @@ class TargetGrade {
         }
     }
     
-    public function get_target_grade_ucas_points($bcgtTargetQualID, $ucasPoints)
+    public function get_target_grade_ucas_points($bcgtTargetQualID, $ucasPoints, $method = "DOWN")
     {
         global $DB;
-        $sql = "SELECT * FROM {block_bcgt_target_grades} WHERE ranking IN (SELECT MAX(ranking)FROM
+        
+        $operand = '';
+        $where = '';
+        $order = '';
+        switch($method)
+        {
+            case "UP":
+                $operand = "MIN";
+                $where = " grades.ucaspoints > ?";
+                $order = " ORDER BY ranking ASC";
+                break;
+            case "DOWN":
+                $operand = "MAX";
+                $where .= " grades.ucaspoints < ?";
+                $order = " ORDER BY ranking DESC";
+                break;
+        }   
+        $sql = "SELECT * FROM {block_bcgt_target_grades} WHERE ranking IN (SELECT $operand(ranking)FROM
             {block_bcgt_target_grades} grades
-            WHERE grades.ucaspoints < ? AND bcgttargetqualid = ?) AND bcgttargetqualid = ? 
-            ORDER BY ranking DESC";
+            WHERE";
+        $sql .= $where;
+        $sql .= " AND bcgttargetqualid = ?) AND bcgttargetqualid = ?";
+        $sql .= $order;
         $record = $DB->get_record_sql($sql, array($ucasPoints, $bcgtTargetQualID, $bcgtTargetQualID));
         if($record)
         {
@@ -112,7 +138,12 @@ class TargetGrade {
         //add the difference to the current ranking
         //get the new breakdown
         $newRanking = $this->ranking + $difference;
-        return $this->get_new_target_by_ranking($newRanking);
+        $newGrade =  $this->get_new_target_by_ranking($newRanking);
+        if(!$newGrade)
+        {
+            $newGrade = $this->get_new_target_by_ranking($this->ranking);
+        }
+        return $newGrade;
     }
     
     public function get_new_target_by_ranking($newRanking)
@@ -138,7 +169,7 @@ class TargetGrade {
         $DB->delete_records('block_bcgt_target_grades', array('id'=>$targetGradeID));
     }
     
-    public static function retrieve_target_grade($id = -1, $targetQualID = -1, $grade = '')
+    public static function retrieve_target_grade($id = -1, $targetQualID = -1, $grade = '', $returnBlankOnFail = false, $ranking = -1)
     {
         global $DB;
         $sql = "SELECT * FROM {block_bcgt_target_grades} WHERE"; 
@@ -154,11 +185,21 @@ class TargetGrade {
             $params[] = $targetQualID;
             $params[] = $grade;
         }
+        elseif($ranking != -1)
+        {
+            $sql .= ' bcgttargetqualid = ? AND ranking= ?';
+            $params[] = $targetQualID;
+            $params[] = $ranking;
+        }
         $record = $DB->get_record_sql($sql, $params);
         if($record)
         {
             return new TargetGrade($record->id, $record);
         }
+        elseif($returnBlankOnFail)
+        {
+            return new TargetGrade(-1, null);
+        }  
         return false;
     }
     
@@ -214,6 +255,11 @@ class TargetGrade {
         $DB->update_record('block_bcgt_target_grades', $params);
     }
     
+    public function set_params($params)
+    {
+        $this->extract_params($params);
+    }
+    
     /**
      * Gets the params from the object passed in and puts them onto 
      * the target grade objectl. 
@@ -224,13 +270,48 @@ class TargetGrade {
         if(isset($params->id))
         {
             $this->id = $params->id;
-        }        
+        }  
         $this->grade = $params->grade;
-        $this->ucaspoints = $params->ucaspoints;
-        $this->bcgttargetqualid = $params->bcgttargetqualid;
-        $this->upperscore = $params->upperscore;
-        $this->lowerscore = $params->lowerscore;
-        $this->ranking = $params->ranking;
+        if(isset($params->ucaspoints) && $params->ucaspoints != 'NULL')
+        {
+            $this->ucaspoints = $params->ucaspoints;
+        }
+        else
+        {
+            $this->ucaspoints = 0;
+        }
+        if(isset($params->bcgttargetqualid) && $params->bcgttargetqualid != 'NULL')
+        {
+            $this->bcgttargetqualid = $params->bcgttargetqualid;
+        }
+        else
+        {
+            $this->bcgttargetqualid = NULL;
+        }
+        if(isset($params->upperscore) && $params->upperscore != 'NULL')
+        {
+            $this->upperscore = $params->upperscore;
+        }
+        else
+        {
+            $this->upperscore = NULL;
+        }
+        if(isset($params->lowerscore) && $params->lowerscore != 'NULL')
+        {
+            $this->lowerscore = $params->lowerscore;
+        }
+        else
+        {
+            $this->lowerscore = NULL;
+        }
+        if(isset($params->ranking) && $params->ranking != 'NULL')
+        {
+            $this->ranking = $params->ranking;
+        }
+        else
+        {
+            $this->ranking = NULL;
+        }
     }
     
     /**
@@ -247,6 +328,64 @@ class TargetGrade {
         {
             $this->extract_params($record);
         }
+    }
+    
+    public function import_csv($csvFile)
+    {
+        //the csv is in the form:
+        //Family|Level|Subtype|Grade|Ucas|upperscore|lowerscore|ranking
+        
+        //loop over each row. 
+        //find targetqualid
+        
+        //if targetgrade exists, update
+        
+        //else insert new. 
+                
+        global $DB, $CFG;
+        require_once($CFG->dirroot.'/blocks/bcgt/lib.php');
+        $count = 1;
+        $CSV = fopen($csvFile, 'r');
+        while(($grade = fgetcsv($CSV)) !== false) {
+            if($count != 1)
+            {
+                $family = $grade[0];
+                $level = $grade[1];
+                $subtype = $grade[2];
+                
+                $targetQual = bcgt_get_target_qual($family, $level, $subtype);
+                if($targetQual)
+                {
+                    $targetQualID = $targetQual->id;
+                    
+                    $params = new stdClass();
+                    $params->grade = $grade[3];
+                    if(isset($grade[4]) && $grade[4] != '')
+                    {
+                        $params->ucaspoints = $grade[4];
+                    }
+                    else
+                    {
+                        $params->ucaspoints = 0;
+                    }
+                    $params->upperscore = $grade[5];
+                    $params->lowerscore = $grade[6];
+                    $params->ranking = $grade[7];
+                    $params->bcgttargetqualid = $targetQualID;
+                    
+                    //does target grade already exist?
+                    //this either returns a blank target grade or one with the id set
+                    $breakdownObj = TargetGrade::retrieve_target_grade(-1, $targetQualID, $grade[3], true);
+                    //insert of update the target grade with the values from the csv
+                    $breakdownObj->set_params($params);
+                                        
+                    //insert of update into database
+                    $breakdownObj->save();
+                }
+            }
+            $count++;
+        }
+        
     }
 }
 

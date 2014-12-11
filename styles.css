@@ -9,9 +9,14 @@
 
 @import url("css/start/jquery-ui-1.10.3.custom.css");
 
+
 /************************/
  /*Start of CSS rewrite:*/
 
+ .block_bcgt .content .list{
+     margin-bottom:4%;
+ }
+ 
  /** Generalisations **/
  .bcgt_admin_container{
      
@@ -71,6 +76,10 @@
 
 .bcgt_div_container .tabtree .tabrow0 li.focus a {
     background-color: #C8E5FF;
+}
+
+#bcgtDashTabs .tabtree {
+    margin-bottom: 0.5em;
 }
 
 .bcgtmainfilter {
@@ -220,7 +229,7 @@ a.bcgtnoaccess {
     cursor: default;
 }
 
-#gridSelect .bcgt_col_two img.bcgtmodcriticon {
+img.bcgtmodcriticon {
     height: 18px;
     width: 18px;
 }
@@ -668,7 +677,12 @@ form#bcgtCourseSelect select,
     width: 40px;
 }
 
-#editStudentsUnits th.rowUserOptionCol, #editStudentsUnits td.rowUserOptionCol {
+#editStudentsUnits td.nameCol
+{
+    cursor: pointer;
+}
+
+#editStudentsUnits th.rowUserOptionCol, #editStudentsUnits td.rowUserOptionCol, #editStudentsUnits .setCol {
     width: 15px;
 }
 
@@ -911,17 +925,17 @@ th[role^="columnheader"] {
 }*/
 
 /* Grid table header, when empty */
-.student_gridsFixedTables th:empty {
+/*.student_gridsFixedTables th:empty {
     background-color : #B8D6EE;
     width: 1px !important;
     padding-left:0px !important;
     padding-right:0px !important;
-}
+}*/
 
 /* Adding Border to Award */
-.student_gridsFixedTables th {
+/*.student_gridsFixedTables th {
     border-right : 1px solid #CFCFCF;
-}
+}*/
 
 /* Borders for data grid with results */
 .dataTable td {
@@ -929,13 +943,13 @@ th[role^="columnheader"] {
 }
 
 /* Data grid with results Odd Row */
-.odd {
-    background-color : #EEFFFF;
+#BTECStudentGrid .ui-row-odd {
+    background-color : #EFE;
 }
 
 /* Data grid with results Even Row */
-.even {
-    background-color : #FFFFFF;
+#BTECStudentGrid .ui-row-even {
+    background-color : #FFF;
 }
 
 /* Background for empty cells in odd rows */
@@ -949,7 +963,8 @@ th[role^="columnheader"] {
 /* Final summary table of overall grades and precited grades */
 #summaryAwardGrades {  
     border : 2px solid #C9DEEF;
-    margin-top : 20px;    
+    margin-top : 20px;  
+    max-width: 30%;
 }
 
 #summaryAwardGrades td {
@@ -962,18 +977,24 @@ th[role^="columnheader"] {
 }
 
 /* Colours rows 1 and 3 */
-#summaryAwardGrades tr:nth-child(1), #summaryAwardGrades tr:nth-child(3) {
+#summaryAwardGrades tr:nth-child(2), #summaryAwardGrades tr:nth-child(4) {
     background-color : #EEFFFF;
 }
 
 /* Advanced edit criteria dropdowns */
 .criteriaValueSelect {
-    width : 60px;
+    width : 90%;
+    margin: auto
+}
+
+table#CGActGridTable
+{
+    text-align: center;
+    display: table;
 }
 
 /* Add Comments button on grids */
 .addComments {
-    float : left;
     margin-left : 2px;
 }
 
@@ -1017,25 +1038,48 @@ div#commentClose {
     width: 5%;
 }
 
-#popUpDiv > #commentUserSpan { 
+.popUpDiv
+{
+    text-align: center;
+}
+
+.popUpDiv > .commentUserSpan { 
     color: #0055A8;
     font-size: 14pt;
 }
 
-#popUpDiv > #commentUnitSpan { 
+.popUpDiv > .commentUnitSpan { 
     color: #023561;
     font-size: 12pt;
 }
 
-#popUpDiv > #commentCriteriaSpan, #popUpDiv > #commentTaskSpan { 
+.popUpDiv > .commentCriteriaSpan, .popUpDiv > .commentTaskSpan { 
     color: #000000;
     font-size: 10pt;
     font-weight: 700;
 }
 
-#popUpDiv > input[type="button"], #genericPopup > input[type="button"] { 
+.popUpDiv > input[type="button"], .genericPopup > input[type="button"] { 
     font-size: 14pt;
     padding: 5px;
+}
+
+textarea.dialogCommentText
+{
+    width: 80%;
+    height: 200px;
+    margin: auto;
+}
+
+.bcgt_student_comments_dialog textarea
+{
+    width: 75%;
+    height: 100px;
+}
+
+.bcgt_comments_dialog, .bcgt_unit_comments_dialog, .bcgt_student_comments_dialog
+{
+    display: none;
 }
 
 div.tooltipContent { 
@@ -1060,21 +1104,26 @@ td.criteriaComments {
 .alevelStudentsGridTables th, 
 .alevelStudentsGridTables td, 
 .alevelClassGridTables th, 
-.alevelClassGridTables td {
+.alevelClassGridTables td, 
+#coefficientSummary td,
+#coefficientSummary th 
+{
     border : 1px solid #CFCFCF;
 }
 
 /* A-Level Headings */
 #alevelSummary th, 
 .alevelStudentsGridTables th, 
-.alevelClassGridTables th {
+.alevelClassGridTables th, 
+#coefficientSummary th{
     background-color : #C9DEEF;
 }
 
 /* A-Level striped rows */
 #alevelSummary tr:nth-child(odd),
 .alevelStudentsGridTables tr:nth-child(odd),
-.alevelClassGridTables tr:nth-child(odd) {
+.alevelClassGridTables tr:nth-child(odd),
+#coefficientSummary tr:nth-child(odd){
     background-color : #EFF;
 }
 
@@ -1116,7 +1165,7 @@ h3.subTitle
 }
 
 /* Set up button shape */
-.viewsimple, .viewadvanced, .editsimple, .editadvanced, .gridsave, .printsimple {
+.viewsimple, .viewadvanced, .editsimple, .editadvanced, .gridsave, .printsimple, .switchsimple {
     border-radius : 10px;
     cursor : pointer;
     font-weight : bold;    
@@ -1145,6 +1194,17 @@ h3.subTitle
 .printsimple:hover {
     background-color: #CFB665;
 }
+
+.switchsimple {
+    background-color: #FF9EFB;
+    color: #000;
+    border: 2px solid #BE74BB;
+}
+
+.switchsimple:hover {
+    background-color: #D374CF;
+}
+
 
 /* View buttons: ON/HOVER */
 .viewsimple:hover, .viewadvanced:hover, 
@@ -1190,7 +1250,7 @@ h3.subTitle
     box-shadow: 2px 2px 5px #888888;
 }
 
-#showLateFunc {
+#showLateFunc, #showLogs {
     margin : 10px;
 }
 
@@ -1253,6 +1313,11 @@ h3.subTitle
     margin-left : 0px;
 }
 
+.bcgtGridMenu label, .bcgt_grid_outer label
+{
+    display: inline-block;
+}
+
 /* Dropdown menu headers: Core/Context */
 li.bcgtHeadLink {
     float : left;    
@@ -1301,12 +1366,12 @@ h4.singleStudentUnitsHeader {
 }
 
 /* single student: the headings are cluttered, reduce font size */
-.singleStudentUnits th[role^="columnheader"], .btecStudentsUnitsTable th {
+.singleStudentUnits th[role^="columnheader"], .btecStudentsUnitsTable th, .cgStudentsUnitsTable th {
     font-size : 90%;
 }
 
 /* whole class: unit names in header */
-.btecStudentsUnitsTable th {
+.btecStudentsUnitsTable th, .cgStudentsUnitsTable th {
     background-color : #C9DEEF;
 }
 
@@ -1575,7 +1640,7 @@ textarea.critDetailsTextArea
     position: relative;
 }
 
-input.bcgtDatePicker, input.criteriaValueDate
+input.bcgtDatePicker, input.criteriaValueDate, input.criteriaUserDefinedValue
 {
     width: 80px !important;
 }
@@ -1660,8 +1725,10 @@ select.tinySelect {
 
 div#cgUnitGrid, div#cgStudentGrid, div#cgStudGrid
 {
-    margin-top: 100px !important;
-    overflow-x: scroll !important;
+    /*margin-top: 100px;*/
+/*    max-height: 1000px;
+    overflow-y: auto;*/
+    /*overflow: scroll !important;*/
 }
 
 table#CGUnitGrid td, table#CGStudentGrid td
@@ -1831,7 +1898,7 @@ a.observationName:hover, a.taskName:hover
 
 table.criteriaPopupDetailsTable { 
     margin: auto;
-    width: 300px;
+    width: 80%;
     font-size: 8pt !important;
 }
 
@@ -2182,7 +2249,7 @@ table.elbp_target_grades_table td
   *zoom: 1;
   padding: 4px 12px;
   margin-bottom: 0;
-  font-size: 14px;
+  font-size: 12px;
   line-height: 20px;
   text-align: center;
   vertical-align: middle;
@@ -2246,7 +2313,7 @@ table.elbp_target_grades_table td
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05); }
   /* line 54, bootstrap/_buttons.scss */
   .btn.disabled, .btn[disabled] {
-    cursor: default;
+    cursor: not-allowed;
     background-image: none;
     opacity: 0.65;
     filter: alpha(opacity=65);
@@ -2255,30 +2322,48 @@ table.elbp_target_grades_table td
     box-shadow: none; }
   
   
-  #bespokeStudentGrid table, #bespokeUnitGrid table
+  #bespokeStudentGrid table, #bespokeUnitGrid table, #CGStudentGrid table
   {
       max-width: 90% !important;
       font-size: 11px;
       color: #000000;
   }
   
-  #bespokeStudentGrid div.fht-tbody, #bespokeUnitGrid div.fht-tbody
+  #bespokeStudentGrid div.fht-tbody, #bespokeUnitGrid div.fht-tbody, #CGStudentGrid div.fht-tbody
   {
       max-height: 600px !important;
   }
   
   
-#bespokeStudentGrid table th, #bespokeUnitGrid table th
+#bespokeStudentGrid table th, #bespokeUnitGrid table th, 
+#CGStudentGrid table th, #CGUnitGrid table th, #CGClassGrid table th,
+#cgActGrid table th,*
+#BTECStudentGrid table th, #BTECUnitGrid table th, #BTECClassGrid table th, #BTECActGrid table th
 {
      border: 1px solid #BAB4BE;
      background-color: #00ADFF !important;
      color: #ffffff;
      font-weight: normal !important;
      text-align: center;
-     padding: 0.5em;
+     /*padding: 0.5em;*/
 }
 
-#bespokeStudentGrid table td, #bespokeUnitGrid table td
+#BTECStudentGrid table th, #BTECUnitGrid table th, #BTECClassGrid table th, #BTECActGrid table th
+{
+    background-color: #49A36A !important;
+    padding: 0.5em;
+}
+
+
+#bespokeStudentGrid .ui-tinytbl-head, #CGStudentGrid .ui-tinytbl-head
+{
+    background: #00ADFF !important;
+}
+
+#bespokeStudentGrid table td, #bespokeUnitGrid table td, 
+#CGStudentGrid table td, #CGUnitGrid table td, #CGClassGrid table td,
+#cgActGrid table td,
+#BTECStudentGrid table td, #BTECUnitGrid table td, #BTECClassGrid table td, #BTECActGrid table td
 {
     border: 1px solid #BAB4BE;
     font-weight: normal !important;
@@ -2288,38 +2373,53 @@ table.elbp_target_grades_table td
 }
 
 
-#bespokeStudentGrid table td:first-child, #bespokeUnitGrid table td:first-child
+#bespokeStudentGrid table td:first-child, #bespokeUnitGrid table td:first-child, 
+#CGStudentGridTable td:first-child, #CGUnitGridTable td:first-child
 {
-    min-width: 35px !important;
+    min-width: 40px !important;
 }
 
-#bespokeStudentGrid table td:first-child img
+#bespokeStudentGrid table td:first-child img, #CGStudentGridTable td:first-child
 {
     max-width: 25px !important;
     max-height: 25px !important;
 }
 
-#bespokeStudentGrid table tr.odd, #bespokeUnitGrid table tr.odd
+#bespokeStudentGrid table tr.odd, #bespokeUnitGrid table tr.odd, 
+#CGStudentGrid table tr.odd, #CGUnitGrid table tr.odd,
+#cgActGrid table tr.odd
 {
     background-color: #e3f7ff !important;
 }
 
-#bespokeStudentGrid table td:empty, #bespokeUnitGrid table td:empty
+#bespokeStudentGrid table td:empty, #bespokeUnitGrid table td:empty, 
+#CGStudentGrid table td:empty, #CGUnitGrid table td:empty, #CGClassGrid table td:empty,
+#cgActGrid table td:empty,
+#BTECStudentGrid table td:empty, #BTECUnitGrid table td:empty, #BTECClassGrid table td:empty, #BTECActGrid table td:empty
 {
     background-color: #e0e0e0 !important;
 }
 
-#bespokeStudentGrid table td select, #bespokeUnitGrid table td select
+#BTECStudentGrid table td.divider, #BTECUnitGrid table td.divider, #BTECClassGrid table td.divider, #BTECActGrid table td.divider
 {
-    width: 100px;
+    background-color: #e0e0e0 !important;
+    width: 5px;
 }
 
-#bespokeStudentGrid table th.unit_name
+
+#bespokeStudentGrid table td select, #bespokeUnitGrid table td select, 
+#CGStudentGrid table td select, #CGUnitGrid table td select,
+#cgActGrid table td select
+{
+    width: 90%;
+}
+
+#bespokeStudentGrid table th.unit_name, #CGStudentGrid table th.unit_name
 {
     min-width: 200px !important;
 }
 
-table#bespokeStudentGridTable td.val img, table#bespokeUnitGridTable td.val img, div#bespokeGridKey img
+td.val img, td.val img, div#bespokeGridKey img, div#cgGridKey img, div#btecGridKey img
 {
     width: 25px;
     height: 25px;
@@ -2356,7 +2456,7 @@ table.bespokeCriteriaHolderTable select
     max-width: 150px;
 }
 
-div#bespokeGridKey
+div#bespokeGridKey, div#cgGridKey, div#btecGridKey
 {
     width: 90%;
     margin: auto;
@@ -2364,30 +2464,31 @@ div#bespokeGridKey
     background-color: #F4FAFF;
 }
 
-div#bespokeGridKey table
+div#bespokeGridKey table, div#cgGridKey table, div#btecGridKey table
 {
     margin-bottom: 0px;
+    width: 100%;
 }
 
-div#bespokeGridKey table th
+div#bespokeGridKey table th, div#cgGridKey table th, div#btecGridKey table th
 {
     background-color: #0055A8;
     color: #fff;
 }
 
-div#bespokeGridKey table td
+div#bespokeGridKey table td, div#cgGridKey table td, div#btecGridKey table td
 {
     text-align: center;
     padding: 0;
     vertical-align: top;
 }
 
-div#bespokeGridKey table tr.imgs td
+div#bespokeGridKey table tr.imgs td, div#cgGridKey table tr.imgs td, div#btecGridKey table tr.imgs td
 {
     padding-top: 10px;
 }
 
-div#bespokeGridKey table tr.names td
+div#bespokeGridKey table tr.names td, div#cgGridKey table tr.names td, div#btecGridKey table tr.names td
 {
     padding-bottom: 10px;
     font-size: smaller;
@@ -2447,7 +2548,7 @@ table#edit_qual_settings th, table#edit_qual_settings td
     display: none;
 }
 
-img.editComments, img.addComments, img.editUnitComments, img.addUnitComments
+img.editComments, img.addComments, img.editCommentsUnit, img.addCommentsUnit
 {
     cursor: pointer;
 }
@@ -2505,6 +2606,14 @@ table#gsTable td img
     background-color: #F1FFB8;
 }
 
+.bespokeSummaryAwardGrades tr:nth-child(3) {
+    background-color: #D2FFB8;
+}
+
+.bespokeSummaryAwardGrades tr:nth-child(4) {
+    background-color: #B8FFBE;
+}
+
 input.long
 {
     width: 500px !important;
@@ -2547,8 +2656,59 @@ input.long
     background: -moz-linear-gradient(0% 0% 270deg,#f8f8f8, #e9e9e9);
 }
 
+.hidden_start_choice
+{
+    display: none;
+}
+
+#reporting_results_table
+{
+    text-align: center;
+}
+
+#loadinggif
+{
+    display: none;
+}
+
+
+table#reporting_results_table tr th
+{
+    color: #fff;
+    background-color: #055aab;
+    border: 1px solid #628DB4;
+    font-size: 8pt !important;
+}
+
+tr.CATEGORY td
+{
+    border: 1px solid #dddddd;
+    font-size: 8pt !important;
+}
+
+tr.FAMILY td
+{
+    background-color: #E5F1FC;
+    border: 1px solid #dddddd;
+    font-size: 8pt !important;
+}
+
+tr.QUAL td, tr.UNIT td
+{
+    background-color: #FCFDE8;
+    border: 1px solid #dddddd;
+    font-size: 8pt !important;
+}
+
+tr.STUD td
+{
+    background-color: #eceaea;
+    border: 1px solid #dddddd;
+    font-size: 8pt !important;
+}
+
 .bcgt_activity_controls .tabs .tabtree {
-    margin-bottom: 2em!important;
+    margin-bottom: 1em !important;
 }
 
 .bcgt_mod_keyos {
@@ -2567,7 +2727,7 @@ input.long
 }
 
 .ui-dialog {
-    width: 500px!important;
+    width: auto !important;
     /*left:420px!important;*/
     /*top: -1000px!important;*/
 }
@@ -2585,7 +2745,7 @@ input.long
     border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
     padding: 4px;
-    mid-width: 200px;
+    min-width: 200px;
 }
 
 .bcgtdialogmodcheck img.modalload{
@@ -2885,6 +3045,7 @@ td.bcgtcritass span.bcgtcritass sup {
     overflow: visible;
 }
 
+
 table.trackersOverallTable {
     min-width:90%;
 }
@@ -2894,3 +3055,1272 @@ table.trackersOverallTable {
     overflow-x: scroll;
 }
 
+#breakdownupdateform {
+    overflow-x: scroll;
+}
+
+/*ALPS*/
+span.alpstemp {
+    width:100%;
+    height:100%;
+}
+
+span.alpstemp1, th.alpstemp1, td.alpstemp1{
+    background-color: #9E1616 !important;
+    color: #ffffff;
+}
+
+span.alpstemp2, th.alpstemp2, td.alpstemp2 {
+    background-color: #B14545 !important;
+    color: #ffffff;
+}
+
+span.alpstemp3, th.alpstemp3, td.alpstemp3 {
+    background-color: #C87D7D !important;
+    color: #ffffff;
+}
+
+span.alpstemp4, th.alpstemp4, td.alpstemp4 {
+    background-color: #999999 !important;
+    color: #ffffff;
+}
+
+span.alpstemp5, th.alpstemp5, td.alpstemp5 {
+    background-color: #000000 !important;
+    color: #ffffff;
+}
+
+span.alpstemp6, th.alpstemp6, td.alpstemp6 {
+    background-color: #999999 !important;
+    color: #ffffff;
+}
+
+span.alpstemp7, th.alpstemp7, td.alpstemp7 {
+    background-color: #8080E6 !important;
+    color: #ffffff;
+}
+
+span.alpstemp8, th.alpstemp8, td.alpstemp8 {
+    background-color: #0000CC !important;
+    color: #ffffff;
+}
+
+span.alpstemp9, th.alpstemp9, td.alpstemp9 {
+    background-color: #00008F !important;
+    color: #ffffff;
+}
+
+tr.expand {
+    cursor: pointer;
+}
+
+#expand {
+    width:50px;
+    margin:auto;
+}
+
+td.subRow1 {
+    padding-left:20px;
+}
+
+td.subRow2 {
+    padding-left:40px;
+}
+
+td.subRow3 {
+    padding-left:60px;
+}
+
+td.subRow4 {
+    padding-left:80px;
+}
+
+#coefficientsummary {
+    width: 60%;
+    margin-left: 20px;
+    border: #cccccc solid 1px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    padding:10px;
+    float: right;
+}
+
+#bcgtalevelgrid .bcgtgridbuttons {
+    float:left;
+    width: 38%;
+}
+
+#bcgtgridsummary {
+    width: 100%;
+}
+
+#bcgtgridsummary:after {
+    clear: both;
+    content: ".";
+    display: block;
+    height: 0;    
+    visibility: hidden; 
+}
+
+#alevelSummary sub.ucas, .alevelStudentsGridTables sub.ucas ,.alevelClassGridTables sub.ucas, 
+table#printGridTable sub.ucas
+{
+    font-size: 0.8em;
+    color: grey;
+    padding-left: 8px;
+}
+
+#alevelSummary sub.alpsscore, .alevelStudentsGridTables sub.alpsscore, .alevelClassGridTables sub.alpsscore, 
+table#printGridTable sub.alpsscore {
+    font-size: 0.8em;
+    padding-left: 8px;
+}
+
+
+
+.rowEven
+{
+    background-color: #ffffff; 
+}
+
+.rowOdd
+{
+    background-color: #DFDFDF;
+}
+
+table#logResults
+{
+    width:100%;
+    margin:auto;
+    text-align:center;
+}
+
+table#logResults td
+{
+    border: 1px solid #CFCFCF;
+}
+
+div#gridLogs
+{
+    width: 95%;
+    margin: auto;
+    background-color: #fbfbfc;
+    text-align: left;
+    padding: 5px;
+    display: none;
+}
+
+div#gridLogs tr, div#gridLogs td, div#gridLogs th
+{
+    border: 1px solid #000;
+}
+
+div#gridLogs .good
+{
+    color: blue;
+}
+
+div#gridLogs .bad
+{
+    background-color: red;
+    color: #fff;
+    font-weight: bold;
+    font-size: 12pt;
+}
+
+
+#bespokeStudentGrid .ui-tinytbl .ui-widget-header, #CGStudentGrid .ui-tinytbl .ui-widget-header,
+#bespokeUnitGrid .ui-tinytbl .ui-widget-header, #CGUnitGrid .ui-tinytbl .ui-widget-header, #CGClassGrid .ui-tinytbl .ui-widget-header,
+#cgActGrid .ui-tinytbl .ui-widget-header,
+#BTECStudentGrid .ui-tinytbl .ui-widget-header, #BTECUnitGrid .ui-tinytbl .ui-widget-header, #BTECClassGrid .ui-tinytbl .ui-widget-header, #BTECActGrid .ui-tinytbl .ui-widget-header
+{
+    border: inherit !important;
+    background: none !important;
+    color: inherit !important;
+    font-weight: inherit !important;
+}
+
+#bespokeStudentGrid .ui-widget-content, #CGStudentGrid .ui-widget-content,
+#bespokeUnitGrid .ui-widget-content, #CGUnitGrid .ui-widget-content, #CGClassGrid .ui-widget-content,
+#cgActGrid .ui-widget-content,
+#BTECStudentGrid .ui-widget-content, #BTECUnitGrid .ui-widget-content, #BTECClassGrid .ui-widget-content, #BTECActGrid .ui-widget-content
+{
+    border: none !important;
+}
+
+#CGStudentGrid .ui-tinytbl .ui-widget-header a,
+#CGUnitGrid .ui-tinytbl .ui-widget-header a,
+#CGClassGrid .ui-tinytbl .ui-widget-header a,
+#BTECStudentGrid .ui-tinytbl .ui-widget-header a,
+#BTECUnitGrid .ui-tinytbl .ui-widget-header a,
+#BTECClassGrid .ui-tinytbl .ui-widget-header a,
+#BTECActGrid .ui-tinytbl .ui-widget-header a,
+#bespokeStudentGrid .ui-tinytbl .ui-widget-header a,
+#bespokeUnitGrid .ui-tinytbl .ui-widget-header a
+{
+    color: #000 !important;
+}
+
+#CGStudentGrid .ui-tinytbl .ui-widget-header a:hover,
+#CGUnitGrid .ui-tinytbl .ui-widget-header a:hover,
+#CGClassGrid .ui-tinytbl .ui-widget-header a:hover,
+#BTECStudentGrid .ui-tinytbl .ui-widget-header a:hover,
+#BTECUnitGrid .ui-tinytbl .ui-widget-header a:hover,
+#BTECClassGrid .ui-tinytbl .ui-widget-header a:hover,
+#BTECActGrid .ui-tinytbl .ui-widget-header a:hover
+#bespokeStudentGrid .ui-tinytbl .ui-widget-header a:hover,
+#bespokeUnitGrid .ui-tinytbl .ui-widget-header a:hover
+{
+    color: red !important;
+}
+
+#BTECUnitGrid .ui-tinytbl-column, #BTECStudentGrid .ui-tinytbl-column, #BTECClassGrid .ui-tinytbl-column, #BTECActGrid .ui-tinytbl-column
+{
+    overflow: visible;
+}
+
+
+#CGStudentGrid th.criteriaName, #CGUnitGrid th.criteriaName, #CGClassGrid th.criteriaName,
+#BTECStudentGrid th.criteriaName, #BTECUnitGrid th.criteriaName, #BTECClassGrid th.criteriaName, #BTECActGrid th.criteriaName
+{
+    width: 40px;
+    min-width: 40px;
+    max-width: 40px;
+    text-align: center;
+}
+
+td.criteriaCell
+{
+    text-align: center;
+}
+
+.hand
+{
+    cursor: pointer;
+}
+
+.unitComment, .criteriaContent, .studentUnitContent, .unitInfoContent
+{
+    display: none;
+}
+
+#bcgt_qual_weightings input.coef{
+    width: 35px;
+}
+
+#bcgt_qual_weightings .bcgt_controls {
+    width: 60%;
+    margin-left: 20px;
+    border: #cccccc solid 1px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    padding:10px;
+    float: left;
+    margin-top:10px;
+    margin-bottom:10px;
+}
+
+#bcgt_qual_weightings .bcgt_controls input{
+    width: 60px;
+    padding: 8px;
+    margin:5px;
+}
+
+reallysmall
+{
+    font-size: 6pt;
+}
+
+.criteriaValueNonEdit
+{
+    cursor: pointer;
+}
+
+img.uNToolTipInfo
+{
+    vertical-align: middle;
+}
+
+.bcgtunitmod p.warningNoQuals {
+    color: red;
+    margin-top:5px;
+}
+
+.bcgtunitmod p.warningNoQualsHidden {
+    visibility:hidden;
+}
+.ui-dialog .ui-dialog-content
+{
+    min-width: 300px;
+}
+
+.ui-button-text-only .ui-button-text
+{
+    font-size: 8pt;
+}
+
+
+.fileUpload {
+	position: relative;
+	overflow: hidden;
+    margin-top: -2.5px;
+}
+.fileUpload input.upload {
+	position: absolute;
+	top: 0;
+	right: 0;
+	margin: 0;
+	padding: 0;
+	font-size: 20px;
+	cursor: pointer;
+	opacity: 0;
+	filter: alpha(opacity=0);
+}
+
+input#uploadFile
+{
+    padding: 8px 12px;
+    font-size: 14px;
+    color: #666;
+    border: 1px solid #D8D8D8;
+    font-family: inherit;
+    width: 250px;
+}
+
+div.cmdoutput
+{
+    width: 90%;
+    margin: auto;
+    padding: 20px;
+    background-color: #000;
+    color: gold;
+    font-family: courier;
+}
+
+div.importoutput
+{
+    width: 90%;
+    margin: auto;
+    padding: 20px;
+    background-color: #F0F5FF;
+    border: 1px dashed #7C90B6;
+}
+
+div.importgriddiv
+{
+    width: 100%;
+    max-height: 800px;
+    margin: auto;
+    overflow: auto;
+    margin-bottom: 40px;
+}
+
+table.importgridtable
+{
+    width: 100%;
+    overflow-x: auto;
+}
+
+table.importgridtable th
+{
+    background-color: #170A75;
+    color: #ffffff;
+    border: 1px solid #000;
+}
+
+table.importgridtable td
+{
+    border: 1px solid #000;
+    text-align: center;
+}
+
+table.importgridtable tr.even
+{
+    background-color: #ffffff
+}
+
+table.importgridtable tr.odd
+{
+    background-color: #f8f8f9;
+}
+
+table.importgridtable td.crit
+{
+    width: 50px;
+    height: 30px;
+    padding: 0px;
+}
+
+table.importgridtable td.updatedinsheet
+{
+    background-color: rgb(187, 247, 190);
+    color: #000;
+}
+
+table.importgridtable td.updatedsince
+{
+    background-color: rgb(247, 159, 159);
+    color: #000;
+}
+
+table.importgridtable td.updatedinsheet.updatedsince
+{
+    background-color: inherit;
+    background: url([[pix:block_bcgt|importhalfnhalf]]);
+    color: #000;
+}
+
+table.importgridtable td:empty
+{
+    background-color: #e0e0e0;
+}
+
+div.importwarning
+{
+    background-color: #FFEFEF;
+    border: 1px dashed #fb7171;
+    color: red;
+    padding: 5px;
+}
+
+div.importsuccessful
+{
+    width: 90%;
+    margin: auto;
+    background-color: #F2FFEF;
+    border: 1px dashed #8DE070;
+    padding: 5px;
+}
+
+th.criteriaName.hand:hover
+{
+    color: #000000 !important;
+}
+
+#mass_value
+{
+    text-align: center;
+    display: none;
+    background-color: #000;
+    color: #fff;
+    padding: 5px;
+    width: 97.6%; // Trolol
+    margin-bottom: 5px;
+}
+
+div#assessment_tracker_left
+{
+    width: 20%;
+    float: left;
+}
+
+div#assessment_tracker_options_title
+{
+    background-color: #87BBFC;
+    color: #fff;
+    text-transform: uppercase;
+    padding: 5px 10px;
+    border-bottom: 1px solid #d0d6de;
+    text-align: center;
+}
+
+div#assessment_tracker_info_title
+{
+    background-color: #87BBFC;
+    color: #fff;
+    text-transform: uppercase;
+    padding: 5px 10px;
+    border-bottom: 1px solid #d0d6de;
+    text-align: center;
+}
+
+div#assessment_tracker_units_title
+{
+    background-color: #87BBFC;
+    color: #fff;
+    text-transform: uppercase;
+    padding: 5px 10px;
+    border-bottom: 1px solid #d0d6de;
+    text-align: center;
+}
+
+div#assessment_tracker_options_content, div#assessment_tracker_info_content, div#assessment_tracker_units_content
+{
+    padding: 2%;
+}
+
+div#assessment_tracker_options_content select
+{
+    width: 90%;
+    margin-left: 5%;
+}
+
+div#assessment_tracker_options
+{
+    margin-bottom: 20px;
+    border: 1px solid #d0d6de;
+}
+
+div#assessment_tracker_units
+{
+    margin-top: 20px;
+    border: 1px solid #d0d6de;
+}
+
+div#assessment_tracker_info
+{
+    display: none;
+    margin-top: 20px;
+    border: 1px solid #d0d6de;
+}
+
+div#assessment_tracker_content
+{
+    float: left;
+    width: 75%;
+    margin-left: 2%;
+    padding-top: 10px;
+}
+
+div#assessment_tracker_content fieldset
+{
+    border: 1px solid #000;
+}
+
+div#assessment_tracker_content legend
+{
+    padding: 0.2em 0.5em;
+    border: 1px solid #000;
+    font-size: 90%;
+    text-align: left;
+    margin-left: 20px;
+    background-color: #87BBFC;
+    color: #fff;
+}
+
+div#assessment_tracker_content fieldset div
+{
+    padding-top: 10px;
+}
+
+#BTECUnitFixedHead
+{
+    overflow: hidden !important; // Hide scroll bar
+    overflow-x: scroll; // Allow scrolling
+}
+
+#BTECStudentGrid table th.divider, #BTECUnitGrid table th.divider, #BTECClassGrid table th.divider, #BTECActGrid table th.divider
+{
+    background-color: #e0e0e0 !important;
+}
+
+th#fixedHead_left_col
+{
+    padding: 0px !important;
+}
+
+div#assessment_tracker_div
+{
+    width: 100%;
+}
+
+div#assessment_tracker_div table
+{
+    width: 100%;
+}
+
+div#assessment_tracker_div th, div#assessment_tracker_div td
+{
+    border: 1px solid #e0e0e0;
+}
+
+div#assessment_tracker_div th.month, div#assessment_tracker_div td.month
+{
+    width: 100px;
+    min-width: 100px;
+    max-width: 100px;
+    overflow: hidden;
+}
+
+div#assessment_tracker_div th.mod, div#assessment_tracker_div td.mod
+{
+    width: 200px;
+    min-width: 200px;
+    max-width: 200px;
+    overflow: hidden;
+    /*font-size: 7pt;*/
+}
+
+
+div#assessment_tracker_div td.mod:empty
+{
+    background-color: #EAEAEA;
+}
+
+div#assessment_tracker_div th.monthheader, div#assessment_tracker_div .daynum, 
+div#assessment_tracker_div th.modheader, div#assessment_tracker_div .weeknum
+{
+    background-color: #87BBFC;;
+    color: #fff;
+}
+
+div#assessment_tracker_div th.daynum, div#assessment_tracker_div td.daynum
+{
+    width: 30px;
+    min-width: 30px;
+    max-width: 30px;
+    text-align: center;
+}
+
+div#assessment_tracker_div th.weeknum, div#assessment_tracker_div td.weeknum
+{
+    width: 75px;
+    min-width: 75px;
+    max-width: 75px;
+    text-align: center;
+    /*font-size: 7pt;*/
+}
+
+div#assessment_tracker_div td.non-date
+{
+    background-color: #F0F0F0;
+}
+
+div#assessment_tracker_div td.modstart
+{
+    background-color: #cfffd2;
+    text-align: center;
+}
+
+div#assessment_tracker_div td.modend
+{
+    background-color: #ffcfd3;
+    text-align: center;
+}
+
+
+div#assessment_tracker_div td.mod img
+{
+    width: 25px;
+    height: 25px;
+    vertical-align: middle;
+}
+
+div#assessment_tracker_div a.mod_head
+{
+    color: #FFFFFF;
+}
+
+div#assessment_tracker_div a.mod_head:hover
+{
+    color: #000000;
+}
+
+img.icn
+{
+    width: 10px;
+}
+
+div.mod_item
+{
+    width: 94%;
+    margin: auto;
+    font-size: 8pt;
+    padding: 2px;
+    padding-bottom: 3px;
+    border: 1px solid #E0E0E0;
+    margin-bottom: 5px;
+}
+
+div.mod_item:hover
+{
+    opacity: 0.8;
+    filter: alpha(opacity=80);
+}
+
+div.mod_item img
+{
+    vertical-align: top;
+}
+
+div#assessment_tracker_div
+{
+    font-size: 8pt;
+}
+
+table.assessment_tracker_activity_criteria, table.assessment_tracker_unlinked_units
+{
+    font-size: 7.5pt;
+    text-align: center;
+}
+
+table.assessment_tracker_activity_criteria th
+{
+    background-color: #bf2068;
+    color: #fff;
+}
+
+table.assessment_tracker_activity_criteria th, table.assessment_tracker_activity_criteria td,
+table.assessment_tracker_unlinked_units th, table.assessment_tracker_unlinked_units td
+{
+    border: 1px solid #E0E0E0;
+}
+
+table.assessment_tracker_activity_criteria td.qualname
+{
+    font-weight: bold;
+    background-color: rgb(245, 248, 218);
+}
+
+table.assessment_tracker_activity_criteria td.qualname a:hover
+{
+    color: darkorange;
+}
+
+table.assessment_tracker_activity_criteria td.unitname,
+table.assessment_tracker_unlinked_units td.unitname
+{
+    background-color: rgb(240, 247, 253);
+}
+
+table.assessment_tracker_activity_criteria table.criteria_values
+{
+    width: 50%;
+    margin: auto;
+}
+
+table.assessment_tracker_activity_criteria table.criteria_values th
+{
+    background-color: #E4FFE8;
+    color: #000000;
+}
+
+
+
+div#assessment_tracker_info_content img.icn
+{
+    vertical-align: top;
+    width: 15px;
+}
+
+#assessment_tracker_div .ui-widget-header
+{
+    border: none !important;
+    background: inherit !important;
+    color: inherit !important;
+    font-weight: inherit !important;
+}
+
+
+textarea[readonly]{
+    background-color: rgb(235, 235, 228);
+    color: rgb(84, 84, 84);
+}
+
+
+/*Core Reporting*/
+/*The three tabs of create reort, view saved report, view custom reports*/
+#bcgt_reporting p.c a{
+    border-bottom-color: grey;
+    border-bottom-style:solid;
+    border-bottom-width:2px;
+}
+
+/*Creating the report*/
+#bcgt_reporting .bcgt_report_create_area {
+    border-color: #cfcfcf;
+    border-style:solid;
+    border-width:1px;
+    border-radius: 10px;
+    padding-top:5px;
+    padding-left: 5px;
+    min-height:100%;
+    height:100%;
+    margin-left:5px;
+    margin-bottom: 5px;
+}
+
+#bcgt_reporting .bcgt_report_create_area span:first-child {
+    margin-bottom:10px;
+}
+
+/*The view reports table*/
+#bcgt_reporting table#bcgt_reports td, #bcgt_reporting table#bcgt_reports th{
+    border-style:solid;
+    border-color:#efefef;
+    border-width:1px;
+}
+
+/*The view reports table*/
+#bcgt_reporting table#bcgt_reports th {
+    background-color: #cfcfcf;
+}
+
+/*The view reports table*/
+#bcgt_reporting table#bcgt_reports tr:nth-child(even) {
+    background-color: #efefef;
+}
+
+/**/
+#bcgt_reporting span.report_icon {
+position: relative;
+z-index: 0; /*resets the stack order of the list items - later we'll increase this*/
+}
+
+/*The icons on the main reporting page and the custom reporting page*/
+#bcgt_reporting span.report_icon img{
+background-color:#eae9d4;
+padding: 3%;
+-webkit-box-shadow: 0 0 6px rgba(132, 132, 132, .75);
+-moz-box-shadow: 0 0 6px rgba(132, 132, 132, .75);
+box-shadow: 0 0 6px rgba(132, 132, 132, .75);
+-webkit-border-radius: 4px; 
+-moz-border-radius: 4px; 
+border-radius: 4px; 
+}
+
+/*The image that cmes out when you hover over the icon in custom reports*/
+#bcgt_reporting span.report_image{
+position:absolute;
+left: -9999px;
+background-color:#eae9d4;
+padding: 4%;
+font-family: 'Droid Sans', sans-serif;
+font-size:.9em;
+text-align: center; 
+color: #495a62; 
+-webkit-box-shadow: 0 0 20px rgba(0,0,0, .75);
+-moz-box-shadow: 0 0 20px rgba(0,0,0, .75);
+box-shadow: 0 0 20px rgba(0,0,0, .75);
+-webkit-border-radius: 8px; 
+-moz-border-radius: 8px; 
+border-radius:8px;
+}
+
+/*The image container on hover brings the image out*/
+#bcgt_reporting span.image_cont:hover{
+z-index: 50;
+cursor:pointer;
+}
+
+/*Custom Reports Images*/
+#bcgt_reporting span.report_image{
+padding:2px;
+background:#ccc;
+}
+
+/*Custom Reports Icon*/
+#bcgt_reporting span.report_icon img{
+width: 100px;
+height: 100px;
+margin: auto;
+}
+
+
+#bcgt_reporting span.image_cont:hover span.report_image{ 
+top: 30%; /*the distance from the bottom of the thumbnail to the top of the popup image*/
+left: 50%; /*distance from the left of the thumbnail to the left of the popup image*/
+}
+
+#bcgt_reporting span.report_desc {
+    padding:5px;
+    margin-left:5px;
+    font-size: 0.8em;
+}
+
+#bcgt_reporting {
+    overflow: visible;
+}
+
+/*The main area, reporting landing page*/
+#bcgt_reporting #reporting_main td, #bcgt_reporting #reporting_main th {
+    border-style:solid;
+    border-color:#efefef;
+    border-width:1px;
+    display: table-cell;
+    vertical-align: top;
+}
+#bcgt_reporting #reporting_main th, table.reportingtable th {
+    background-color: #cfcfcf;
+}
+
+#bcgt_reporting #reporting_main td span {
+    padding: 0px;
+    margin:0px;
+}
+
+#bcgt_reporting #reporting_main td span:first-child {
+    float: left;
+    display: inline;
+    width:50%;
+}
+
+#bcgt_reporting #reporting_main img {
+    height: 100%;
+    width: 94%;
+    margin-top:0.5em;
+}
+
+#bcgt_reporting #reporting_main td span:last-child {
+    float: right;
+    display: inline;
+    width:50%;
+}
+
+#bcgt_reporting #reporting_main td:last-child span.report_desc p{
+    padding-left:3%;
+}
+
+#bcgt_reporting #reporting_main td:nth-child(2) span {
+    width: 100%;
+    float: none;
+} 
+
+#bcgt_reporting #reporting_main td:nth-child(2) span img {
+    height: auto;
+    width: 94%;
+    margin-bottom: 3%;
+    margin-top: 0.5em;
+}
+
+
+/*Reporting resuklts*/
+#reportoptions, #reportResults {
+    padding:1%;
+    border-color:#efefef;
+    border-style:solid;
+    border-width:2px;
+    border-radius: 10px;
+    background-color:lightgray;
+}
+
+#reportResults {
+    margin-top:1%;
+}
+
+
+#reportoptions #optionsHeader {
+    cursor: pointer;
+}
+
+#reportoptions #coreOptions table {
+    background-color: white;
+}
+
+#reportoptions #coreOptions table th, #reportResults table th {
+    text-align: center;
+    background-color: lightgray;
+    border-color:grey;
+    border-style:solid;
+    border-width:1px;
+}
+
+#reportoptions #coreOptions table td {
+    padding-left:3px;
+    padding-right:3px;
+    border-color:grey;
+    border-style:solid;
+    border-width:1px;
+}
+
+#reportResults
+{
+    overflow-x: scroll;
+}
+
+#reportResults table td {
+    padding:1px;
+    border-color:#efefef;
+    border-style:solid;
+    border-width:1px;
+    vertical-align: top;
+    min-height:100%;
+    padding-bottom:0px!important;
+    position: relative;
+}
+
+#reportResults table {
+    background-color: white;
+}
+
+#reportResults .dataTable tr td:empty {
+    width:auto!important;
+    background-color:white;
+}
+#reportResults table tr:nth-child(even) td:empty {
+    background-color: #efefef;
+}
+
+
+#reportResults table tr:nth-child(even) {
+    background-color: #efefef;
+}
+
+#reportoptions #coreOptions span, #reportoptions #customOptions span {
+    display:block;
+    padding-left:2px;
+    padding-right:2px;
+    white-space: nowrap;
+}
+
+#reportoptions #coreOptions span input{
+    margin-left:4px;
+}
+
+#outputcommands {
+    width:120px;
+    margin:auto;
+    margin-top:1%;
+    margin-bottom: 1%;
+}
+
+#outputcommands input
+{
+    margin-left:1%;
+    margin-right:1%;
+    padding:1%;
+}
+
+#optionsContent {
+    display:hidden;
+}
+
+#reportResults span.newline{
+    display: block;
+}
+
+#reportResults div.cellcent{
+    text-align: center;
+    width:100%;
+    padding-top:3px;
+    padding-bottom:3px;
+    vertical-align: bottom;
+    min-height:100%;
+}
+
+#reportResults td.emptyrow div{
+    visibility:hidden;
+    min-width:100%;
+}
+
+#reportResults .dataTable td {
+    padding:0px!important;
+}
+
+#reportResults .Behind
+{
+    background-color: #F28A8C;
+}
+
+#reportResults .Ahead
+{
+    background-color: #00CC99;
+}
+
+#reportResults .OnTarget
+{
+    background-color: #0066FF;
+}
+
+#reportResults  tr.even:hover, #reportResults  tr.even:hover td:empty{
+	background-color:#ECFFB3!important;
+}
+
+#reportResults  tr.odd:hover, #reportResults  tr.odd:hover td:empty{
+	background-color:#E6FF99!important;
+}
+
+#reportResults td.highlight {
+    background-color: #E6FF99 !important;
+}
+
+
+div.unitGroup
+{
+    width: 95%;
+    margin: auto;
+    margin-bottom: 20px;
+    background-color: #fff;
+    border: 1px solid #000;
+    padding: 5px;
+}
+ 
+div.unitGroup p
+{
+    text-align: center;
+}
+
+div.unitGroup select
+{
+    height: 150px;
+    width: 90%;
+    margin: auto;
+}
+
+/* ALPS */
+#bcgtAlpsTabContentContainer .tabs {
+    margin-top:5%;
+}
+
+#bcgtAlpsTabContentContainer table.reportingtable td, #bcgtAlpsTabContentContainer table.reportingtable th {
+    border-color: #cfcfcf;
+    border-style:solid;
+    border-width:1px;
+}  
+
+#bcgtAlpsTabContentContainer table.reportingtable th {
+    background-color: #efefef;
+}
+
+#bcgtAlpsTabContentContainer table.reportingtable span.expand {
+    cursor: pointer;
+}
+
+#bcgtAlpsTabContentContainer table.reportingtable span.noscore {
+    color: #cfcfcf;
+    font-size: 0.8em;
+}
+
+#alpsreportstable {
+    overflow-x: scroll;
+}
+
+#bcgtAlpsTabContentContainer table.reportingtable {
+    width:100%;
+    max-width:100%;
+    overflow-x: scroll;
+}
+
+#bcgtAlpsTabContentContainer table.reportingtable tr.blankrow {
+    background-color: #cfcfcf;
+}
+
+#bcgtAlpsTabContentContainer table.reportingtable tr.spacerrem {
+    background-color: white;
+}
+
+#bcgtAlpsTabContentContainer table.reportingtable tr.spacerrem td{
+    border-left-style: none;
+    border-right-style:none;
+}
+#bcgtAlpsTabContentContainer #lastRun {
+    width:50%;
+    margin:auto;
+    margin-top:1%;
+    margin-bottom:1%;
+}
+
+#bcgtAlpsTabContentContainer #lastRun a{
+    margin-left:5%;
+    text-decoration: underline;
+}
+
+#exportalps, #exportexamples, #reportexaples {
+    background-color: #efefef;
+    border-color: #cfcfcf;
+    border-style:solid;
+    border-width:1px;
+    -webkit-border-radius: 8px; 
+    -moz-border-radius: 8px; 
+    border-radius:8px;
+    padding:5%;
+    padding-top:1%;
+    margin-bottom:2%;
+    margin-top:2%;
+}
+
+#exportalps, #exportexamples h3, #reportexaples h3{
+    margin-top:4%;
+}
+
+#exportalps, #exportexamples img, #reportexaples img {
+    max-width:90%;
+    min-width:90%;
+    margin:auto;
+    padding:2%;
+    background-color: #cfcfcf;
+    -webkit-border-radius: 8px; 
+    -moz-border-radius: 8px; 
+    border-radius:8px;
+    border-color: #cfcfcf;
+    border-style:solid;
+    border-width:1px;
+    margin-bottom:4%;
+}
+
+#reportexaples img {
+    max-width:50%;
+    min-width:50%;
+}
+
+#exportalps input {
+    margin-left:5px;
+}
+
+#ass_grid_class_data {
+    overflow-x: scroll;
+}
+
+#archivegriddata {
+    margin-top:4%;
+}
+
+table.archivestudentdata td, table.archivestudentdata th {
+    border-color: #cfcfcf;
+    border-style:solid;
+    border-width:1px;
+}  
+
+table.archivestudentdata th {
+    background-color: #efefef;
+}
+
+div#archivetype, div#archiveoptions
+{
+    max-width:90%;
+    min-width:90%;
+    margin:auto;
+    background-color: #cfcfcf;
+    -webkit-border-radius: 8px; 
+    -moz-border-radius: 8px; 
+    border-radius:8px;
+    border-color: #cfcfcf;
+    border-style:solid;
+    border-width:1px;
+    margin-bottom:1%;
+    padding:2%;
+}
+
+#archivequals {
+    margin-top:1%;
+}
+
+#archiveoptions select {
+    max-width:50%;
+}
+
+.blackbg
+{
+    background-color: #000;
+    color: #fff;
+}
+
+div#unit_sets
+{
+    text-align: left;
+}
+
+div#unit_sets form
+{
+    float: left;
+    margin-left: 2%;
+}
+
+.bcgt_highlighted
+{
+    background-color: #ffff99;
+}

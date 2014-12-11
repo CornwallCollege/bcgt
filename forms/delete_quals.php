@@ -12,6 +12,9 @@ global $COURSE, $CFG, $PAGE, $OUTPUT;
 require_once('../../../config.php');
 require_once('../lib.php');
 require_once($CFG->dirroot.'/user/profile/lib.php');
+
+set_time_limit(0);
+
 $courseID = optional_param('cID', -1, PARAM_INT);
 if($courseID != -1)
 {
@@ -36,12 +39,12 @@ require_capability('block/bcgt:searchquals', $context);
 $tab = optional_param('page', 1, PARAM_INTEGER);
 $url = '/blocks/bcgt/forms/my_dashboard.php';
 $PAGE->set_url($url, array('page' => $tab));
-$PAGE->set_title(get_string('selectqual', 'block_bcgt'));
+$PAGE->set_title(get_string('deletequals', 'block_bcgt'));
 $PAGE->set_heading(get_string('selectqual', 'block_bcgt'));
-$PAGE->set_pagelayout('login');
-$PAGE->add_body_class(get_string('myDashboard', 'block_bcgt'));
-$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php','title');
-$PAGE->navbar->add(get_string('myDashboard', 'block_bcgt'),'my_dashboard.php?tab=dash','title');
+$PAGE->set_pagelayout( bcgt_get_layout() );
+$PAGE->add_body_class(get_string('bcgtmydashboard', 'block_bcgt'));
+$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php?tab=track','title');
+//$PAGE->navbar->add(get_string('bcgtmydashboard', 'block_bcgt'),'my_dashboard.php?tab=dash','title');
 $PAGE->navbar->add(get_string('dashtabadm', 'block_bcgt'),'my_dashboard.php?tab=adm','title');
 $PAGE->navbar->add('',$url.'?page='.$tab,'title');
 
@@ -143,7 +146,7 @@ elseif (isset($_POST['delete']) && !empty($_POST['qualID'])){
             if ($studs){
                 foreach($studs as $stud){
                     // Just get their name/username
-                    $record = $DB->get_record("user", array("id" => $stud->userid), "id, firstname, lastname, username");
+                    $record = $DB->get_record("user", array("id" => $stud->userid));
                     if ($record)
                     {
                         if (!isset($studentsLinked[$qual->get_id()])) $studentsLinked[$qual->get_id()] = array();
@@ -152,8 +155,8 @@ elseif (isset($_POST['delete']) && !empty($_POST['qualID'])){
                 }
             }
             
-            if (!empty($coursesLinked)) asort($coursesLinked[$qual->get_id()]);
-            if (!empty($studentsLinked)) asort($studentsLinked[$qual->get_id()]);
+            if (!empty($coursesLinked) && isset($coursesLinked[$qual->get_id()])) asort($coursesLinked[$qual->get_id()]);
+            if (!empty($studentsLinked) && isset($studentsLinked[$qual->get_id()])) asort($studentsLinked[$qual->get_id()]);
             
         }
         

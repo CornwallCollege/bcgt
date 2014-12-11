@@ -14,6 +14,7 @@ require_once($CFG->dirroot.'/user/profile/lib.php');
 
 $cID = optional_param('cID', -1, PARAM_INT);
 $tab = optional_param('tab', '', PARAM_TEXT);
+$view = optional_param('view', 'os', PARAM_TEXT);
 if($cID != -1)
 {
     $context = context_course::instance($cID);
@@ -30,13 +31,17 @@ $url = '/blocks/bcgt/forms/activities.php';
 $PAGE->set_url($url, array());
 $PAGE->set_title(get_string('viewactivitylinks', 'block_bcgt'));
 $PAGE->set_heading(get_string('viewactivitylinks', 'block_bcgt'));
-$PAGE->set_pagelayout('login');
+$PAGE->set_pagelayout( bcgt_get_layout() );
 $PAGE->add_body_class(get_string('activity', 'block_bcgt'));
-$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php','title');
+$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php?tab=track','title');
 if($cID != -1)
 {
     $course = $DB->get_record_sql("SELECT * FROM {course} WHERE id = ?", array($cID));
-    $PAGE->navbar->add($course->shortname,$CFG->wwwroot.'/course/view.php?id='.$cID,'title');
+    if($course)
+    {
+        $PAGE->navbar->add($course->shortname,$CFG->wwwroot.'/course/view.php?id='.$cID,'title');
+    }
+    
 }
 $PAGE->navbar->add(get_string('viewactivitylinks', 'block_bcgt'),'','title');
 
@@ -92,6 +97,11 @@ $out.= '<li class="last '.$focus.'">'.
 //        '<a href="?tab=actcal&cID='.$cID.'">'.
 //        '<span>'.get_string('activitycalendarview', 'block_bcgt').'</span></a></li>';
 $out.= '</ul>';
+
+$out .= '<br>';
+
+$out .= bcgt_get_grid_assignment_overview_buttons($view, $cID);
+
 $out.= '</div></div>';
 if($tab == 'actcal')
 {
@@ -101,16 +111,17 @@ if($tab == 'actcal')
 elseif($tab == 'acheck')
 {
     //get quals on course
-    $includeFamilies = array('BTEC');
+    $includeFamilies = array('BTEC', 'CG');
     //get all of the qual families that are on this course
     $families = get_course_qual_families($cID, $includeFamilies);
     if($families)
     {
         foreach($families AS $family)
         {
-            require_once($CFG->dirroot.$family->classfolderlocation.'/'.str_replace(' ', '', $family->type).'Qualification.class.php');
-            $class = str_replace(' ', '', $family->type).'Qualification';
+            require_once($CFG->dirroot.$family->classfolderlocation.'/'.str_replace(' ', '', $family->family).'Qualification.class.php');
+            $class = str_replace(' ', '', $family->family).'Qualification';
             $out.= $class::gradebook_check_page($cID);
+            $out .= '<br><br>';
         }
     } 
 }
@@ -135,7 +146,7 @@ elseif($tab == 'actgrid')
 }
 else
 {
-    $includeFamilies = array('BTEC');
+    $includeFamilies = array('BTEC', 'CG');
     //get all of the qual families that are on this course
     $families = get_course_qual_families($cID, $includeFamilies);
     if($families)
@@ -144,9 +155,9 @@ else
         //then get the activity_view_page
         foreach($families AS $family)
         {
-            require_once($CFG->dirroot.$family->classfolderlocation.'/'.str_replace(' ', '', $family->type).'Qualification.class.php');
+            require_once($CFG->dirroot.$family->classfolderlocation.'/'.str_replace(' ', '', $family->family).'Qualification.class.php');
             //$class = $family->type.'Qualification';
-            $class = str_replace(' ', '', $family->type).'Qualification';
+            $class = str_replace(' ', '', $family->family).'Qualification';
             $out.= $class::activity_view_page($cID, $tab);
         }
     }

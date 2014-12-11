@@ -51,12 +51,8 @@ if($unit)
     //there is a multidimentional array of rows and columns
     $unit->set_student_flag($flag);
     $data = $unit->get_unit_grid_data($qualID, $advancedMode, $editing, $courseID);
-    $output = array(
-		"iTotalRecords" => count($data),
-		"iTotalDisplayRecords" => count($data),
-		"aaData" => $data
-	);
-	echo json_encode( $output );
+    echo $data;
+
 }
 else
 {

@@ -31,10 +31,10 @@ $url = '/blocks/bcgt/forms/my_dashboard.php';
 $PAGE->set_url($url, array('page' => $tab));
 $PAGE->set_title(get_string('transferstudentsunits', 'block_bcgt'));
 $PAGE->set_heading(get_string('transferstudentsunits', 'block_bcgt'));
-$PAGE->set_pagelayout('login');
-$PAGE->add_body_class(get_string('myDashboard', 'block_bcgt'));
-$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php','title');
-$PAGE->navbar->add(get_string('myDashboard', 'block_bcgt'),'my_dashboard.php?tab=dash','title');
+$PAGE->set_pagelayout( bcgt_get_layout() );
+$PAGE->add_body_class(get_string('bcgtmydashboard', 'block_bcgt'));
+$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php?tab=track','title');
+//$PAGE->navbar->add(get_string('bcgtmydashboard', 'block_bcgt'),'my_dashboard.php?tab=dash','title');
 $PAGE->navbar->add(get_string('dashtabadm', 'block_bcgt'),'my_dashboard.php?tab=adm','title');
 $PAGE->navbar->add('',$url.'?page='.$tab,'title');
 
@@ -99,7 +99,7 @@ if ($studentID > 0 && isset($_POST['transfer']) && ctype_digit($_POST['transferf
                         
                         // Archive old one
                         $DB->execute( "INSERT INTO {block_bcgt_user_unit_his} 
-                                       (bcgtuserunitid, userid, bcgtqualificationid, bcgtunitid, bcgttypeawardid, comments, dateupdated, userdefinedvalue, bcgtvalueid, setbyuserid, updatedbyuserid, dateset) 
+                                       (bcgtuserunitid, userid, bcgtqualificationid, bcgtunitid, bcgttypeawardid, comments, dateupdated, userdefinedvalue, bcgtvalueid, setbyuserid, updatedbyuserid, dateset, studentcomments) 
                                        SELECT * FROM {block_bcgt_user_unit} WHERE id = ?", array($userRecord->id) );
                         
                         // Update record
@@ -205,7 +205,7 @@ if ($studentID > 0 && isset($_POST['transfer']) && ctype_digit($_POST['transferf
     }
     
     echo "<br><br><a href='{$CFG->wwwroot}/blocks/bcgt/forms/transfer_units.php'>[Transfer More Units]</a>";
-    echo "<br><br><a href='{$CFG->wwwroot}/blocks/bcgt/forms/my_dashboard.php?tab=adm'>[Back to Dashboard]</a>";
+    echo "<br><br><a href='{$CFG->wwwroot}/blocks/bcgt/forms/my_dashboard.php?tab=adm&cID=".$courseID."'>[Back to Dashboard]</a>";
     
     
 }

@@ -28,18 +28,20 @@ $uID = optional_param('uID', -1, PARAM_INT);
 $fID = optional_param('fID', -1, PARAM_INT);
 $aID = optional_param('aID', -1, PARAM_INT);
 
-
 $url = '/blocks/bcgt/forms/add_activity.php';
 $PAGE->set_url($url, array());
 $PAGE->set_title(get_string('addactivitylinks', 'block_bcgt'));
 $PAGE->set_heading(get_string('addactivitylinks', 'block_bcgt'));
-$PAGE->set_pagelayout('login');
+$PAGE->set_pagelayout( bcgt_get_layout() );
 $PAGE->add_body_class(get_string('gridselect', 'block_bcgt'));
-$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php','title');
+$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php?tab=track','title');
 if($cID != -1)
 {
     $course = $DB->get_record_sql("SELECT * FROM {course} WHERE id = ?", array($cID));
-    $PAGE->navbar->add($course->shortname,$CFG->wwwroot.'/course/view.php?id='.$cID,'title');
+    if($course)
+    {
+        $PAGE->navbar->add($course->shortname,$CFG->wwwroot.'/course/view.php?id='.$cID,'title');
+    }
 }
 $PAGE->navbar->add(get_string('addactivitylinks', 'block_bcgt'),'activities.php?tab=unit&cID=2','title');
 
@@ -60,7 +62,7 @@ $out .= html_writer::start_tag('div', array('class'=>'bcgt_activity_controls',
     'id'=>'editCourseQual'));
 $out .= '<form name="addActivity" action"#" method="POST" id="addActivity"/>';
 //get all of the qual families that are on this course
-$includeFamilies = array('BTEC');
+$includeFamilies = array('BTEC', 'CG');
     //get all of the qual families that are on this course
 $families = get_course_qual_families($cID, $includeFamilies);
 if($families)
@@ -69,9 +71,9 @@ if($families)
     //then get the activity_view_page
     foreach($families AS $family)
     {
-        $type = str_replace(" ", "", $family->type);
+        $type = str_replace(" ", "", $family->family);
         require_once($CFG->dirroot.$family->classfolderlocation.'/'.$type.'Qualification.class.php');
-        $class = $family->type.'Qualification';
+        $class = $type.'Qualification';
         $out.= $class::add_activity_view_page($cID, $uID, $aID);
     }
 }

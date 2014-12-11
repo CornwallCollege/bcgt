@@ -28,8 +28,8 @@ class ProjectsSorter
         }
         else
         {
-            $aTime = $a->get_date();
-            $bTime = $b->get_date();
+            $aTime = $a->get_Due_Date_TimeStamp();
+            $bTime = $b->get_Due_Date_TimeStamp();
             if($aTime == $bTime)
 			{
 				return 0;

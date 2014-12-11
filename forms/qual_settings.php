@@ -31,10 +31,10 @@ $url = '/blocks/bcgt/forms/my_dashboard.php';
 $PAGE->set_url($url, array('page' => $tab));
 $PAGE->set_title(get_string('selectqual', 'block_bcgt'));
 $PAGE->set_heading(get_string('selectqual', 'block_bcgt'));
-$PAGE->set_pagelayout('login');
-$PAGE->add_body_class(get_string('myDashboard', 'block_bcgt'));
-$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php','title');
-$PAGE->navbar->add(get_string('myDashboard', 'block_bcgt'),'my_dashboard.php?tab=dash','title');
+$PAGE->set_pagelayout( bcgt_get_layout() );
+$PAGE->add_body_class(get_string('bcgtmydashboard', 'block_bcgt'));
+$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php?tab=track','title');
+//$PAGE->navbar->add(get_string('bcgtmydashboard', 'block_bcgt'),'my_dashboard.php?tab=dash','title');
 $PAGE->navbar->add(get_string('dashtabadm', 'block_bcgt'),'my_dashboard.php?tab=adm','title');
 $PAGE->navbar->add('',$url.'?page='.$tab,'title');
 require_once($CFG->dirroot.'/blocks/bcgt/lib.php');
@@ -49,7 +49,7 @@ echo $OUTPUT->header();
 $pluginName = get_plugin_name($familyID);
 if($pluginName)
 {
-   include($CFG->dirroot.'/blocks/bcgt/plugins/'.$pluginName.'/forms/qual_settings.php'); 
+   require_once($CFG->dirroot.'/blocks/bcgt/plugins/'.$pluginName.'/forms/qual_settings.php'); 
 }
 
 echo $OUTPUT->footer();

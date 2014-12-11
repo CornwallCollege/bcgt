@@ -25,6 +25,8 @@
     require_once($CFG->dirroot.'/blocks/bcgt/plugins/bcgtbtec/classes/BTECFirst2013Qualification.class.php');
     require_once($CFG->dirroot.'/blocks/bcgt/plugins/bcgtbtec/classes/BTECFirst2013Unit.class.php');
     require_once($CFG->dirroot.'/blocks/bcgt/plugins/bcgtbtec/classes/BTECFirst2013Criteria.class.php');
+    require_once($CFG->dirroot.'/blocks/bcgt/plugins/bcgtbtec/classes/sorters/BTECCriteriaSorter.class.php');
+
     
     function run_btec_initial_import()
     {
@@ -949,8 +951,9 @@
                     }
                     $retval .= '<label>'.  bcgt_get_qualification_display_name($qual).
                             ' : </label><input '.$checked.' type="checkbox" name="q_'.$qual->id.'_u_'.
-                            $unitID.'"/>';
+                            $unitID.'" class="qualunitcheck qualunitcheck'.$unitID.'" unit="'.$unitID.'"/>';
                 }
+                $retval .= '<p class="warningNoQuals" id="'.$unitID.'_noqualswarn">'.get_string('warningnoqualsselected','block_bcgt').'</p>';
             }
             $criterias = $unit->get_criteria();
             require_once($CFG->dirroot.'/blocks/bcgt/classes/sorters/CriteriaSorter.class.php');
@@ -1066,7 +1069,7 @@
                 $out .= '</td>';
                 //now get the units that are on it. 
                 $out .= '<td class="bcgtmodlinkingunitsummary">';
-                $out .= get_mod_unit_summary_table($activity->id);
+                $out .= get_mod_unit_summary_table($activity->id, BTECQualification::FAMILYID);
                 $out .= '</td>';
                 $activity->out = $out;
                 $activity->dueDate = $dueDate;
@@ -1209,6 +1212,8 @@
         }
         return $retval;
     }
+        
+    
     
     /**
      * This searches for any units that are attached to the mod
@@ -1227,9 +1232,13 @@
             return false;
         }
         global $DB;
-        $sql = "SELECT * FROM {block_bcgt_activity_refs} refs WHERE coursemoduleid = ? 
-            AND bcgtunitid NOT IN (";
-        $params = array($courseModuleID);
+        $sql = "SELECT refs.*, t.bcgttypefamilyid
+                FROM {block_bcgt_activity_refs} refs 
+                INNER JOIN {block_bcgt_qualification} q ON q.id = refs.bcgtqualificationid
+                INNER JOIN {block_bcgt_target_qual} tq ON tq.id = q.bcgttargetqualid
+                INNER JOIN {block_bcgt_type} t ON t.id = tq.bcgttypeid
+                WHERE refs.coursemoduleid = ? AND t.bcgttypefamilyid = ? AND refs.bcgtunitid NOT IN (";
+        $params = array($courseModuleID, BTECQualification::FAMILYID);
         $count = 0;
         foreach($units AS $unitID)
         {
@@ -1259,7 +1268,7 @@
      * @param type $unitID
      * @param type $courseID
      */
-    function bcgt_btec_process_mod_unit_selection($courseModuleID, $unitID, $courseID)
+    function bcgt_btec_process_mod_unit_selection($courseModuleID, $unitID, $courseID, $attemptNo = 1)
     {
         $loadParams = new stdClass();
         $loadParams->loadLevel = Qualification::LOADLEVELCRITERIA;
@@ -1287,6 +1296,7 @@
                 $stdObj->coursemoduleid = $courseModuleID;
                 $stdObj->bcgtunitid = $unitID;
                 $stdObj->bcgtqualificationid = $qual->id;
+                $stdObj->attemptno = $attemptNo;
                 foreach($criteriasUsed AS $criteriaID)
                 {
                     $stdObj->bcgtcriteriaid = $criteriaID;
@@ -1304,7 +1314,7 @@
      * @param type $unitID
      * @param type $courseID
      */
-    function bcgt_btec_process_mod_selection_changes($courseModuleID, $unitID, $courseID)
+    function bcgt_btec_process_mod_selection_changes($courseModuleID, $unitID, $courseID, $attemptNo = 1)
     {
         $loadParams = new stdClass();
         $loadParams->loadLevel = Qualification::LOADLEVELCRITERIA;
@@ -1337,6 +1347,7 @@
                     $stdObj->bcgtunitid = $unitID;
                     $stdObj->bcgtqualificationid = $qual->id;
                     $stdObj->bcgtcriteriaid = $criteria->get_id();
+                    $stdObj->attemptno = $attemptNo;
                     insert_activity_onto_unit($stdObj);
                 }
             }
@@ -1359,19 +1370,19 @@
      * @param type $unitID
      * @param type $courseID
      */
-    function bcgt_btec_process_mod_units($courseModuleID, $unitID, $courseID)
+    function bcgt_btec_process_mod_units($courseModuleID, $unitID, $courseID, $attemptNo = 1)
     {
-        $activityUnits = get_activity_units($courseModuleID);
+        $activityUnits = get_activity_units($courseModuleID, BTECQualification::FAMILYID);
         //was this unit on it before?
         if(array_key_exists($unitID, $activityUnits))
         {
             //then we need to check it
-            bcgt_btec_process_mod_selection_changes($courseModuleID, $unitID, $courseID);
+            bcgt_btec_process_mod_selection_changes($courseModuleID, $unitID, $courseID, $attemptNo);
         }
         else 
         {
             //we are just adding it all
-            bcgt_btec_process_mod_unit_selection($courseModuleID, $unitID, $courseID);
+            bcgt_btec_process_mod_unit_selection($courseModuleID, $unitID, $courseID, $attemptNo);
         }
         
     }
@@ -1506,6 +1517,18 @@ function bcgt_btec_get_criteria_submission_summary($criteriaID, $courseID = -1, 
     $params[] = 'A';
     $sql .= $achievedSql;
     return $DB->get_record_sql($sql, $params);
+}
+
+
+function btec_apply_assignment_grading_box(&$mform)
+{
+    
+    $mform->addElement('header', 'gradetrackerheader', get_string('gradetracker2', 'block_bcgt'));
+        
+    
+    
+    $mform->addElement('html', '<br><br><br>');
+    
 }
     
 ?>

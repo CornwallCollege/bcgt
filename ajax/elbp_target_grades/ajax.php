@@ -26,13 +26,12 @@ if ($action == 'save')
     
     if (elbp_has_capability('block/bcgt:editasptargetgrade', $access))
     {
-        
+                
         // Aspirational is set
         if (isset($params['aspirationalgrade']) && !empty($params['aspirationalgrade'])){
             
             if ($params['aspirationalgrade'] == "OTHER")
             {
-                
                 $grade = $params['aspirationalcustom'];
                 if (!empty($grade))
                 {
@@ -45,7 +44,6 @@ if ($action == 'save')
             }
             else
             {
-                
                 $explode = explode(":", $params['aspirationalgrade']);
                 $grades[] = array(
                     "type" => "aspirational",
@@ -69,22 +67,39 @@ if ($action == 'save')
         }
         
         
-        if (isset($params['targetgrade']) && !empty($params['targetgrade'])){
-            
-            if ($params['targetgrade'] == "OTHER")
-            {
-                
-                $grade = $params['targetcustom'];
-                if (!empty($grade))
+        if (!isset($params['ignoreTarget']))
+        {
+                    
+            if (isset($params['targetgrade']) && !empty($params['targetgrade'])){
+
+                if ($params['targetgrade'] == "OTHER")
                 {
+
+                    $grade = $params['targetcustom'];
+                    if (!empty($grade))
+                    {
+                        $grades[] = array(
+                            "type" => "target",
+                            "custom" => $grade
+                        );
+                    }
+
+                }
+                else
+                {
+
+                    $explode = explode(":", $params['targetgrade']);
                     $grades[] = array(
                         "type" => "target",
-                        "custom" => $grade
+                        "grade" => @$explode[2],
+                        "recordid" => @$explode[1],
+                        "location" => @$explode[0]
                     );
+
                 }
-                
+
             }
-            else
+            elseif (isset($params['targetgrade']))
             {
                 
                 $explode = explode(":", $params['targetgrade']);
@@ -101,19 +116,24 @@ if ($action == 'save')
         else
         {
             // Not set - remove any from DB
-            if ($DB->delete_records("block_bcgt_stud_course_grade", array("userid" => $studentID, "qualid" => $qualID, "courseid" => $courseID, "type" => "target"))){
-                if (!is_null($qualID)){
-                    echo " $('#target_info_{$qualID}').html('-'); ";
-                } elseif (!is_null($courseID)){
-                    echo " $('#target_info_course_{$courseID}').html('-'); ";
+            $check = $DB->get_records("block_bcgt_stud_course_grade", array("userid" => $studentID, "qualid" => $qualID, "courseid" => $courseID, "type" => "target"));
+            if ($check){
+                if ($DB->delete_records("block_bcgt_stud_course_grade", array("userid" => $studentID, "qualid" => $qualID, "courseid" => $courseID, "type" => "target"))){
+                    if (!is_null($qualID)){
+                        echo " $('#target_info_{$qualID}').html('-'); ";
+                    } elseif (!is_null($courseID)){
+                        echo " $('#target_info_course_{$courseID}').html('-'); ";
+                    }
                 }
             }
+        
+        
         }
         
         
         
     }
-                            
+                                
     if ($grades)
     {
         

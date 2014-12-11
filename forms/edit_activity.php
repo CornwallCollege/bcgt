@@ -33,10 +33,10 @@ $url = '/blocks/bcgt/forms/add_activity.php';
 $PAGE->set_url($url, array());
 $PAGE->set_title(get_string('addactivitylinks', 'block_bcgt'));
 $PAGE->set_heading(get_string('addactivitylinks', 'block_bcgt'));
-$PAGE->set_pagelayout('login');
+$PAGE->set_pagelayout( bcgt_get_layout() );
 $PAGE->add_body_class(get_string('gridselect', 'block_bcgt'));
-$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'','title');
-$PAGE->navbar->add(get_string('addactivitylinks', 'block_bcgt'),'','title');
+$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php?tab=track','title');
+$PAGE->navbar->add(get_string('addactivitylinks', 'block_bcgt'),null,'title');
 
 $jsModule = array(
     'name'     => 'block_bcgt',
@@ -62,8 +62,9 @@ if($families)
     //then get the activity_view_page
     foreach($families AS $family)
     {
-        require_once($CFG->dirroot.$family->classfolderlocation.'/'.$family->type.'Qualification.class.php');
-        $class = $family->type.'Qualification';
+        $type = str_replace(" ", "", $family->family);
+        require_once($CFG->dirroot.$family->classfolderlocation.'/'.$type.'Qualification.class.php');
+        $class = $type.'Qualification';
         $out.= $class::edit_activity_view_page($cID, $uID, $aID);
     }
 }

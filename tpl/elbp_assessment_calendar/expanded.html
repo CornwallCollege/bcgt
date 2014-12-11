@@ -1,0 +1,44 @@
+<?php if(!defined('ELBP')) exit; ?>
+
+<div id="elbp_assessment_calendar_content">
+    
+    <div id='assessment_tracker'>
+        
+        <div id='assessment_tracker_left'>
+            
+            <div id='assessment_tracker_options'>
+                
+                <div id='assessment_tracker_options_title'><?= get_string('options') ?></div>
+                
+                <div id='assessment_tracker_options_content'>
+                    <?= $AssessmentTracker->getStudentTrackerOptions() ?>
+                </div>
+                <link href="../../styles.css" rel="stylesheet" type="text/css"/>
+                
+            </div>
+            
+            <p id='loading' style='display:none;'><img src='<?= $CFG->wwwroot ?>/blocks/bcgt/pix/ajax-loader.gif' /></p>
+            
+            <div id='assessment_tracker_info'>
+                <div id='assessment_tracker_info_title'></div>
+                <div id='assessment_tracker_info_content'></div>
+            </div>
+            
+        </div>
+        
+        
+        <div id='assessment_tracker_content'>
+            
+            <?= $AssessmentTracker->getStudentTracker(); ?>
+    
+        </div>
+                    
+        
+        
+    </div>
+    
+</div>
+
+<script>
+    M.block_bcgt.initassessmenttracker(null, <?= $AssessmentTracker->getStudentID() ?>);
+</script>

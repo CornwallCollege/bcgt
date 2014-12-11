@@ -35,11 +35,20 @@ $groupingID = optional_param('grID', -1, PARAM_INT);
 $cmID = optional_param('cmID', -1, PARAM_INT);
 $url = '/blocks/bcgt/forms/unit_grid.php';
 $PAGE->set_url($url, array());
-$PAGE->set_title(get_string('bcgtmydashboard', 'block_bcgt'));
+$PAGE->set_title(get_string('activitygrid', 'block_bcgt'));
 $PAGE->set_heading(get_string('bcgtmydashboard', 'block_bcgt'));
-$PAGE->set_pagelayout('login');
+$PAGE->set_pagelayout( bcgt_get_layout() );
 $PAGE->add_body_class(get_string('bcgtmydashboard', 'block_bcgt'));
-$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),$CFG->wwwroot.'/blocks/bcgt/forms/my_dashboard.php?tab=track','title');
+if($courseID != 1)
+{
+    global $DB;
+    $course = $DB->get_record_sql("SELECT * FROM {course} WHERE id = ?", array($courseID));
+    if($course)
+    {
+        $PAGE->navbar->add($course->shortname,$CFG->wwwroot.'/course/view.php?id='.$courseID,'title');
+    }
+}
+$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),$CFG->wwwroot.'/blocks/bcgt/forms/my_dashboard.php?tab=track&cID='.$courseID,'title');
 $jsModule = array(
     'name'     => 'block_bcgt',
     'fullpath' => '/blocks/bcgt/js/block_bcgt.js',
@@ -192,14 +201,14 @@ $out = $OUTPUT->header();
                 &nbsp;&nbsp;&nbsp;&nbsp;
                 <input type="button" id="deleteComment" value="Delete" />
             </div>';
-     $out .= '<div id="genericPopup" style="display:none;">
+     $out .= '<div id="genericPopup" style="display:none;"><div id="genericContent">
                 <div id="commentClose"><a href="#" onclick="popup.close();return false;"><img src="'.$CFG->wwwroot.'/blocks/bcgt/pix/close.png" style="width:24px;" alt="Close" /></a></div><br class="cl" /><!-- Toggle -->
                 <span id="popUpTitle"></span><br><br>
                     <div id="popUpSubTitle"></div><br>
                     <div id="popUpContent"></div>
                     <br>
                     <input type="button" value="Close" onclick="popup.close();return false;" />    
-            </div>';
+              </div></div>';
     $out .= '</form>';			
 $out .= $OUTPUT->footer();
 echo $out;

@@ -29,22 +29,28 @@ class UserVA {
     
     public function ahead_behind_on($targetRanking, $awardRanking)
     {
-       $diff = $this->calculate_difference($awardRanking, $targetRanking);
-        //so we have the differance
-        $onTarget = 'OnTarget';
-        if($diff > 0)
+        $onTarget = 'Unknown';
+        if($targetRanking && $awardRanking)
         {
-            $onTarget = 'Ahead';
+            $diff = $this->calculate_difference($awardRanking, $targetRanking);
+            //so we have the differance
+            if($diff > 0)
+            {
+                $onTarget = 'Ahead';
+            }
+            elseif($diff < 0)
+            {
+                $onTarget = 'Behind';
+            }
+            elseif($diff == 0)
+            {
+                $onTarget = 'OnTarget';
+            }
+            else
+            {
+                $onTarget = 'Unknown';
+            }
         }
-        elseif($diff < 0)
-        {
-            $onTarget = 'Behind';
-        }
-        elseif($diff === '')
-        {
-            $onTarget = 'Unknown';
-        }
-        
         return $onTarget;
     }
     
@@ -54,6 +60,7 @@ class UserVA {
         {
             return ($awardRanking - $targetRanking);
         }
+        return null;
     }
 }
 

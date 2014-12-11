@@ -2,9 +2,10 @@
 header("Content-Type: text/html; charset=utf-8");
 require_once '../../../../../config.php';
 require_once('../../../lib.php');
-require_once($CFG->dirroot.'/blocks/bcgt/plugins/bcgtbtec/classes/BTECQualification.class.php');
-require_once($CFG->dirroot.'/blocks/bcgt/plugins/bcgtbtec/classes/BTECUnit.class.php');
-require_once($CFG->dirroot.'/blocks/bcgt/plugins/bcgtbtec/classes/BTECCriteria.class.php');
+require_once($CFG->dirroot.'/blocks/bcgt/plugins/bcgtbtec/lib.php');
+//require_once($CFG->dirroot.'/blocks/bcgt/plugins/bcgtbtec/classes/BTECQualification.class.php');
+//require_once($CFG->dirroot.'/blocks/bcgt/plugins/bcgtbtec/classes/BTECUnit.class.php');
+//require_once($CFG->dirroot.'/blocks/bcgt/plugins/bcgtbtec/classes/BTECCriteria.class.php');
 require_login();
 /**
  * Parameters:
@@ -114,7 +115,7 @@ switch($action)
     
     case 'criteriaComment':
         // Required params:
-        $req = array("qualID", "criteriaID", "studentID", "comment", "element");
+        $req = array("qualID", "criteriaID", "studentID", "comment", "element", "imgID");
         
         // Optional params: "singleUnitView", "unitView"
         if (empty($params['comment'])){
@@ -126,6 +127,11 @@ switch($action)
         _valid($params->grid, $params);
         
         $params->comment = trim($params->comment);
+        $params->comment = urldecode($params->comment);
+        
+        // Datatables throws a major wobbly with even slightly weird characters, so going to ahve to remove anything that
+        // isn't simple
+        $params->comment = preg_replace("/[^a-z 0-9_\-\'\"\!\:\;\n\r\.\,\?\(\)\/]/i", "", $params->comment);
         
         // Update the comment, but do not update the date in the user_criteria record - as is the default
         if(empty($params->comment))
@@ -134,20 +140,25 @@ switch($action)
         }
         else
         {
-            $criteria->add_comments( urldecode($params->comment) );
+            $criteria->add_comments( $params->comment );
             $criteria->save_students_comments($params->qualID);
         }
         
         // Update session
-        update_session_qual($params->studentID, $params->qualID, $qualification);
+        if ($params->grid == 'student'){
+            update_session_qual($params->studentID, $params->qualID, $qualification);
+        } elseif ($params->grid == 'unit'){
+            update_session_unit($params->studentID, $params->unitID, $unit, $params->qualID);
+        }
         
         // Remove single quotes
+        $params->comment = urlencode($params->comment);
         $params->comment = str_replace("'", "", $params->comment);
                
                         
         // If we're in the single student/unit view, we don't want to update a cell as we don't have one
         if(!isset($params->singleUnitView)){
-            echo " updateCommentCell('{$params->element}', '{$params->comment}'); ";
+            echo " updateCommentCell('{$params->element}', '{$params->comment}', '{$params->imgID}'); ";
         }
         
     break;
@@ -155,7 +166,7 @@ switch($action)
     case 'unitComment':
         
         // Required params:
-        $req = array("qualID", "unitID", "studentID", "comment", "element");
+        $req = array("qualID", "unitID", "studentID", "comment", "element", "imgID");
         
         if (empty($params['comment'])){
             $params['comment'] = ' ';
@@ -165,16 +176,27 @@ switch($action)
         _valid($params->grid, $params, 2);
                 
         $params->comment = trim($params->comment);
+        $params->comment = urldecode($params->comment);
+        
+         // Datatables throws a major wobbly with even slightly weird characters, so going to ahve to remove anything that
+        // isn't simple
+        $params->comment = preg_replace("/[^a-z 0-9_\-\'\"\!\:\;\n\r\.\,\?\(\)\/]/i", "", $params->comment);
                 
-        $unit->set_comments( urldecode($params->comment) );
+        $unit->set_comments( $params->comment );
         $unit->update_comments($params->qualID, urldecode($params->comment));
+        
         // Update session
-        update_session_qual($params->studentID, $params->qualID, $qualification, $unit);
+        if ($params->grid == 'student'){
+            update_session_qual($params->studentID, $params->qualID, $qualification, $unit);
+        } elseif($params->grid == 'unit'){
+            update_session_unit($params->studentID, $params->unitID, $unit, $params->qualID);
+        }
         
         // Replace actual newlines with \n so JS can parse it properly
+        $params->comment = urlencode($params->comment);
         $params->comment = str_replace("'", '', $params->comment);
                 
-        echo " updateUnitCommentCell('{$params->element}', '{$params->comment}'); ";
+        echo " updateUnitCommentCell('{$params->element}', '{$params->comment}', '{$params->imgID}'); ";
         
     break;
 

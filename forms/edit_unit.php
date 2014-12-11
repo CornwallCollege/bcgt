@@ -145,6 +145,7 @@ if(isset($_POST['save']))
             }
             
             // reload unit
+            $loadParams->loadLevel = Qualification::LOADLEVELCRITERIA;
             $unit = Unit::get_unit_class_id($unitID, $loadParams);
             
             $successmsg = get_string('unitsaved', 'block_bcgt');
@@ -164,7 +165,7 @@ if(isset($_POST['save']))
 ////		{
 ////			redirect($CFG->wwwroot.'/mod/qualification/student_grid.php?sID='.$studentID.'&qID='.$qualID);
 ////		}
-		//redirect($CFG->wwwroot.'/blocks/bcgt/forms/my_dashboard.php?tab=adm');
+		//redirect($CFG->wwwroot.'/blocks/bcgt/forms/my_dashboard.php?tab=adm&cID='.$courseID);
 //	}
 }
 elseif(isset($_POST['cancel']))
@@ -196,10 +197,10 @@ $url = '/blocks/bcgt/forms/edit_unit.php';
 $PAGE->set_url($url, array());
 $PAGE->set_title(get_string('editunit', 'block_bcgt'));
 $PAGE->set_heading(get_string('editunit', 'block_bcgt'));
-$PAGE->set_pagelayout('login');
+$PAGE->set_pagelayout( bcgt_get_layout() );
 $PAGE->add_body_class('editunit');
-$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php','title');
-$PAGE->navbar->add(get_string('myDashboard', 'block_bcgt'),'my_dashboard.php?tab=dash','title');
+$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php?tab=track','title');
+//$PAGE->navbar->add(get_string('bcgtmydashboard', 'block_bcgt'),'my_dashboard.php?tab=dash','title');
 $PAGE->navbar->add(get_string('dashtabadm', 'block_bcgt'),'my_dashboard.php?tab=adm','title');
 $PAGE->navbar->add(get_string('editunit', 'block_bcgt'));
 $jsModule = array(

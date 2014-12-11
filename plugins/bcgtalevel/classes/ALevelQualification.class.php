@@ -18,7 +18,7 @@ class AlevelQualification extends Qualification{
     const INITIALFORMALASSESSMENTS = 4;
     const ASSubTypeID = 12;
     const A2SubTypeID = 13;
-    const DEFAULTINITIALWEIGHTINGS = 8;
+    const DEFAULTINITIALWEIGHTINGS = 9;
 
 	protected $ums;
     //this is an array with the assignment/criteriaid as the key
@@ -33,11 +33,11 @@ class AlevelQualification extends Qualification{
 		if($qualID != -1)
 		{
 			//gets the credits from the database
-			$creditsObj = ALevelQualification::retrieve_ums($qualID);
-			if($creditsObj)
-			{
-				$this->ums = $creditsObj->credits;
-			}
+//			$creditsObj = ALevelQualification::retrieve_ums($qualID);
+//			if($creditsObj)
+//			{
+//				$this->ums = $creditsObj->credits;
+//			}
 //			$assessments = ALevelQualification::retrieve_assessments($qualID);
 //			if($assessments)
 //			{
@@ -107,6 +107,35 @@ class AlevelQualification extends Qualification{
     {
         return AlevelQualification::ID;
     }
+    
+    protected function is_A2()
+    {
+        return false;
+    }
+    
+     /**
+     * Get the display name for the qual
+	 * This is level, type, subtype and name 
+     * @param type $long
+     * @param type $seperator
+     * @param type $exclusions
+     * @param type $returnType
+     * @return type
+     */
+	public function get_display_name($long = true, $seperator = ' ', $exclusions = array(), $returnType = 'String')
+	{
+        $qual = new stdClass();
+        $qual->family = '';
+        $qual->trackinglevel = '';
+        $qual->subtype = $this->subType->get_subtype();
+        $qual->subtypeshort = $this->subType->get_short_subtype();
+        $qual->name = $this->name;
+        $qual->additionalname = $this->additionalName;
+        $qual->levelid = $this->level->get_id();
+        return bcgt_get_qualification_display_name($qual, $long, $seperator, $exclusions, $returnType);
+	}
+    
+    
     
     public function get_assessments()
     {
@@ -187,6 +216,8 @@ class AlevelQualification extends Qualification{
         $retval->weightedIdField = 'bcgtweightedgradeid';
         $retval->teacherSetIdField = 'teacherset_targetid';
         $retval->table = 'targetgrade';
+        $retval->aspLocation = 'asplocation';
+        $retval->aspRecordID = 'asprecordid';
         return $retval;
     }
     
@@ -197,80 +228,80 @@ class AlevelQualification extends Qualification{
 	 */
 	public function get_edit_form_fields()
     {
-        //input for UMS
+//        //input for UMS
         $retval = "";
-        $retval .= "<div class='inputContainer'><div class='inputLeft'>".
-                "<label for='ums'><span class='required'>*</span>".
-                get_string('alevelums', 'block_bcgt')." : </label></div>";
-		$retval .= "<div class='inputRight'><input type='input' name='ums' ".
-                "id='ums' value='$this->ums'/></div></div>";
-        
-        //two columns. One for Units and one for assessments
-        $retval .= '<div id="bcgtColumnConainer" class="bcgt_two_c_container bcgt_float_container">';
-            //********************units
-        //bcgt_admin_left 
-            $retval .= '<div id="alevelunits" class="bcgt_col">';
-            $retval .= '<h3>'.get_string('units','block_bcgt').'</h3>';
-            $retval .= "<table align='center' id='aleveleUnitsTable'>";
-            $retval .= '<tr><th>'.get_string('unitname', 'block_bcgt').'</th>'.
-                    '<th>'.get_string('alevelunitums', 'block_bcgt').'</th></tr>';
+//        $retval .= "<div class='inputContainer'><div class='inputLeft'>".
+//                "<label for='ums'><span class='required'>*</span>".
+//                get_string('alevelums', 'block_bcgt')." : </label></div>";
+//		$retval .= "<div class='inputRight'><input type='input' name='ums' ".
+//                "id='ums' value='$this->ums'/></div></div>";
+//        
+//        //two columns. One for Units and one for assessments
+//        $retval .= '<div id="bcgtColumnConainer" class="bcgt_two_c_container bcgt_float_container">';
+//            //********************units
+//        //bcgt_admin_left 
+//            $retval .= '<div id="alevelunits" class="bcgt_col">';
+//            $retval .= '<h3>'.get_string('units','block_bcgt').'</h3>';
+//            $retval .= "<table align='center' id='aleveleUnitsTable'>";
+//            $retval .= '<tr><th>'.get_string('unitname', 'block_bcgt').'</th>'.
+//                    '<th>'.get_string('alevelunitums', 'block_bcgt').'</th></tr>';
+//            
+//            //new qual or old?
+//            if($this->id != -1)
+//            {
+//                $i=0;
+//                //then we are loading a previous qual
+//                foreach($this->units AS $unit)
+//                {
+//                    $i++;
+//                    $retval .= "<tr id='".$unit->get_id()."' class='unitRow'>".
+//                            "<td><input type='text' class='unitName' id='unitName".
+//                            $unit->get_id()."' name='unitName".$unit->get_id()."'".
+//                            "value='".$unit->get_name()."'/></td>";
+//                    $retval .= "<td><input type='text' name='unitUMS".$unit->get_id().
+//                            "' value='".$unit->get_ums()."'/></td>";
+//                    $retval .= "<td><input type='button' class='removeUnit'".
+//                            "name='remove' value='X'/></td>";
+//                    //this is so we know that the nth number of unit has the id of ...
+//                    $retval .= "<td><input type='hidden' name='unitID$i' value='".
+//                            $unit->get_id()."'/></td></tr>";
+//                }
+//            }
+//            else
+//            {
+//                //loading a brand new qual up
+//                $x = 1;
+//                if($this->is_A2())
+//                {
+//                    $x = 3;
+//                }
+//                for($i=1;$i<=AlevelQualification::INITIALUNITS;$i++)
+//                {
+//                    $unitName = get_string('unit', 'block_bcgt').$i;
+//                    if($this->is_A2())
+//                    {
+//                        $unitName = get_string('unit', 'block_bcgt').($i+2);
+//                    }
+//                    $retval .= "<tr id='$i' class='unitRow'><td><input type='text' class='unitName' name='unitName$i' id='unitName$i' value='$unitName'/></td>
+//                    <td><input type='text' name='unitUMS$i' value=''></td>
+//                    <td><input class='removeUnit' type='button' name='removeUnit' value='X'/></td></tr>";
+//                }
+//            }  
+//            $retval .= '</table>';
+//            //we need to know how many we have
+//            if($this->id != -1)
+//            {
+//                $countUnits = count($this->units);
+//            }
+//            else
+//            {
+//                $countUnits = AlevelQualification::INITIALUNITS;
+//            }
+//            $retval .= "<input type='hidden' name='noUnits' id='noUnits' value='$countUnits'/>";
+//            $retval .= "<input class='addUnit' id='addUnit' align='center' type='button' name='addUnitRow' value='Add new Unit'/>";
+//            $retval .= '</div>';
             
-            //new qual or old?
-            if($this->id != -1)
-            {
-                $i=0;
-                //then we are loading a previous qual
-                foreach($this->units AS $unit)
-                {
-                    $i++;
-                    $retval .= "<tr id='".$unit->get_id()."' class='unitRow'>".
-                            "<td><input type='text' class='unitName' id='unitName".
-                            $unit->get_id()."' name='unitName".$unit->get_id()."'".
-                            "value='".$unit->get_name()."'/></td>";
-                    $retval .= "<td><input type='text' name='unitUMS".$unit->get_id().
-                            "' value='".$unit->get_ums()."'/></td>";
-                    $retval .= "<td><input type='button' class='removeUnit'".
-                            "name='remove' value='X'/></td>";
-                    //this is so we know that the nth number of unit has the id of ...
-                    $retval .= "<td><input type='hidden' name='unitID$i' value='".
-                            $unit->get_id()."'/></td></tr>";
-                }
-            }
-            else
-            {
-                //loading a brand new qual up
-                $x = 1;
-                if($this->is_A2())
-                {
-                    $x = 3;
-                }
-                for($i=1;$i<=AlevelQualification::INITIALUNITS;$i++)
-                {
-                    $unitName = get_string('unit', 'block_bcgt').$i;
-                    if($this->is_A2())
-                    {
-                        $unitName = get_string('unit', 'block_bcgt').($i+2);
-                    }
-                    $retval .= "<tr id='$i' class='unitRow'><td><input type='text' class='unitName' name='unitName$i' id='unitName$i' value='$unitName'/></td>
-                    <td><input type='text' name='unitUMS$i' value=''></td>
-                    <td><input class='removeUnit' type='button' name='removeUnit' value='X'/></td></tr>";
-                }
-            }  
-            $retval .= '</table>';
-            //we need to know how many we have
-            if($this->id != -1)
-            {
-                $countUnits = count($this->units);
-            }
-            else
-            {
-                $countUnits = AlevelQualification::INITIALUNITS;
-            }
-            $retval .= "<input type='hidden' name='noUnits' id='noUnits' value='$countUnits'/>";
-            $retval .= "<input class='addUnit' id='addUnit' align='center' type='button' name='addUnitRow' value='Add new Unit'/>";
-            $retval .= '</div>';
-            
-//            if($useFAs = get_config('bcgt', 'alevelusefa') && 
+//            if($useFAs = get_config('bcgt', 'usefa') && 
 //                    !$manageCentrally = get_config('bcgt', 'alevelManageFACentrally'))
 //            {
 //                //****************Formal Assessments
@@ -409,8 +440,10 @@ class AlevelQualification extends Qualification{
 //                $retval .= '</div>';
 //            }
             $retval .= '</div>';
-            $useWeightings = get_config('bcgt', 'alevelallowalpsweighting');
-            if($useWeightings)
+            $useWeightings = get_config('bcgt', 'allowalpsweighting');
+            $qualWeighting = new QualWeighting();
+            $familyWeighted = $qualWeighting->is_family_using_weigtings(str_replace(' ','',AlevelQualification::NAME));     
+            if($useWeightings && $familyWeighted)
             {
             
                 //******* Weightings **********/
@@ -469,7 +502,7 @@ class AlevelQualification extends Qualification{
                         $retval .= '<td><input type="text" name="weightCoef'.$i.
                                 '" value=""/></td>';
                         $retval .= '<td><input type="checkbox" ';
-                        if($this->weightingPercentage[$i] == get_config('bcgt', 'aleveldefaultalpsperc'))
+                        if($this->weightingPercentage[$i] == get_config('bcgt', 'defaultalpsperc'))
                         {
                             $retval .= 'checked="checked"';
                         }
@@ -501,7 +534,7 @@ class AlevelQualification extends Qualification{
 	public function get_submitted_edit_form_data()
     {
         //get the inputed UMS, units and assessments
-        $this->ums = $_POST['ums'];
+//        $this->ums = $_POST['ums'];
     }
     
     public static function has_formal_assessments()
@@ -523,7 +556,7 @@ class AlevelQualification extends Qualification{
 		$dataobj->name = $this->name;
         $dataobj->additionalname = $this->additionalName;
 		$dataobj->code = $this->code;
-		$dataobj->credits = $this->ums;
+		$dataobj->credits = 0;
         $dataobj->noyears = $this->noYears;
 		$targetQualID = parent::get_target_qual($typeID);
 		$dataobj->bcgttargetqualid = $targetQualID;
@@ -532,20 +565,21 @@ class AlevelQualification extends Qualification{
         logAction(LOG_MODULE_GRADETRACKER, LOG_ELEMENT_GRADETRACKER_QUALIFICATION, LOG_VALUE_GRADETRACKER_INSERTED_QUAL, null, $this->id, null, null, null);
 			
 		//then build up the unit class and insert those. These have to be done here in this order
-        if($insertUnit)
-        {
-            $this->get_unit_details(false);
-            $this->insert_units();
-        }
+//        if($insertUnit)
+//        {
+//            $this->get_unit_details(false);
+//            $this->insert_units();
+//        }
         
-//        if($useFAs = get_config('bcgt', 'alevelusefa') && 
+//        if($useFAs = get_config('bcgt', 'usefa') && 
 //                    !$manageCentrally = get_config('bcgt', 'alevelManageFACentrally'))
 //        {
 //            $this->get_assessment_details(false);
 //            $this->insert_assessments();
 //        }
-        
-        if($insertWeightings && $useWeightings = get_config('bcgt', 'alevelallowalpsweighting'))
+        $qualWeighting = new QualWeighting();
+        $familyWeighted = $qualWeighting->is_family_using_weigtings(str_replace(' ','',AlevelQualification::NAME)); 
+        if($insertWeightings && $useWeightings = get_config('bcgt', 'allowalpsweighting') && $familyWeighted)
         {
             $this->get_weighting_details(false);
             $this->insert_weightings();
@@ -561,7 +595,7 @@ class AlevelQualification extends Qualification{
     {
         $this->delete_qual_main();
     }
-	
+
 	/**
 	 * Updates the qual
 	 * For each type there maybe specific things we need to do
@@ -575,21 +609,23 @@ class AlevelQualification extends Qualification{
         $dataobj->additionalname = $this->additionalName;
 		$dataobj->code = $this->code;
         $dataobj->noyears = $this->noYears;
-		$dataobj->credits = $this->ums;
+		$dataobj->credits = 0;
 		$DB->update_record("block_bcgt_qualification", $dataobj);
         logAction(LOG_MODULE_GRADETRACKER, LOG_ELEMENT_GRADETRACKER_QUALIFICATION, LOG_VALUE_GRADETRACKER_UPDATED_QUAL, null, $this->id, null, null, null);
         
 		//lets updae the unit information
-        $this->get_unit_details(true);
-        $this->update_units();
-//        if($useFAs = get_config('bcgt', 'alevelusefa') && 
+//        $this->get_unit_details(true);
+//        $this->update_units();
+//        if($useFAs = get_config('bcgt', 'usefa') && 
 //                    !$manageCentrally = get_config('bcgt', 'alevelManageFACentrally'))
 //        {
 //            $this->get_assessment_details(true);
 //            $this->update_assessments();
 //        }
-        $useWeightings = get_config('bcgt', 'alevelallowalpsweighting');
-        if($useWeightings)
+        $qualWeighting = new QualWeighting();
+        $familyWeighted = $qualWeighting->is_family_using_weigtings(str_replace(' ','',AlevelQualification::NAME)); 
+        $useWeightings = get_config('bcgt', 'allowalpsweighting');
+        if($useWeightings && $familyWeighted)
         {
             $this->get_weighting_details(true);
             $this->update_weightings();
@@ -839,9 +875,9 @@ class AlevelQualification extends Qualification{
         $displayBody = true;
         //show the view and edit simple buttons. 
         global $COURSE, $PAGE, $CFG;
-        $retval = '<div class="bcgtgridbuttons">';
-        $retval .= "<input type='submit' id='viewsimple' name='viewsimple' class='gridbuttonswitch viewsimple' value='View Simple'/>";
-        $retval .= "<br>";
+        
+        $fromPortal = (isset($_SESSION['pp_user'])) ? true : false;
+        
         $courseID = optional_param('cID', -1, PARAM_INT);
         $context = context_course::instance($COURSE->id);
         if($courseID != -1)
@@ -854,20 +890,43 @@ class AlevelQualification extends Qualification{
         {
             $editing = true;
         }
-        if(has_capability('block/bcgt:editstudentgrid', $context))
-        {	
-            $retval .= "<input type='submit' id='editsimple' name='editsimple' class='gridbuttonswitch editsimple' value='Edit Simple'/>";
-            if($editing)
-            {   
-                $retval .= "<input type='submit' id='save' name='save' class='gridbuttonswitch gridsave' value='Save'/>";
+        
+        $retval = '<div id="bcgtgridsummary bcgtalevelgrid">';
+        
+        if (!$fromPortal)
+        {
+            
+            $retval .= '<div class="bcgtgridbuttons">';
+            $retval .= "<input type='submit' id='viewsimple' name='viewsimple' class='gridbuttonswitch viewsimple' value='View Simple'/>";
+            $retval .= "<br>";
+            
+            if(has_capability('block/bcgt:editstudentgrid', $context))
+            {	
+                $retval .= "<input type='submit' id='editsimple' name='editsimple' class='gridbuttonswitch editsimple' value='Edit Simple'/>";
+                if($editing)
+                {   
+                    $retval .= "<input type='submit' id='save' name='save' class='gridbuttonswitch gridsave' value='Save'/>";
+                }
             }
+
+            if (!$externalView && has_capability('block/bcgt:printstudentgrid', $context)){
+                $retval .= "<a href='{$CFG->wwwroot}/blocks/bcgt/grids/print_grid.php?sID={$this->studentID}&qID={$this->id}' target='_blank'><input type='button' class='gridbuttonswitch printsimple' value='Print Grid'/></a>";
+            }
+
+            $retval .= "</div>";
+
         }
         
-        if ($externalView && has_capability('block/bcgt:printstudentgrid', $context)){
-            $retval .= "<a href='{$CFG->wwwroot}/blocks/bcgt/grids/print_grid.php?sID={$this->studentID}&qID={$this->id}' target='_blank'><input type='button' class='gridbuttonswitch printsimple' value='Print Grid'/></a>";
+        //if we are using alsp reporting
+        //then show the alps coefficients
+        if(get_config('bcgt', 'calcultealpstempreports') 
+                        && has_capability('block/bcgt:seealpsreportsstudent', $context))
+        {
+            $retval .= $this->display_coefficient_summary_table();
         }
+        $retval .= '</div>';
         
-        $retval .= "</div><br clear='all' /><br />";
+        $retval .= "<br clear='all' /><br />";
         $retval .= '<input type="hidden" id="grid" name="g" value="'.$grid.'"/>';
         $jsModule = array(
             'name'     => 'mod_bcgtalevel',
@@ -880,12 +939,14 @@ class AlevelQualification extends Qualification{
         load_javascript();
         $seeTargetGrade = false;
         $seeWeightedTargetGrade = false;
-        if(has_capability('block/bcgt:viewtargetgrade', $context))
+        if(has_capability('block/bcgt:viewtargetgrade', $context) || $fromPortal)
         {
             $seeTargetGrade = true;
         }
-        if(has_capability('block/bcgt:viewweightedtargetgrade', $context) && get_config('bcgt', 
-                    'alevelallowalpsweighting'))
+        $qualWeighting = new QualWeighting();
+        $familyWeighted = $qualWeighting->is_family_using_weigtings(str_replace(' ','',AlevelQualification::NAME));
+        if( (has_capability('block/bcgt:viewweightedtargetgrade', $context) && get_config('bcgt', 
+                    'allowalpsweighting') && $familyWeighted) || $fromPortal )
         {
             $seeWeightedTargetGrade = true;
         }
@@ -899,10 +960,13 @@ class AlevelQualification extends Qualification{
         {
             $seeBoth = true;
         }
-        $retval .= $this->display_summary_table($seeTargetGrade, $seeWeightedTargetGrade, $seeValueAdded, false, $seeBoth);
+        
+        if (!$fromPortal){
+            $retval .= $this->display_summary_table($seeTargetGrade, $seeWeightedTargetGrade, $seeValueAdded, false, $seeBoth);
+        }
         
         $retval .= '<div id="alevelStudentGridOuter" class="alevelgrid">';
-        if(get_config('bcgt', 'alevelusefa') && get_config('bcgt', 'alevelManageFACentrally') 
+        if(get_config('bcgt', 'usefa') 
                 && !get_config('bcgt', 'alevelLinkAlevelGradeBook'))
         {
             //then all of the subjects can be in one table
@@ -915,7 +979,10 @@ class AlevelQualification extends Qualification{
         {
             //else each subject needs to have its own table
             //go and get the quals. 
-            $studentsQuals = get_role_quals($this->studentID, 'student', '', AlevelQualification::FAMILYID);
+            require_once $CFG->dirroot . '/blocks/bcgt/plugins/bcgtbtec/lib.php';
+            $studentsQuals = get_role_quals($this->studentID, 'student', '', array(AlevelQualification::FAMILYID, BTECQualification::FAMILYID));
+            
+            
             if($studentsQuals)
             {
                 $i=0;
@@ -923,12 +990,24 @@ class AlevelQualification extends Qualification{
                 {
                     $i++;
                     $retval .= '<div class="alevelSingleQual">';
-                    $retval .= '<h2>'.bcgt_get_qualification_display_name($qual, 
-                                true, ' ', array('family', 'trackinglevel')).'</h2>';
+                    $retval .= '<h2>';
+                    
+                    if ($fromPortal){
+                    
+                        $retval .= bcgt_get_qualification_display_name($qual, 
+                                true, ' ', array('family', 'trackinglevel'));
+                        
+                    } else {
+                        $retval .= '<a href="'.$CFG->wwwroot.'/blocks/bcgt/grids/student_grid.php?qID='.$qual->id.'&sID='.$this->studentID.'&g=s">'.bcgt_get_qualification_display_name($qual, 
+                                true, ' ', array('family', 'trackinglevel')).'</a>';
+                    }
+                            
+                    $retval .= '</h2>';
                     if($qual->id != $this->id)
                     {
                         //need to get the qual from the session.
                         $qualification = get_student_qual_from_session($qual->id, $this->studentID);
+                        $qualification->set_student_id($this->studentID);
                         $retval .= $qualification->display_student_grid_actual($editing, $formalAssessments, $gradebook, $displayBody);
                     }
                     else
@@ -938,8 +1017,200 @@ class AlevelQualification extends Qualification{
                     $retval .= '</div>';
                 }
             }
-        }
+        } 
         $retval .= '</div>';
+        if(get_config('bcgt','showarchivegriddata'))
+        {
+            $retval .= '<div id="archivegriddata">';
+            $archive = new Archive(Archive::STUDENTARCHIVETYPE, Archive::FORMALASSESSMENTSVALUE);
+            $jsonString = $archive->get_archive($this->studentID);
+            if($jsonString)
+            {
+                $retval .= '<h2>'.get_string('historicalqualifications','block_bcgt').'</h2>';
+                $jsonObject = json_decode($jsonString);
+                $retval .= $this->create_stu_grid_display_from_archive($jsonObject, $seeTargetGrade, $seeWeightedTargetGrade, $seeBoth);
+            }   
+            $retval .= '</div>';    
+        }
+        return $retval;
+    }
+    
+    protected function create_stu_grid_display_from_archive($archive, $seeTargetGrade = false, $seeWeightedTargetGrade = false, $seeBoth = false)
+    {
+        global $COURSE;
+        $retval = '';
+        $quals = $archive->quals;
+        $projects = $archive->projects;
+        $colspanProjects = 0;
+        foreach($projects AS $project)
+        {
+            $colspanProjects++;
+        }
+        $courseID = optional_param('cID', -1, PARAM_INT);
+        $context = context_course::instance($COURSE->id);
+        if($courseID != -1)
+        {
+            $context = context_course::instance($courseID);
+        }
+        $retval .= '<table class="archivestudentdata">';
+        $retval .= '<thead>';
+        //are we showing the alps reports?
+        $seeAlps = false;
+        if(get_config('bcgt', 'calcultealpstempreports') 
+                && has_capability('block/bcgt:seealpsreportsstudent', $context))
+        {
+            $seeAlps = true;
+        }
+        $colspan = 1;
+        if(($seeBoth && $seeTargetGrade) || (!$seeBoth && !$seeWeightedTargetGrade && $seeTargetGrade))
+        {
+            $colspan++;
+        }
+        if($seeWeightedTargetGrade)
+        {
+            $colspan++;
+        }
+        if(has_capability('block/bcgt:viewweightedtargetgrade', $context) && get_config('bcgt', 
+                'allowalpsweighting'))
+        {
+            $string = 'target';
+            if($seeTargetGrade)
+            {
+                $string = 'specifictargetgrade';
+            }
+        }
+        $showCeta = false;
+        if(get_config('bcgt', 'aleveluseceta'))
+        {
+            $showCeta = true;
+        }
+        $rowSpan = 1;
+        $showFAHeader = false;
+        if(get_config('bcgt', 'usefa'))
+        {
+            $showFAHeader = true;
+            $rowSpan = 3;
+        }
+        $header = '<tr><th rowspan="'.$rowSpan.'">'.get_string('qual','block_bcgt').'</th>';
+        // | Target |
+        if(($seeBoth && $seeTargetGrade) || (!$seeBoth && !$seeWeightedTargetGrade && $seeTargetGrade))
+        {
+            $header .= '<th rowspan="'.$rowSpan.'">'.get_string('target', 'block_bcgt').'</th>';
+        }
+        if($seeWeightedTargetGrade)
+        {
+            $header .= '<th rowspan="'.$rowSpan.'">'.get_string($string, 'block_bcgt').'</th>';
+        }
+        $subHeadingColspan = 1;
+        if($showCeta)
+        {
+            //then there are two columns
+            $colspanProjects = $colspanProjects * 2;
+            $subHeadingColspan = $subHeadingColspan * 2;
+        }
+        if($showFAHeader)
+        {
+            $header .= '<th colspan="'.$colspanProjects.'">'.get_string('formalassessments', 'block_bcgt').'</th>';
+        }
+        $header .= '</tr>';
+        
+        //then we need the subheading, which is for every
+        //project
+        $subHeading = '';
+        if($showFAHeader)
+        {
+            $header .= '<tr>';
+            foreach($projects AS $project)
+            {
+                $header .= '<th colspan="'.$subHeadingColspan.'">'.$project.'</th>';
+                $subHeading .= '<th>'.get_string('grade','block_bcgt').'</th>';
+                if($showCeta)   
+                {
+                    $subHeading .= '<th>'.get_string('ceta','block_bcgt').'</th>';
+                }
+            }
+            $header .= '</tr>';
+        }
+        $retval .= $header;
+        $retval .= $subHeading;
+        $retval .= '</thead>';
+        $retval .= '<tbody>';
+        foreach($quals AS $qual)
+        {
+            $qualProjects = $qual->assessments;
+            $retval .= '<tr>';
+            $retval .= '<td>'.$qual->qual.'</td>';
+            if(($seeBoth && $seeTargetGrade) || (!$seeBoth && !$seeWeightedTargetGrade && $seeTargetGrade))
+            {
+                $retval .= '<td>';
+                if(isset($qual->targetgrade))
+                {
+                    $retval .= $qual->targetgrade;
+                }
+                $retval .= '</td>';
+            }
+            if($seeWeightedTargetGrade)
+            {
+                $retval .= '<td>';
+                if(isset($qual->weightedtargetgrade))
+                {
+                    $retval .= $qual->weightedtargetgrade;
+                }
+                $retval .= '</td>';
+            }
+            if($showFAHeader)
+            {
+                foreach($projects AS $project)
+                {
+                    //does this project (the project name)
+                    //exist on this qual?
+                    if(isset($qualProjects->$project))
+                    {
+                        $retval .= '<td>';
+                        $qualProject = $qualProjects->$project;
+                        $projectGrade = isset($qualProject->grade) ? $qualProject->grade : '';
+                        $projectGradeScore = ($seeAlps && isset($qualProject->gradescore)) ? $qualProject->gradescore : '';
+                        $projectGradeCoef = ($seeAlps && isset($qualProject->gradecoef)) ? $qualProject->gradecoef : '';
+                        $retval .= '<span class="alpstemp'.$projectGradeScore.'">';
+                        $retval .= $projectGrade;
+                        if($seeAlps)
+                        {
+                            $retval .= ' '.$projectGradeScore;
+                            $retval .= '<sub class="alpsscore">'.$projectGradeCoef.'</sub>';
+                        }
+                        $retval . '</span>';
+                        $retval .= '</td>';
+                        if($showCeta)
+                        {
+                            $retval .= '<td>';
+                            $projectCeta = isset($qualProject->ceta) ? $qualProject->ceta : '';
+                            $projectCetaScore = ($seeAlps && isset($qualProject->cetascore)) ? $qualProject->cetascore : '';
+                            $projectCetaCoef = ($seeAlps && isset($qualProject->cetacoef)) ? $qualProject->cetacoef : '';
+                            $retval .= '<span class="alpstemp'.$projectCetaScore.'">';
+                            $retval .= $projectCeta;
+                            if($seeAlps)
+                            {
+                                $retval .= ' '.$projectCetaScore;
+                                $retval .= '<sub class="alpsscore">'.$projectCetaCoef.'</sub>';
+                                
+                            }
+                            $retval . '</span>';
+                            $retval .= '</td>';
+                        }
+                    }
+                    else
+                    {
+                        $retval .= '<td></td>';
+                        if($showCeta)
+                        {
+                            $retval .= '<td></td>';
+                        }
+                    }
+                }
+            }
+            $retval .= '</tr>';
+        }
+        $retval .= '</tbody></table>';
         return $retval;
     }
     
@@ -951,22 +1222,240 @@ class AlevelQualification extends Qualification{
         //create the header
         $id = ($print) ? 'printGridTable' : 'alevelStudentGridQ'.$this->id;
         $retval = '<table class="alevelStudentsGridTables" id="'.$id.'">';
-            $retval .= $this->get_display_grid_header(false, $formalAssessments, $gradebook, true);
+            $retval .= $this->get_display_grid_header(false, $formalAssessments, $gradebook, true, $print);
             $retval .= '<tbody>';
             if($displayBody)
             {  
-                $retval .= $this->display_student_grid_data($editing, false, $formalAssessments, $gradebook, false, true);
+                $retval .= $this->display_student_grid_data($editing, false, $formalAssessments, $gradebook, false, true, $print);
             }
             $retval .= '</tbody>';
         $retval .= '</table>';
         return $retval;
     }
     
-    protected function get_display_grid_header($students = true, $formalAssessments = false, $gradebook = false, $displaySubject = false)
+    protected function get_display_grid_header($students = true, $formalAssessments = false, $gradebook = false, $displaySubject = false, $print = false)
     {
-        global $CFG, $COURSE;
+        global $CFG, $COURSE, $printGrid;
+        
+        $fromPortal = (isset($_SESSION['pp_user'])) ? true : false;
+        
         $useGradeBook = false;
-        $retval = '<thead><tr>';
+        $courseID = optional_param('cID', -1, PARAM_INT);
+        $groupingID = optional_param('grID', -1, PARAM_INT);
+        $context = context_course::instance($COURSE->id);
+        if($courseID != -1)
+        {
+            $context = context_course::instance($courseID);
+        }
+        //are we showing the alps reports?
+        $seeAlps = false;
+        if(get_config('bcgt', 'calcultealpstempreports') 
+                && has_capability('block/bcgt:seealpsreportsstudent', $context))
+        {
+            $seeAlps = true;
+        }
+        
+        $seeBoth = false;
+        if(has_capability('block/bcgt:viewbothweightandnormaltargetgrade', $context))
+        {
+            $seeBoth = true;
+        }
+        
+        $seeTargetGrade = false;
+        if(has_capability('block/bcgt:viewtargetgrade', $context) || $fromPortal)
+        {
+            $seeTargetGrade = true;
+        }
+        // | Weighted |
+        $seeWeightedGrade = false;
+        $qualWeighting = new QualWeighting();
+        $familyWeighted = $qualWeighting->is_family_using_weigtings(str_replace(' ','',AlevelQualification::NAME));
+        if( (has_capability('block/bcgt:viewweightedtargetgrade', $context) || $fromPortal) && get_config('bcgt', 
+                'allowalpsweighting') && $familyWeighted)
+        {
+            $string = 'target';
+            if($seeTargetGrade)
+            {
+                $string = 'specifictargetgrade';
+            }
+            $seeWeightedGrade = true;
+        }
+        $gradeBookAlpsHeader = '';
+        $linkToGradeBook = get_config('bcgt', 'alevelLinkAlevelGradeBook');        
+        if($linkToGradeBook)
+        {
+            //this could be coming from subject or student grids.
+            //if we are showing students, then its the course in general
+            $this->get_gradebook_for_grid($students, $print);
+            if($this->gradebook && $this->gradebook->entriescount > 0)
+            {
+                $useGradeBook = true;
+                $gradeBookHeader = '<th colspan="'.$this->gradebook->entriescount.'">'.get_string('gradebook', 'block_bcgt').'</th>';
+                $gradeBookAlpsHeader = $this->gradebook->alpsheader;
+            }
+        } 
+        $showCeta = false;
+        $multiplyer = 1;
+        if(get_config('bcgt', 'aleveluseceta'))
+        {
+            $showCeta = true;
+            $multiplyer = 2;
+        }
+        
+        if ($fromPortal || $printGrid){
+            $multiplyer++;
+        }
+        
+        $subHead = '';
+        $header = '';
+        $showFAHeader = false;
+        $alpsHead = '';
+        if(get_config('bcgt', 'usefa'))
+        {
+            $showFAHeader = true;
+            $projects = $this->get_projects();
+            //now we need to display the latest formalAssessment/or all
+            if($projects)
+            {
+                //are we showing one?
+                if($formalAssessments)
+                {
+                    $link = $CFG->wwwroot.'/blocks/bcgt/grids/ass.php?qID='.$this->id.'&sID='.$this->studentID.'&v=sg';
+                    if($students)
+                    {
+                        //then we are looking at the subject grid
+                        $link = $CFG->wwwroot.'/blocks/bcgt/grids/ass.php?qID='.$this->id.'&sID=-1&v=qg';
+                    }
+                    //then we are showing more than one
+                    //lets reorder backwards
+                    
+                    foreach($projects AS $project)
+                    {
+                        $alps = null;
+                        if($print && !$students)
+                        {
+                            $temp = $this->get_user_fa_ind_alps_temp($this->studentID, $project->get_id(), true);
+                            $display = bcgt_display_alps_temp($temp, true);
+                            $alps = new stdClass();
+                            $alps->grade = $display;
+                            
+                            $temp = $this->get_user_ceta_ind_alps_temp($this->studentID, $project->get_id(), true);
+                            $display = bcgt_display_alps_temp($temp, true);
+                            $alps->ceta = $display;
+                        }
+                        elseif($print && $students)
+                        {
+                            $temp = $this->get_class_fa_ind_alps_temp($project->get_id(), $groupingID, true);
+                            $display = bcgt_display_alps_temp($temp, true);
+                            $alps = new stdClass();
+                            $alps->grade = $display;
+                            
+                            $temp = $this->get_class_ceta_ind_alps_temp($project->get_id(), $groupingID, true);
+                            $display = bcgt_display_alps_temp($temp, true);
+                            $alps->ceta = $display;
+                        }
+                    
+                        $retvalObj = $project->get_project_heading(-1, $link, $this->id, $alps, $showCeta);
+                        $header .= $retvalObj->retval;
+                        $subHead .= $retvalObj->subHead;
+                        $alpsHead .= $retvalObj->alspHead;
+                    }
+                }
+                else
+                {
+                    //then we are just seeing one
+                    $project = reset($projects);
+                    $alps = null;
+                    if($print && !$students)
+                    {
+                        $temp = $this->get_user_fa_ind_alps_temp($this->studentid, $project->id, true);
+                        $display = bcgt_display_alps_temp($temp, true);
+                        $alps = new stdClass();
+                        $alps->grade = $display;
+
+                        $temp = $this->get_user_ceta_ind_alps_temp($this->studentid, $project->id, true);
+                        $display = bcgt_display_alps_temp($temp, true);
+                        $alps->ceta = $display;
+                    }
+                    elseif($print && $students)
+                    {
+                        $temp = $this->get_class_fa_ind_alps_temp($project->get_id(), $groupingID, true);
+                        $display = bcgt_display_alps_temp($temp, true);
+                        $alps = new stdClass();
+                        $alps->grade = $display;
+
+                        $temp = $this->get_class_ceta_ind_alps_temp($project->get_id(), $groupingID, true);
+                        $display = bcgt_display_alps_temp($temp, true);
+                        $alps->ceta = $display;
+                    }
+                    //just get one. 
+                    
+                    $retvalObj = $project->get_project_heading($project->id, $link, $this->id, $alps, $showCeta);
+                    $header .= $retvalObj->reval;
+                    $subHead .= $retvalObj->subHead;
+                    $alpsHead .= $retvalObj->alspHead;
+                }
+            }
+        }
+        
+        $retval = '<thead>';
+        if($seeAlps)
+        {
+            $colspan = 0;
+            if($students)
+            {
+                $columns = array('picture', 'username','name');
+                //need to get the global config record
+
+                $configColumns = get_config('bcgt','btecgridcolumns');
+                if($configColumns)
+                {
+                    $columns = explode(",", $configColumns);
+                }
+                $colspan = count($columns);
+            }
+            elseif($displaySubject)
+            {
+                $colspan = 1;
+            }
+            if(($seeBoth && $seeTargetGrade) || (!$seeBoth && !$seeWeightedGrade && $seeTargetGrade))
+            {
+                $colspan++;
+            }
+            if($seeWeightedGrade)
+            {
+                $colspan++;
+            }
+            if(get_config('bcgt', 'alevelusecalcpredicted'))
+            {
+                $colspan++;
+            }
+            if($showCeta)
+            {
+                $colspan++;
+            }
+            $retval .= '<tr>';
+            $retval .= '<th colspan="'.$colspan.'"><span alpstemp id="alpsclass_'.$this->id.'" class="alpsclass" qual="'.$this->id.'">';
+            if($print && $students)
+            {
+                $temp = $this->get_class_alps_temp($groupingID, true);
+                $display = bcgt_display_alps_temp($temp, true, ''.get_string('overall', 'block_bcgt').': ');
+                $retval .= $display;
+            }
+            $retval .= '</span></th>';
+            $retval .= '<th>'.get_string('alps', 'block_bcgt').'</th>';
+            if(get_config('bcgt', 'usefa') && $showFAHeader)
+            {
+                $retval .= $alpsHead;
+            }
+            if($useGradeBook)
+            {
+                $retval .= $gradeBookAlpsHeader;
+            }
+            $retval .= '</tr>';
+        }
+        
+        $retval .= '<tr>';
         $rowSpan = 3;
         if($students)
         {
@@ -979,36 +1468,6 @@ class AlevelQualification extends Qualification{
             $retval .= '<th rowspan="'.$rowSpan.'">'.get_string('subject', 'block_bcgt').'</th>';
         }
         // | Target |
-        $courseID = optional_param('cID', -1, PARAM_INT);
-        $context = context_course::instance($COURSE->id);
-        if($courseID != -1)
-        {
-            $context = context_course::instance($courseID);
-        }
-        
-        $seeBoth = false;
-        if(has_capability('block/bcgt:viewbothweightandnormaltargetgrade', $context))
-        {
-            $seeBoth = true;
-        }
-        
-        $seeTargetGrade = false;
-        if(has_capability('block/bcgt:viewtargetgrade', $context))
-        {
-            $seeTargetGrade = true;
-        }
-        // | Weighted |
-        $seeWeightedGrade = false;
-        if(has_capability('block/bcgt:viewweightedtargetgrade', $context) && get_config('bcgt', 
-                'alevelallowalpsweighting'))
-        {
-            $string = 'target';
-            if($seeTargetGrade)
-            {
-                $string = 'specifictargetgrade';
-            }
-            $seeWeightedGrade = true;
-        }
         if(($seeBoth && $seeTargetGrade) || (!$seeBoth && !$seeWeightedGrade && $seeTargetGrade))
         {
             $retval .= '<th rowspan="'.$rowSpan.'">'.get_string('target', 'block_bcgt').'</th>';
@@ -1027,16 +1486,12 @@ class AlevelQualification extends Qualification{
         {
             $retval .= '<th rowspan="'.$rowSpan.'">'.get_string('ceta', 'block_bcgt').'</th>';
         }
-        
-        $showCeta = false;
-        $multiplyer = 1;
-        //then we are showing multiple
-        if(get_config('bcgt', 'aleveluseceta'))
+        if($seeAlps)
         {
-            $showCeta = true;
-            $multiplyer = 2;
+            $retval .= '<th rowspan="'.$rowSpan.'"></th>';
         }
-        if(get_config('bcgt', 'alevelusefa'))
+
+        if(get_config('bcgt', 'usefa'))
         {
             if($formalAssessments)
             {
@@ -1048,55 +1503,15 @@ class AlevelQualification extends Qualification{
 
             $retval .= '<th colspan="'.$columnSpan.'">'.get_string('formalassessments', 'block_bcgt').'</th>';
         }
-        $linkToGradeBook = get_config('bcgt', 'alevelLinkAlevelGradeBook');        
-        if($linkToGradeBook)
+        if($useGradeBook)
         {
-            //this could be coming from subject or student grids. 
-            $this->get_gradebook_for_grid($students);
-            if($this->gradebook && $this->gradebook->entriescount > 0)
-            {
-                $useGradeBook = true;
-                $retval .= '<th colspan="'.$this->gradebook->entriescount.'">'.get_string('gradebook', 'block_bcgt').'</th>';
-            }
+            $retval .= $gradeBookHeader;
         }
         $retval .= '</tr>';
         $retval .= '<tr>';
-        $subHead = '';
-        if(get_config('bcgt', 'alevelusefa'))
+        if($showFAHeader)
         {
-            $projects = $this->get_projects();
-            //now we need to display the latest formalAssessment/or all
-            if($projects)
-            {
-                //are we showing one?
-                if($formalAssessments)
-                {
-                    $link = $CFG->wwwroot.'/blocks/bcgt/grids/ass.php?qID='.$this->id.'&sID='.$this->studentID.'&v=sg';
-                    if($students)
-                    {
-                        //then we are looking at the subject grid
-                        $link = $CFG->wwwroot.'/blocks/bcgt/grids/ass.php?qID='.$this->id.'&sID=-1&v=qg';
-                    }
-                    
-                    //then we are showing more than one
-                    //lets reorder backwards
-                    foreach($projects AS $project)
-                    {
-                        $retvalObj = $project->get_project_heading($showCeta, $link);
-                        $retval .= $retvalObj->retval;
-                        $subHead .= $retvalObj->subHead;
-                    }
-                }
-                else
-                {
-                    //just get one. 
-                    $project = reset($projects);
-                    $retvalObj = $project->get_project_heading($showCeta, $link);
-                    $retval .= $retvalObj->reval;
-                    $subHead .= $retvalObj->subHead;
-                }
-            }
-            
+            $retval .= $header;
         }
         if($useGradeBook)
         {
@@ -1112,7 +1527,7 @@ class AlevelQualification extends Qualification{
         return $retval;
     }
     
-    protected function display_all_student_grids($editing, $formalAssessments, $gradebook)
+    protected function display_all_student_grids($editing, $formalAssessments, $gradebook, $printing = false)
     {
         //get all of the grids/quals into the one table.
         //only happens where the formal assessments are centrally managed
@@ -1125,19 +1540,19 @@ class AlevelQualification extends Qualification{
         $gradebook = true;
         $retval = '<table class="alevelAllStudentsGridTables" id="alevelStudentGrid">';
         $retval .= '<thead>';
-        $retval .= $this->get_display_grid_header(false, $formalAssessments, $gradebook, $displayBody);
+        $retval .= $this->get_display_grid_header(false, $formalAssessments, $gradebook, $displayBody, $printing);
         $retval .= '</thead>';
         $retval .= '<tbody>';
         if($displayBody)
         {
-            $retval .= $this->get_all_students_grid_data($editing, $formalAssessments, $gradebook, $displayBody);
+            $retval .= $this->get_all_students_grid_data($editing, $formalAssessments, $gradebook, $displayBody, $printing);
         }
         $retval .= '</tbody>';
         $retval .= '</table>';
         return $retval;
     }
     
-    protected function get_all_students_grid_data($editing, $formalAssessments, $gradebook, $displayBody)
+    protected function get_all_students_grid_data($editing, $formalAssessments, $gradebook, $displayBody, $printing = false)
     {
         $retval = '';
         $studentsQuals = get_role_quals($this->studentID, 'student', '', AlevelQualification::FAMILYID);
@@ -1151,11 +1566,11 @@ class AlevelQualification extends Qualification{
                     //need to get the qual from the session.
                     $qualification = get_student_qual_from_session($qual->id, $this->studentID);
                     $qualification->get_projects();
-                    $retval .= $qualification->display_student_grid_data($editing, false, $formalAssessments, $gradebook, false, $displayBody);
+                    $retval .= $qualification->display_student_grid_data($editing, false, $formalAssessments, $gradebook, false, $displayBody, $printing);
                 }
                 else
                 {
-                    $retval .= $this->display_student_grid_data($editing, false, $formalAssessments, $gradebook, false, $displayBody);
+                    $retval .= $this->display_student_grid_data($editing, false, $formalAssessments, $gradebook, false, $displayBody, $printing);
                 }
                 $retval .= '</tr>';
             }
@@ -1164,7 +1579,7 @@ class AlevelQualification extends Qualification{
     }
     
     public function display_student_grid_data($editing = false, $displayStudents = true, 
-            $formalAssessments = false, $gradebook = false, $ajaxCall = false, $displaySubject = false)
+            $formalAssessments = false, $gradebook = false, $ajaxCall = false, $displaySubject = false, $print = false)
     {
         global $CFG;
         if($displayStudents)
@@ -1183,15 +1598,18 @@ class AlevelQualification extends Qualification{
         }
         else
         {
-            $retval = $this->get_single_grid_row($editing, false, $formalAssessments, $gradebook, $ajaxCall, $displaySubject);
+            $retval = $this->get_single_grid_row($editing, false, $formalAssessments, $gradebook, $ajaxCall, $displaySubject, $print);
         }
         return $retval;
     }
     
     protected function get_single_grid_row($editing, $multipleStudents, 
-            $formalAssessments, $gradebook, $ajaxCall = false, $displaySubject = false)
+            $formalAssessments, $gradebook, $ajaxCall = false, $displaySubject = false, $printing = false)
     {
-        global $CFG, $COURSE;
+        global $CFG, $COURSE, $printGrid;
+        
+        $fromPortal = (isset($_SESSION['pp_user'])) ? true : false;
+
         $courseID = optional_param('cID', -1, PARAM_INT);
         $context = context_course::instance($COURSE->id);
         if($courseID != -1)
@@ -1223,6 +1641,13 @@ class AlevelQualification extends Qualification{
         //for this get the target grade
         //for this get the predicted grade
         //for this get the ceta grade
+        $seeUcas = false;
+        //go and get the summary. 
+        if(get_config('bcgt', 'showucaspoints') 
+                && has_capability('block/bcgt:seeucaspoints', $context))
+        {
+            $seeUcas = true;
+        }
         $summary = $this->get_summary_information($this->id);
         $targetGradeID = -1;
         $targetGrade = '';
@@ -1264,7 +1689,7 @@ class AlevelQualification extends Qualification{
                 $seeBoth = true;
             }
             
-            if(has_capability('block/bcgt:viewtargetgrade', $context))
+            if(has_capability('block/bcgt:viewtargetgrade', $context) || $fromPortal)
             {
                 $seeTargetGrade = true;
             }
@@ -1272,29 +1697,51 @@ class AlevelQualification extends Qualification{
             $predictedGrade = 'N/A';
             // | Weighted |
             $seeWeightedGrade = false;
-            if(has_capability('block/bcgt:viewweightedtargetgrade', $context) && get_config('bcgt', 
-                    'alevelallowalpsweighting'))
+            $qualWeighting = new QualWeighting();
+            $familyWeighted = $qualWeighting->is_family_using_weigtings(str_replace(' ','',AlevelQualification::NAME));
+            if( (has_capability('block/bcgt:viewweightedtargetgrade', $context) || $fromPortal) && get_config('bcgt', 
+                    'allowalpsweighting') && $familyWeighted)
             {
                 $seeWeightedGrade = true;
             }
             if(($seeBoth && $seeTargetGrade) | (!$seeBoth & !$seeWeightedGrade))
             {
-                $retval .= '<td>'.$targetGrade.'</td>';
+                $retval .= '<td>'.$targetGrade;
+                if($seeUcas && $summary)
+                {
+                    $retval .= '<sub class="ucas">{'.$summary->targetgradeucas.'}</sub>';
+                }
+                $retval .= '</td>';
             }
             if($seeWeightedGrade)
             {
-                $retval .= '<td>'.$weightedTargetGrade.'</td>';
+                $retval .= '<td>'.$weightedTargetGrade;
+                if($seeUcas && $summary)
+                {
+                    $retval .= '<sub class="ucas">{'.$summary->weightedtargetgradeucas.'}</sub>';
+                }
+                $retval .= '</td>';
             }
             if(get_config('bcgt', 'alevelusecalcpredicted'))
             {
-                $retval .= '<td>'.$predictedGrade.'</td>';
+                $retval .= '<td>'.$predictedGrade;
+                if($seeUcas && $summary)
+                {
+                    $retval .= '<sub class="ucas">{'.$summary->predictedgradeucas.'}</sub>';
+                }
+                $retval .= '</td>';
             }
             if(get_config('bcgt', 'aleveluseceta'))
             {
                 $ceta = $this->get_current_ceta($this->id, $this->studentID);
                 if($ceta && $ceta->grade)
                 {
-                    $retval .= '<td>'.$ceta->grade.'</td>';
+                    $retval .= '<td>'.$ceta->grade;
+                    if($seeUcas)
+                    {
+                        $retval .= '<sub class="ucas">{'.$ceta->ucaspoints.'}</sub>';
+                    }
+                    $retval .= '</td>';
                 }
                 else
                 {
@@ -1302,7 +1749,12 @@ class AlevelQualification extends Qualification{
                     if($cetas)
                     {
                         $ceta = end($cetas);
-                        $retval .= '<td><span class="projNonCurrentCeta">'.$ceta->grade.'</span></td>';
+                        $retval .= '<td><span class="projNonCurrentCeta">'.$ceta->grade;
+                        if($seeUcas)
+                        {
+                            $retval .= '<sub class="ucas">{'.$ceta->ucaspoints.'}</sub>';
+                        }
+                        $retval .= '</span></td>';
                         $cetaRank = $ceta->ranking;
                     }
                     else
@@ -1311,10 +1763,24 @@ class AlevelQualification extends Qualification{
                     }
                 }
             }
+            $seeAlps = false;
+            if(get_config('bcgt', 'calcultealpstempreports') 
+                    && has_capability('block/bcgt:seealpsreportsstudent', $context))
+            {
+                $seeAlps = true;
+                $retval .= '<td><span class="alpsceta alpstemp" qual="'.$this->id.'" user="'.$this->studentID.'" id="alpsceta_'.$this->id.'_'.$this->studentID.'_2">';
+                if($printing)
+                {
+                    $temp = $this->get_user_ceta_alps_temp($this->studentID, true);
+                    $display = bcgt_display_alps_temp($temp, true);
+                    $retval .= $display;
+                }
+                $retval .= '</span></td>';
+            }
         }
         $targetGradeObj = $this->userTargetGrades;
         $useWeighted = false;
-        if(has_capability('block/bcgt:viewweightedtargetgrade', $context))
+        if(has_capability('block/bcgt:viewweightedtargetgrade', $context) || $fromPortal)
         {
             $seeWeightedTargetGrade = true;
         }
@@ -1327,24 +1793,25 @@ class AlevelQualification extends Qualification{
                 $this->useWeighted = true;
             }
         }
-        if(get_config('bcgt', 'alevelusefa'))
+                
+        if(get_config('bcgt', 'usefa'))
         {
             //now we need to display the latest formalAssessment/or all
-            
+            //where is this loaded?
             $projects = $this->projects;
             if($projects)
             {
                 if($formalAssessments)
                 {
                     $retval .= $this->display_user_project_row($this->studentID, $projects, $editing, 
-            $targetGradeObj, $useWeighted);
+            $targetGradeObj, $useWeighted, -1, $seeUcas);
                 }
                 else
                 {
                     //just get one. 
                     $project = reset($projects);
                     $retval .= $this->display_user_project_row($this->studentID, $projects, $editing, 
-            $targetGradeObj, $useWeighted, $project->get_id());
+            $targetGradeObj, $useWeighted, $project->get_id(), $seeUcas);
                     
                 }
             }
@@ -1364,10 +1831,11 @@ class AlevelQualification extends Qualification{
         return $retval;
     }
     
-    public function get_gradebook_for_grid($courseInGeneral = false)
+    public function get_gradebook_for_grid($courseInGeneral = false, $print = false)
     {
         $retval = '';
         global $CFG;
+        $groupingID = optional_param('grID', -1, PARAM_INT);
         //is the student on that course?
         $header = '';
         $subHead = '';
@@ -1380,7 +1848,7 @@ class AlevelQualification extends Qualification{
         {
             $courses = $this->get_courses_by_user();
         }
-        
+        $alpsHeader = '';
         $entriesCount = 0;
         if($courses)
         {
@@ -1409,6 +1877,21 @@ class AlevelQualification extends Qualification{
                     $header .= '<th colspan="'.$colspan.'" class="'.$courseClass.' gradebook">'.$course->shortname.'</th>';
                     foreach($gradeBook AS $gradeObj)
                     {
+                        $alpsHeader .= '<th class="gradeBookAlps alpstemp" id="gbalps_'.$gradeObj->id.'_'.$course->id.'" 
+                            qual="'.$this->id.'" gID="'.$gradeObj->id.'" courseID="'.$course->id.'">';
+                        if($print && !$courseInGeneral)
+                        {
+                            $temp = $this->get_user_gbook_alps_temp($this->studentID, $gradeObj->id, $course->id, true);
+                            $display = bcgt_display_alps_temp($temp, true);
+                            $alpsHeader .= $display;
+                        }
+                        elseif($print && $courseInGeneral)
+                        {
+                            $temp = $this->get_class_gbook_alps_temp($gradeObj->id, $course->id, $groupingID, true);
+                            $display = bcgt_display_alps_temp($temp, true);
+                            $alpsHeader .= $display;
+                        }
+                        $alpsHeader .= '</th>';
                         $subHead .= '<th class="'.$courseClass.' gradebook">'.$gradeObj->itemname.'</th>';
                         if(!$courseInGeneral)
                         {
@@ -1497,30 +1980,36 @@ class AlevelQualification extends Qualification{
         $gradeBook->body = $body;
         $gradeBook->coursecount = count($courses);
         $gradeBook->entriescount = $entriesCount;
+        $gradeBook->alpsheader = $alpsHeader;
         
         $this->gradebook = $gradeBook;
         return $retval;
     }
     
-    public function get_user_course_gradebook($courseID)
+    public function get_user_course_gradebook($courseID, $itemID = -1)
     {
         global $DB;
-        $sql = "SELECT distinct(items.id), items.itemname, items.itemtype,items.itemmodule, 
+        $sql = "SELECT distinct(items.id), items.itemname, items.itemtype,items.itemmodule, items.sortorder, 
             scale.scale 
             FROM {course} course 
             JOIN {context} context ON context.instanceid = course.id
             JOIN {role_assignments} roleass ON roleass.contextid = context.id 
-            JOIN {user} user ON user.id = roleass.userid
+            JOIN {user} u ON u.id = roleass.userid
             JOIN {grade_items} items ON items.courseid = course.id
             LEFT OUTER JOIN {scale} scale ON scale.id = items.scaleid
-            WHERE user.id = ? AND course.id = ? AND itemtype != ?";
+            WHERE u.id = ? AND course.id = ? AND itemtype != ?";
         $params = array($this->studentID, $courseID, 'course');
         if(get_config('bcgt', 'alevelgradebookscaleonly'))
         {
             $sql .= " AND scale.name = ?";
             $params[] = 'Grade Tracker Alevel Scale';
         }
-        $sql .= "ORDER BY itemmodule, items.sortorder";
+        if($itemID != -1)
+        {
+            $sql .= " AND item.id = ?";
+            $params[] = $itemID;
+        }
+        $sql .= "ORDER BY items.itemmodule, items.sortorder";
         return $DB->get_records_sql($sql, $params);
     }
     
@@ -1532,11 +2021,11 @@ class AlevelQualification extends Qualification{
             FROM {course} course 
             JOIN {context} context ON context.instanceid = course.id
             JOIN {role_assignments} roleass ON roleass.contextid = context.id 
-            JOIN {user} user ON user.id = roleass.userid
+            JOIN {user} u ON u.id = roleass.userid
             JOIN {grade_items} items ON items.courseid = course.id
-            LEFT OUTER JOIN {grade_grades} grades ON grades.itemid = items.id AND grades.userid = user.id
+            LEFT OUTER JOIN {grade_grades} grades ON grades.itemid = items.id AND grades.userid = u.id
             LEFT OUTER JOIN {scale} scale ON scale.id = items.scaleid
-            WHERE user.id = ? AND course.id = ? AND itemtype != ? AND grades.itemid = ?";
+            WHERE u.id = ? AND course.id = ? AND itemtype != ? AND grades.itemid = ?";
         $params = array($this->studentID, $courseID, 'course', $itemID);
         if(get_config('bcgt', 'alevelgradebookscaleonly'))
         {
@@ -1547,10 +2036,10 @@ class AlevelQualification extends Qualification{
         return $DB->get_record_sql($sql, $params);
     }
     
-    public function get_qual_course_gradebook($courseID)
+    public function get_qual_course_gradebook($courseID, $itemID = -1)
     {
         global $DB;
-        $sql = "SELECT distinct(items.id), items.itemname, items.itemtype,items.itemmodule 
+        $sql = "SELECT distinct(items.id), items.itemname, items.itemtype, items.itemmodule, items.sortorder
             FROM {course} course 
             JOIN {grade_items} items ON items.courseid = course.id
             LEFT OUTER JOIN {scale} scale ON scale.id = items.scaleid
@@ -1561,7 +2050,12 @@ class AlevelQualification extends Qualification{
             $sql .= " AND scale.name = ?";
             $params[] = 'Grade Tracker Alevel Scale';
         }
-        $sql .= "ORDER BY itemmodule, items.sortorder";
+        if($itemID != -1)
+        {
+            $sql .= " AND item.id = ?";
+            $params[] = $itemID;
+        }
+        $sql .= "ORDER BY items.itemmodule, items.sortorder";
         return $DB->get_records_sql($sql, $params);
     }
     
@@ -1569,21 +2063,77 @@ class AlevelQualification extends Qualification{
 	 * Returns the possible values that can be selected for this qualification type
 	 * when updating criteria for students
 	 */
-	public static function get_possible_values($typeID)
+	public static function get_possible_values($typeID, $checkEnabled = true)
 	{
 		global $DB;
 		$sql = "SELECT * FROM {block_bcgt_value} 
 		WHERE bcgttypeid = ?";
         $params = array($typeID);
+        if($checkEnabled)
+        {
+            $sql .= " AND enabled = ?";
+            $params[] = 1;
+        }
 		return $DB->get_records_sql($sql, $params);
 		
 	}
     
+    protected function display_coefficient_summary_table($qualID = -1)
+    {
+        $retval = '';
+        $retval .= '<div id="coefficientsummary">';
+        $retval .= '<h3>'.get_string('alpscoefficients','block_bcgt').'</h3>';
+        $weighting = new QualWeighting();
+        if($qualID == -1)
+        {
+            $qualCoefficients = $weighting->get_coefficients_for_users_quals($this->studentID);
+        }
+        else
+        {
+            $qualCoefficients = $weighting->get_coefficients_for_qual_summary($qualID);
+        }
+        if($qualCoefficients)
+        {
+            $retval .= '<table id="coefficientSummary">';
+            $retval .= '<tr>';
+            $retval .= '<th>'.get_string('qual','block_bcgt').'</th>';
+            for($i=0;$i<AlevelQualification::DEFAULTINITIALWEIGHTINGS;$i++)
+            {
+                $retval .= '<th><span class="alpstemp'.($i+1).'">'.($i+1).'</span></th>';
+            }
+            $retval .= '<th><span class="alpstemp'.($i+1).'">'.($i+1).'</span></th>';
+            $retval .= '</tr>';
+            foreach($qualCoefficients AS $qual)
+            {
+                $retval .= '<tr>';
+                $retval .= '<td>'.bcgt_get_qualification_display_name($qual->qual).'</td>';
+                $coefficients = $qual->coefficients;
+                if($coefficients)
+                {
+                    foreach($coefficients AS $coefficient)
+                    {
+                        $retval .= '<td><span class="alpstemp'.$coefficient->number.'">'.$coefficient->coefficient.'</span></td>';
+                    }
+                }
+                $retval .= '</tr>';
+            }
+            $retval .= '</table>';
+        }
+        $retval .= '</div>';
+        return $retval;
+    }
+    
     protected function display_summary_table($seeTargetGrade, $seeWeightedGrade, $seeValueAdded, $print = false, $seeBoth)
     {
                 
+        global $COURSE, $OUTPUT;
         $id = ($print) ? 'printGridTable' : 'alevelSummary';
-        
+        $courseID = optional_param('cID', -1, PARAM_INT);
+        $context = context_course::instance($COURSE->id);
+        if($courseID != -1)
+        {
+            $context = context_course::instance($courseID);
+        }
         $retval = '';
         //show the summary -> Get all of the subjects
         $retval .= '<div id="alevelSummary">';
@@ -1602,7 +2152,7 @@ class AlevelQualification extends Qualification{
                 }
                 if($seeWeightedGrade)
                 {
-                    if($seeTargetGrade)
+                    if($seeTargetGrade && $seeBoth)
                     {
                         $string = 'specifictargetgrade';
                     }
@@ -1625,31 +2175,10 @@ class AlevelQualification extends Qualification{
                 {
                     $retval .= '<th rowspan="'.$rowSpan.'">'.get_string('predicted', 'block_bcgt').'</th>';
                 }
+                
                 $subRow1 = '';
                 $thirdRow = '';
-                if(get_config('bcgt', 'aleveluseceta'))
-                {
-                    $colspan = 1;
-                    if($seeValueAdded && ($seeTargetGrade || $seeWeightedGrade))
-                    {
-                        $colspan = 2;
-                        $subColSpan = 1;
-                        $subRowSpan = 1;
-                        if($seeBoth && $seeTargetGrade && $seeWeightedGrade)
-                        {
-                            $colspan = 3;
-                            $subRowSpan = 2;
-                            $subColSpan = 2;
-                            $thirdRow .= '<th class="ceta">'.get_string('t', 'block_bcgt').
-                                    '</th><th class="ceta">'.get_string('wt', 'block_bcgt').
-                                    '</th>';
-                        }
-                        $subRow1 .= '<th rowspan="'.$subRowSpan.'" class="ceta">'.get_string('current', 'block_bcgt').'</th>';
-                        $subRow1 .= '<th colspan="'.$subColSpan.'" class="ceta">'.get_string('va', 'block_bcgt').'</th>';
-                    }
-                    $retval .= '<th colspan="'.$colspan.'" class="ceta">'.get_string('ceta', 'block_bcgt').'</th>';
-                }
-                if(get_config('bcgt', 'alevelusefa'))
+                if(get_config('bcgt', 'usefa'))
                 {
                     //are we using Formal Asessments?
                     $colspan = 1;
@@ -1672,6 +2201,49 @@ class AlevelQualification extends Qualification{
                     }
                     $retval .= '<th colspan="'.$colspan.'" class="fa">'.get_string('formalassessment', 'block_bcgt').'</th>';
                 }
+                if(get_config('bcgt', 'aleveluseceta'))
+                {
+                    $colspan = 1;
+                    if($seeValueAdded && ($seeTargetGrade || $seeWeightedGrade))
+                    {
+                        $colspan = 2;
+                        $subColSpan = 1;
+                        $subRowSpan = 1;
+                        if($seeBoth && $seeTargetGrade && $seeWeightedGrade)
+                        {
+                            $colspan = 3;
+                            $subRowSpan = 2;
+                            $subColSpan = 2;
+                            $thirdRow .= '<th class="ceta">'.get_string('t', 'block_bcgt').
+                                    '</th><th class="ceta">'.get_string('wt', 'block_bcgt').
+                                    '</th>';
+                        }
+                        $subRow1 .= '<th rowspan="'.$subRowSpan.'" class="ceta">'.get_string('current', 'block_bcgt').'</th>';
+                        $subRow1 .= '<th colspan="'.$subColSpan.'" class="ceta">'.get_string('va', 'block_bcgt').'</th>';
+                    }
+                    $retval .= '<th colspan="'.$colspan.'" class="ceta">'.get_string('ceta', 'block_bcgt').'</th>';
+                }
+                
+                $seeAlps = false;
+                if(get_config('bcgt', 'calcultealpstempreports') 
+                        && has_capability('block/bcgt:seealpsreportsstudent', $context))
+                {
+                    $seeAlps = true;
+                    $colspan = 1;
+                    if(get_config('bcgt', 'usefa'))
+                    {
+                        $colspan++;
+                        $subRow1 .= '<th rowspan="'.$subRowSpan.'" class="alps">'.get_string('formalassessment', 'block_bcgt').'</th>';
+                    }
+                    if(get_config('bcgt', 'aleveluseceta'))
+                    {
+                        $colspan++;
+                        $subRow1 .= '<th rowspan="'.$subRowSpan.'" class="alps">'.get_string('ceta', 'block_bcgt').'</th>';
+                    }
+                    $subRow1 .= '<th rowspan="'.$subRowSpan.'" class="alps">'.get_string('overall', 'block_bcgt').'</th>';
+                    //then we can see the alps reports
+                    $retval .= '<th colspan="'.$colspan.'" class="alps">'.get_string('alps', 'block_bcgt').'</th>';
+                }
                 $retval .= '</tr>';
                 $retval .= '<tr>';
                 $retval .= $subRow1;
@@ -1680,12 +2252,25 @@ class AlevelQualification extends Qualification{
                 {
                     $retval .= $thirdRow;
                 }
+                $seeUcas = false;
                 //go and get the summary. 
+                if(get_config('bcgt', 'showucaspoints') 
+                && has_capability('block/bcgt:seeucaspoints', $context))
+                {
+                    $seeUcas = true;
+                }
                 $summary = $this->get_summary_information();
                 if($summary)
                 {
+                    $count = 0;
+                    $countSummary = count($summary);
                     foreach($summary AS $record)
                     {
+                        if($print)
+                        {
+                            $qualificationObj = Qualification::get_qualification_class_id($record->id);
+                        }
+                        $count++;
                         $targetGradeRank = $record->targetgraderank;
                         $weightedTargetGradeRank = $record->weightedtargetgraderank;
                         $formalAssessmentRank = 0;
@@ -1694,24 +2279,138 @@ class AlevelQualification extends Qualification{
                             $retval .= '<td>'.$record->type.' '.$record->name.'</td>';
                             if(($seeBoth && $seeTargetGrade) || (!$seeBoth && !$seeWeightedGrade && $seeTargetGrade))
                             {
-                                $retval .= '<td>'.$record->targetgrade.'</td>';
+                                $retval .= '<td>'.$record->targetgrade;
+                                if($seeUcas)
+                                {
+                                    $retval .= ' <sub class="ucas">{'.$record->targetgradeucas.'}</sub>';
+                                }
+                                $retval .= '</td>';
                             }
                             if($seeWeightedGrade)
                             {
-                                $retval .= '<td>'.$record->weightedtargetgrade.'</td>';
+                                $retval .= '<td>'.$record->weightedtargetgrade;
+                                if($seeUcas)
+                                {
+                                    $retval .= ' <sub class="ucas">{'.$record->weightedtargetgradeucas.'}</sub>';
+                                }
+                                $retval .= '</td>';
                             }
                             if(get_config('bcgt', 'alevelusecalcpredicted'))
                             {
-                                $retval .= '<td>'.$record->predictedgrade.'</td>';
+                                $retval .= '<td>'.$record->predictedgrade;
+                                if($seeUcas)
+                                {
+                                    $retval .= ' <sub class="ucas">{'.$record->predictedgradeucas.'}</sub>';
+                                }
+                                $retval .= '</td>';
                             }
                             //for the qual go and get the latest formalassessment updated after this date
                             //for the qual go and get the latest ceta updates after this date
+                            if(get_config('bcgt', 'usefa'))
+                            {
+                                //this returns only one record
+                                $formalAssessment = $this->get_current_formal_assessment($record->id);
+                                if($formalAssessment)
+                                {
+                                    $assessment = end($formalAssessment);
+                                    //loop over them all and find the one thats the closest backwards
+                                    //to todays date
+//                                    foreach($formalAssessment AS $assessment)
+//                                    {
+                                    
+                                    $projectObj = new Project($assessment->projectid);
+                                                                        
+                                    if ($projectObj->is_visible_to_you())
+                                    {
+                                    
+                                        $retval .= '<td>'.$assessment->value;
+                                        if($seeUcas)
+                                        {
+                                            //go and get the ucas points:
+                                            $targetGrade = new TargetGrade();
+                                            $targetGradeObj = $targetGrade->get_obj_from_grade($assessment->value, -1, $record->targetqualid);
+                                            if($targetGradeObj)
+                                            {
+                                                $retval .= ' <sub class="ucas">{'.$targetGradeObj->get_ucas_points().'}</sub>';
+                                            }
+
+                                        }
+                                        $retval .= '</td>';
+                                    
+                                    }
+                                    else
+                                    {
+                                        $retval .= '<td><img src="'.$OUTPUT->pix_url('t/show').'" alt="hidden" /></td>';
+                                    }
+                                    
+                                    $formalAssessmentRank = $assessment->ranking;
+//                                    }
+                                }
+                                else {
+                                    $retval .= '<td></td>';
+                                }
+                                
+                                if($seeValueAdded)
+                                {
+                                    if(($seeBoth && $seeTargetGrade) || (!$seeBoth && !$seeWeightedGrade && $seeTargetGrade))
+                                    {
+                                        
+                                        if (isset($projectObj) && $projectObj->is_visible_to_you())
+                                        {
+                                        
+                                            if($formalAssessmentRank && $targetGradeRank)
+                                            {
+                                                $retval .= '<td>'.($formalAssessmentRank - $targetGradeRank).'</td>';
+                                            }
+                                            else
+                                            {
+                                                $retval .= '<td></td>';
+                                            }
+                                        
+                                        }
+                                        else
+                                        {
+                                            $retval .= '<td><img src="'.$OUTPUT->pix_url('t/show').'" alt="hidden" /></td>';
+                                        }
+                                        
+                                    }
+                                    if($seeWeightedGrade)
+                                    {
+                                        
+                                        if (isset($projectObj) && $projectObj->is_visible_to_you())
+                                        {
+                                        
+                                            if($formalAssessmentRank && $weightedTargetGradeRank)
+                                            {
+                                                $retval .= '<td>'.($formalAssessmentRank - $weightedTargetGradeRank).'</td>';
+                                            }
+                                            else
+                                            {
+                                                $retval .= '<td></td>';
+                                            }
+                                        
+                                        }
+                                        else
+                                        {
+                                            $retval .= '<td><img src="'.$OUTPUT->pix_url('t/show').'" alt="hidden" /></td>';
+                                        }
+                                        
+                                    }
+                                }
+                                
+                            }
                             if(get_config('bcgt', 'aleveluseceta'))
                             {
                                 $ceta = $this->get_current_ceta($record->id, $this->studentID);
                                 if($ceta && $ceta->grade)
                                 {
-                                    $retval .= '<td>'.$ceta->grade.'</td>';
+                                    $retval .= '<td>'.$ceta->grade;
+                                    if($seeUcas)
+                                    {
+                                        //go and get the ucas points:
+                                        $retval .= ' <sub class="ucas">{'.$ceta->ucaspoints.'}</sub>';
+                                    }
+                                    $retval .= '</td>';
                                     $cetaRank = $ceta->ranking;
                                 }
                                 else
@@ -1720,7 +2419,13 @@ class AlevelQualification extends Qualification{
                                     if($cetas)
                                     {
                                         $ceta = end($cetas);
-                                        $retval .= '<td><span class="projNonCurrentCeta">'.$ceta->grade.'</span></td>';
+                                        $retval .= '<td><span class="projNonCurrentCeta">'.$ceta->grade;
+                                        if($seeUcas)
+                                        {
+                                            //go and get the ucas points:
+                                            $retval .= ' <sub class="ucas">'.$ceta->ucaspoints.'</sub>';
+                                        }
+                                        $retval .= '</span></td>';
                                         $cetaRank = $ceta->ranking;
                                     }
                                     else
@@ -1756,48 +2461,58 @@ class AlevelQualification extends Qualification{
                                     
                                 }
                             }
-                            if(get_config('bcgt', 'alevelusefa'))
+                            
+                            if($seeAlps)
                             {
-                                $formalAssessment = $this->get_current_formal_assessment($record->id);
-                                if($formalAssessment)
+                                if(get_config('bcgt', 'usefa'))
                                 {
-                                    //loop over them all and find the one thats the closest backwards
-                                    //to todays date
-                                    foreach($formalAssessment AS $assessment)
+                                    $colspan++;
+                                    $retval .= '<td><span class="alpsfa" id="alpsfa_'
+                                    .$record->id.'_'.$this->studentID.'" qual="'.
+                                            $record->id.'" user="'.
+                                            $this->studentID.'">';
+                                    if($print)
                                     {
-                                        $retval .= '<td>'.$assessment->value.'</td>';
-                                        $formalAssessmentRank = $assessment->ranking;
+                                        //then load the alps
+                                        $temp = $qualificationObj->get_user_fa_alps_temp($this->studentID, true);
+                                        $display = bcgt_display_alps_temp($temp, true);
+                                        $retval .= $display;
                                     }
+                                    $retval .= '</span></td>'; 
+                                    
                                 }
-                                else {
-                                    $retval .= '<td></td>';
-                                }
-                                if($seeValueAdded)
+                                if(get_config('bcgt', 'aleveluseceta'))
                                 {
-                                    if(($seeBoth && $seeTargetGrade) || (!$seeBoth && !$seeWeightedGrade && $seeTargetGrade))
+                                    $colspan++;
+                                    $retval .= '<td><span class="alpsceta" id="alpsceta_'
+                                    .$record->id.'_'.$this->studentID.'" qual="'.
+                                            $record->id.'" user="'.
+                                            $this->studentID.'">';
+                                    if($print)
                                     {
-                                        if($formalAssessmentRank && $targetGradeRank)
-                                        {
-                                            $retval .= '<td>'.($formalAssessmentRank - $targetGradeRank).'</td>';
-                                        }
-                                        else
-                                        {
-                                            $retval .= '<td></td>';
-                                        }
+                                        //then load the alps
+                                        $temp = $qualificationObj->get_user_fa_alps_temp($this->studentID, true);
+                                        $display = bcgt_display_alps_temp($temp, true);
+                                        $retval .= $display;
                                     }
-                                    if($seeWeightedGrade)
-                                    {
-                                        if($formalAssessmentRank && $weightedTargetGradeRank)
-                                        {
-                                            $retval .= '<td>'.($formalAssessmentRank - $weightedTargetGradeRank).'</td>';
-                                        }
-                                        else
-                                        {
-                                            $retval .= '<td></td>';
-                                        }
-                                    }
+                                    $retval .= '</span></td>';    
                                 }
-                                
+                                if($count == 1)
+                                {
+                                    $retval .= '<td rowspan="'.$countSummary.
+                                            '"><span class="alpsall" id="alpsall_'.
+                                            $record->id.'_'.$this->studentID.'" qual="'.
+                                            $record->id.'" user="'.
+                                            $this->studentID.'">';
+                                    if($print)
+                                    {
+                                        //then load the alps
+                                        $temp = $qualificationObj->get_user_all_alps_temp($this->studentID);
+                                        $display = "<span class='alpstemp alpstemp'>".$temp."</span>";
+                                        $retval .= $display;
+                                    }
+                                    $retval .= '</span></td>';
+                                }
                             }
 //                            $retval .= '<td>'.$record->formalassessment.'</td>';
 //                            $retval .= '<td>'.$record->cetagrade.'</td>';
@@ -1815,50 +2530,75 @@ class AlevelQualification extends Qualification{
         return $retval;
     }
     
-    protected function get_summary_information($qualID = -1)
+    protected function get_users_alevel_quals($userID)
     {
         global $DB;
-        $sql = 'SELECT qual.id, qual.name, type.type, targetgrades.grade as targetgrade, 
-            targetgrades.id AS targetgradeid, targetgrades.ranking AS targetgraderank, 
+        $sql = "SELECT qual.id, qual.name FROM {block_bcgt_user_qual} userqual
+            JOIN {block_bcgt_qualification} qual ON qual.id = userqual.bcgtqualificationid 
+            JOIN {block_bcgt_target_qual} targetqual ON targetqual.id = qual.bcgttargetqualid 
+            JOIN {block_bcgt_type} type ON type.id = targetqual.bcgttypeid
+            WHERE userqual.userid = ? AND (type.id = ? OR type.id = ?)";
+        $params = array($userID, ASLevelQualification::ID, A2LevelQualification::ID);
+        return $DB->get_records_sql($sql, $params);
+    }
+    
+    protected function get_summary_information($qualID = -1)
+    {
+        global $CFG, $DB;
+        $sql = 'SELECT DISTINCT qual.id, qual.name, type.type, targetgrades.grade as targetgrade, targetqual.id as targetqualid, 
+            targetgrades.id AS targetgradeid, targetgrades.ranking AS targetgraderank,
             awardgrades.grade as predictedgrade, usertargets.userid, targetgradesweighted.id as weightedgradeid, 
-            targetgradesweighted.grade as weightedtargetgrade, targetgradesweighted.ranking as weightedtargetgraderank 
+            targetgradesweighted.grade as weightedtargetgrade, 
+            targetgradesweighted.ranking as weightedtargetgraderank, 
+            targetgrades.ucaspoints AS targetgradeucas, targetgradesweighted.ucaspoints AS weightedtargetgradeucas, 
+            awardgrades.ucaspoints AS predictedgradeucas
             FROM {block_bcgt_user_qual} userqual 
             JOIN {block_bcgt_qualification} qual ON qual.id = userqual.bcgtqualificationid 
             JOIN {block_bcgt_target_qual} targetqual ON targetqual.id = qual.bcgttargetqualid 
             JOIN {block_bcgt_type} type ON type.id = targetqual.bcgttypeid 
-            LEFT OUTER JOIN {block_bcgt_user_course_trgts} usertargets ON usertargets.bcgtqualificationid = qual.id 
+            LEFT OUTER JOIN {block_bcgt_user_course_trgts} usertargets ON usertargets.bcgtqualificationid = qual.id AND usertargets.userid = userqual.userid
             LEFT OUTER JOIN {block_bcgt_user_award} useraward ON useraward.bcgtqualificationid = qual.id AND useraward.userid = ? 
             LEFT OUTER JOIN {block_bcgt_target_grades} targetgrades ON targetgrades.id = usertargets.bcgttargetgradesid
             LEFT OUTER JOIN {block_bcgt_target_grades} awardgrades ON awardgrades.id = useraward.bcgttargetgradesid 
             LEFT OUTER JOIN {block_bcgt_target_grades} targetgradesweighted ON targetgradesweighted.id = usertargets.bcgtweightedgradeid';
         
-        $sql .= ' WHERE userqual.userid = ? AND (type.id = ? OR type.id = ?) AND usertargets.userid = ?
+        $sql .= ' WHERE userqual.userid = ? AND (type.id = ? OR type.id = ? OR type.id = ?)
             ';
-        $params = array($this->studentID, $this->studentID, ASLevelQualification::ID, A2LevelQualification::ID, $this->studentID);
+        
+        require_once $CFG->dirroot . '/blocks/bcgt/plugins/bcgtbtec/lib.php';
+        $params = array($this->studentID, $this->studentID, ASLevelQualification::ID, A2LevelQualification::ID, BTECQualification::ID);
         if($qualID != -1)
         {
             $sql .= ' AND qual.id = ?';
             $params[] = $qualID;
         }
+        $sql .= " ORDER BY qual.name ASC";
         if($qualID != -1)
         {
-            return $DB->get_record_sql($sql, $params);
+            $sql .= ", usertargets.id ASC ";
+            return $DB->get_record_sql($sql, $params, IGNORE_MULTIPLE);
         }
         return $DB->get_records_sql($sql, $params);
     }
     
-    protected function get_current_formal_assessment($qualID)
+    protected function get_current_formal_assessment($qualID, $userID = -1)
     {
         //so we want the formal assessment that is closest to todays date, but before it
         global $DB;
-        $sql = "SELECT value.* FROM {block_bcgt_user_activity_ref} userref 
+        $sql = "SELECT value.*, project.id as projectid FROM {block_bcgt_user_activity_ref} userref 
             JOIN {block_bcgt_activity_refs} refs ON refs.id = userref.bcgtactivityrefid 
             JOIN {block_bcgt_value} value ON value.id = bcgtvalueid 
             JOIN {block_bcgt_project} project ON project.id = refs.bcgtprojectid 
             WHERE refs.bcgtqualificationid = ? AND userref.userid = ? AND 
-            project.targetdate < NOW() AND project.targetdate IS NOT NULL 
+            project.targetdate < ? AND project.targetdate IS NOT NULL AND bcgtvalueid IS NOT NULL  
             ORDER BY project.targetdate DESC";
-        return $DB->get_records_sql($sql, array($qualID,$this->studentID), 0, 1);
+                
+        if($userID == -1)
+        {
+           $userID =  $this->studentID;
+        }
+                
+        return $DB->get_records_sql($sql, array($qualID,$userID, time()), 0, 1);
     }
     
     protected function get_max_formal_assessment($qualID)
@@ -1886,7 +2626,8 @@ class AlevelQualification extends Qualification{
 
         global $COURSE, $PAGE, $CFG;
         $this->get_projects();
-        $retval = '<div>';
+        $retval = '<div id="bcgtgridsummary bcgtalevelgrid">';
+        $retval .= '<div class="bcgtgridbuttons">';
         $retval .= "<input type='submit' id='viewsimple' name='viewsimple' value='View Simple' class='viewsimple' />";
         $retval .= "<br>";
         $courseID = optional_param('cID', -1, PARAM_INT);
@@ -1911,6 +2652,16 @@ class AlevelQualification extends Qualification{
                 $retval .= "<input type='submit' id='save' name='save' value='Save' class='gridsave' />";
             }
         }
+        $retval .= '</div>';
+        //if we are using alsp reporting
+        //then show the alps coefficients
+        if(get_config('bcgt', 'calcultealpstempreports') 
+                        && has_capability('block/bcgt:seealpsreportsstudent', $context))
+        {
+            $retval .= $this->display_coefficient_summary_table($this->id);
+        }
+        $retval .= '</div>';
+        $retval .= '<br clear="all">';
         $retval .= '<input type="hidden" id="grid" name="g" value="'.$grid.'"/>';
         $jsModule = array(
             'name'     => 'mod_bcgtalevel',
@@ -1952,7 +2703,7 @@ class AlevelQualification extends Qualification{
         $retval .= '</tbody>';
         $retval .= '</table>';
         $retval .= '</div>';
-        $retval .= '</div>';
+//        $retval .= '</div>';
         return $retval;
     }
     
@@ -1965,6 +2716,10 @@ class AlevelQualification extends Qualification{
             $familyID = -1, $params = null, $loadParams = null)
     {
         //units and criteria are directly on the qualification
+        if(!$loadParams)
+        {
+            $loadParams = new stdClass();
+        }
         $loadParams->loadLevel = Qualification::LOADLEVELALL;
         global $CFG;
         $subTypeID = -1;
@@ -2501,7 +3256,9 @@ class AlevelQualification extends Qualification{
     public function print_grid()
     {
             
-        global $CFG, $COURSE;
+        global $CFG, $COURSE, $printGrid;
+        
+        $printGrid = true;
         
         //show all formalAssessments iniially
         $formalAssessments = true;
@@ -2519,6 +3276,8 @@ class AlevelQualification extends Qualification{
         {
             $context = context_course::instance($COURSE->id);
         }
+        //if we are using alsp reporting
+        //then show the alps coefficients
         
         $seeTargetGrade = false;
         $seeWeightedTargetGrade = false;
@@ -2555,25 +3314,31 @@ class AlevelQualification extends Qualification{
             echo "<h1>{$this->get_display_name()}</h1>";
             echo "<h2>".fullname($this->student)." ({$this->student->username})</h2>";
             echo "<br><br><br>";
-            
+            if(get_config('bcgt', 'calcultealpstempreports') 
+                        && has_capability('block/bcgt:seealpsreportsstudent', $context))
+            {
+                echo $this->display_coefficient_summary_table();
+            }
+            echo "<br><br><br>";
             echo $this->display_summary_table($seeTargetGrade, $seeWeightedTargetGrade, $seeValueAdded, true, $seeBoth);
             
             echo "<br><br><br>";
             
-            if(get_config('bcgt', 'alevelusefa') && get_config('bcgt', 'alevelManageFACentrally') 
+            if(get_config('bcgt', 'usefa')
                 && !get_config('bcgt', 'alevelLinkAlevelGradeBook'))
             {
                 //then all of the subjects can be in one table
                 //the content here is retrieved using ajax. 
                     //the table is retrieved, where the header is retrieved
                         //the body is retrieved in its own sub ajax call. 
-                echo $this->display_all_student_grids(false, $formalAssessments, $gradebook);
+                echo $this->display_all_student_grids(false, $formalAssessments, $gradebook, true);
             }
             else
             {
                 //else each subject needs to have its own table
                 //go and get the quals. 
-                $studentsQuals = get_role_quals($this->studentID, 'student', '', AlevelQualification::FAMILYID);
+                require_once $CFG->dirroot . '/blocks/bcgt/plugins/bcgtbtec/lib.php';
+                $studentsQuals = get_role_quals($this->studentID, 'student', '', array(AlevelQualification::FAMILYID, BTECQualification::FAMILYID));
                 if($studentsQuals)
                 {
                     $i=0;
@@ -2614,7 +3379,18 @@ class AlevelQualification extends Qualification{
     public function print_class_grid()
     {
         
-        global $CFG;
+        global $CFG, $COURSE;
+        $courseID = optional_param('cID', -1, PARAM_INT);
+        if($courseID != -1)
+        {
+            $context = context_course::instance($courseID);
+        }
+        else
+        {
+            $context = context_course::instance($COURSE->id);
+        }
+        
+        
         
         $formalAssessments = true;
         $gradebook = true;
@@ -2635,10 +3411,19 @@ class AlevelQualification extends Qualification{
                         
             echo "<br><br><br><br>";
             
+            //if we are using alsp reporting
+            //then show the alps coefficients
+            if(get_config('bcgt', 'calcultealpstempreports') 
+                            && has_capability('block/bcgt:seealpsreportsstudent', $context))
+            {
+                echo $this->display_coefficient_summary_table($this->id);
+            }
+            
+            echo "<br><br><br><br>";
             echo "<table id='printGridTable' class='aLvl'>";
             
             echo '<thead>';
-            echo $this->get_display_grid_header($students = true, $formalAssessments, $gradebook,false);
+            echo $this->get_display_grid_header($students = true, $formalAssessments, $gradebook,false, true);
             echo '</thead>';
             
             
@@ -2655,7 +3440,7 @@ class AlevelQualification extends Qualification{
                     $this->load_student_information($student->id, $loadParams);
                     $this->get_gradebook_for_grid();
                     echo $this->get_single_grid_row(false, true, 
-                        $formalAssessments, $gradebook, false, false);
+                        $formalAssessments, $gradebook, false, false, true);
                     echo '</tr>';
                 }
             }

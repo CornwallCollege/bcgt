@@ -16,6 +16,7 @@ require_once($CFG->dirroot.'/user/profile/lib.php');
 
 //this is the course we are coming from. 
 $cID = optional_param('cID', -1, PARAM_INT);
+$sCID = optional_param('sCID', -1, PARAM_INT);
 if($cID != -1)
 {
     $context = context_course::instance($cID);
@@ -37,6 +38,7 @@ $studentID = optional_param('students', -1, PARAM_INT);
 $assID = optional_param('assessments', -1, PARAM_INT);
 $actID = optional_param('activities', -1, PARAM_INT);
 $unitID = optional_param('units', -1, PARAM_INT);
+$registerGroupID = optional_param('registerGroupID', -1, PARAM_INT);
 //these are all actually the grouping id
 $groupID = optional_param('grID',-1, PARAM_INT);
 $aGroupID = optional_param('agrID',-1, PARAM_INT);
@@ -85,6 +87,7 @@ $qualExcludes = array();
 $tabFocusS = '';
 $tabFocusU = '';
 $tabFocusC = '';
+$tabFocusR = '';
 $tabFocusFA = '';
 $tabFocusG = '';
 switch($grid)
@@ -101,8 +104,12 @@ switch($grid)
    case 'c':
        $string = 'gridselectclass';
        $tabFocusC = 'focus';
-       $qualExcludes = array('CG', 'Bespoke');
+       $qualExcludes = array('Bespoke');
        break;
+   case 'r':
+       $string = 'gridselectregister';
+       $tabFocusR = 'focus';
+   break;
    case 'fa':
        $string = 'gridselectfassessment';
        $tabFocusFA = 'focus';
@@ -142,14 +149,17 @@ $url = '/blocks/bcgt/forms/grid_select.php';
 $PAGE->set_url($url, array());
 $PAGE->set_title(get_string($string, 'block_bcgt'));
 $PAGE->set_heading(get_string($string, 'block_bcgt'));
-$PAGE->set_pagelayout('login');
+$PAGE->set_pagelayout( bcgt_get_layout() );
 $PAGE->add_body_class(get_string('gridselect', 'block_bcgt'));
-$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),$CFG->wwwroot.'/blocks/bcgt/forms/my_dashboard.php?tab=track','title');
+$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),$CFG->wwwroot.'/blocks/bcgt/forms/my_dashboard.php?tab=track&cID='.$courseID,'title');
 if($cID != -1 && $cID != 1)
 {
     global $DB;
     $course = $DB->get_record_sql("SELECT * FROM {course} WHERE id = ?", array($cID));
-    $PAGE->navbar->add($course->shortname,$CFG->wwwroot.'/course/view.php?id='.$cID,'title');
+    if($course)
+    {
+        $PAGE->navbar->add($course->shortname,$CFG->wwwroot.'/course/view.php?id='.$cID,'title');
+    }
     
 }
 $PAGE->navbar->add(get_string($string, 'block_bcgt'),'','title');
@@ -178,7 +188,7 @@ if(count(array_intersect(explode('|',BCGT_UNIT_VIEW_FAMILIES), $qualFamilies)) >
 {
     $out .= '<li class="'.$tabFocusU.'">'.
         '<a href="'.$CFG->wwwroot.'/blocks/bcgt/forms/grid_select.php?g=u&cID='.$cID.'&il=true">'.
-        '<span>'.get_string('byUnit', 'block_bcgt').'</span></a></li>';
+        '<span>'.get_string('byunit', 'block_bcgt').'</span></a></li>';
 }
 
 if(count(array_intersect(explode('|',BCGT_CLASS_VIEW_FAMILIES), $qualFamilies)) > 0)
@@ -186,6 +196,13 @@ if(count(array_intersect(explode('|',BCGT_CLASS_VIEW_FAMILIES), $qualFamilies)) 
     $out .= '<li class="'.$tabFocusC.'">'.
         '<a href="'.$CFG->wwwroot.'/blocks/bcgt/forms/grid_select.php?g=c&cID='.$cID.'&il=true">'.
         '<span>'.get_string('byClassGroup', 'block_bcgt').'</span></a></li>';
+}
+
+if(count(array_intersect(explode('|',BCGT_REGISTER_VIEW_FAMILIES), $qualFamilies)) > 0)
+{
+    $out .= '<li class="'.$tabFocusR.'">'.
+        '<a href="'.$CFG->wwwroot.'/blocks/bcgt/forms/grid_select.php?g=r&cID='.$cID.'&il=true">'.
+        '<span>'.get_string('byregistergroup', 'block_bcgt').'</span></a></li>';
 }
 
 if(get_config('bcgt','usefa') && 
@@ -207,81 +224,89 @@ $out .= '</div></div>';
 $out .= html_writer::start_tag('div', array('class'=>'bcgt_admin_controls bcgtColumnConainer bcgt_float_container', 
     'id'=>'gridSelect'));
 //two columns
-$out .= '<div class="bcgt_col_one">';
-$out .= '<form name="gridselect" class="bcgt_form" action="grid_select.php" method="POST" id="gridselect">';
 
-//wrap it in a container: Full Access
-$useGroups = false;
-if($grid != 's' && get_config('bcgt','usegroupsingradetracker'))
+if ($grid != 'r')
 {
-    $useGroups = true;
-}
 
-$out .= '<fieldset>';
-$out .= '<legend>'.get_string('mytrackerfilters', 'block_bcgt').'</legend>';
-$out .= '<input type="hidden" id="cID" name="cID" value="'.$cID.'"/>';
-$out .= '<input type="hidden" name="g" value="'.$grid.'"/>';
-$out .= '<input type="hidden" name="il" value="false"/>';
-$out .= '<p class="gridSelectDesc">'.get_string('disabledoptiondescgridselect', 'block_bcgt').'</p>';
-$out .= '<p class="gridSelectDesc">'.get_string('griddisabledlinksdesc','block_bcgt').'</p>';
-$divID = 'bcgtmainfilter';
-if($useGroups)
-{
-    $divID = 'bcgtmainfiltergroups';
-}
-$out .= '<div id="'.$divID.'" class="bcgtmainfilter">';
-$out .= '<div class="inputContainer"><div class="inputLeft">'.
-            '<label for="type">'.get_string('myquals', 'block_bcgt').'</label></div>';
-    $out .= '<div class="inputRight"><select name="qID" id="qual"><option value="-1">Please select one</option>';
-$myQual = null;
-if($quals)
-{    
-    foreach($quals AS $qual)
+    $out .= '<div class="bcgt_col_one">';
+    $out .= '<form name="gridselect" class="bcgt_form" action="grid_select.php" method="POST" id="gridselect">';
+
+    //wrap it in a container: Full Access
+    $useGroups = false;
+    if($grid != 's' && get_config('bcgt','usegroupsingradetracker'))
     {
-        $disabled = '';
-        //is this qual actuall on a course?
-        $onCourse = $DB->get_records_sql('SELECT * FROM {block_bcgt_course_qual} WHERE bcgtqualificationid = ?', array($qual->id));
-        if(!$onCourse)
-        {
-            $disabled = 'disabled';
-        }
-        
-        $class = '';
-        $hasStudents = $DB->get_records_sql('SELECT userqual.id FROM {block_bcgt_user_qual} userqual 
-            JOIN {role} role ON role.id = userqual.roleid WHERE bcgtqualificationid = ? AND role.shortname = ?', 
-                array($qual->id, 'student'));
-        if(!$hasStudents)
-        {
-            $class = 'noStudents';
-        }
-        $selected = '';
-        if($initialLoad && (count($quals) == 1 || ($qualID != -1 && $qualID == $qual->id)))
-        {
-            if(count($quals) == 1)
-            {
-                $myQual = $qual;
-                $qualID = $qual->id;
-            }
-            $selected = 'selected';
-        }
-        elseif($qualID == $qual->id)
-        {
-            $selected = 'selected';
-        }
-        $out .= '<option class="'.$class.'" '.$selected.' value="'.$qual->id.' '.$disabled.'">'.
-                bcgt_get_qualification_display_name($qual, true, ' ').'</option>';
+        $useGroups = true;
     }
+
+
+    $out .= '<fieldset>';
+    $out .= '<legend>'.get_string('mytrackerfilters', 'block_bcgt').'</legend>';
+    $out .= '<input type="hidden" id="cID" name="cID" value="'.$cID.'"/>';
+    $out .= '<input type="hidden" name="g" value="'.$grid.'"/>';
+    $out .= '<input type="hidden" name="il" value="false"/>';
+    $out .= '<p class="gridSelectDesc">'.get_string('disabledoptiondescgridselect', 'block_bcgt').'</p>';
+    $out .= '<p class="gridSelectDesc">'.get_string('griddisabledlinksdesc','block_bcgt').'</p>';
+    $divID = 'bcgtmainfilter';
+    if($useGroups)
+    {
+        $divID = 'bcgtmainfiltergroups';
+    }
+    $out .= '<div id="'.$divID.'" class="bcgtmainfilter">';
+    $out .= '<div class="inputContainer"><div class="inputLeft">'.
+                '<label for="type">'.get_string('myquals', 'block_bcgt').'</label></div>';
+        $out .= '<div class="inputRight"><select name="qID" id="qual"><option value="-1">Please select one</option>';
+    $myQual = null;
+    if($quals)
+    {    
+        foreach($quals AS $qual)
+        {
+            $disabled = '';
+            //is this qual actuall on a course?
+            $onCourse = $DB->get_records_sql('SELECT * FROM {block_bcgt_course_qual} WHERE bcgtqualificationid = ?', array($qual->id));
+            if(!$onCourse)
+            {
+                $disabled = 'disabled';
+            }
+
+            $class = '';
+            $hasStudents = $DB->get_records_sql('SELECT userqual.id FROM {block_bcgt_user_qual} userqual 
+                JOIN {role} role ON role.id = userqual.roleid WHERE bcgtqualificationid = ? AND role.shortname = ?', 
+                    array($qual->id, 'student'));
+            if(!$hasStudents)
+            {
+                $class = 'noStudents';
+            }
+            $selected = '';
+            if($initialLoad && (count($quals) == 1 || ($qualID != -1 && $qualID == $qual->id)))
+            {
+                if(count($quals) == 1)
+                {
+                    $myQual = $qual;
+                    $qualID = $qual->id;
+                }
+                $selected = 'selected';
+            }
+            elseif($qualID == $qual->id)
+            {
+                $selected = 'selected';
+            }
+            $out .= '<option class="'.$class.'" '.$selected.' value="'.$qual->id.' '.$disabled.'">'.
+                    bcgt_get_qualification_display_name($qual, true, ' ').'</option>';
+        }
+    }
+    $out .= '</select>';
+    $out .= '</div></div>';
+    if($useGroups)
+    {
+        $out .= '<p class="bcgtqualfilterdesc">'.get_string('qualfilterdesc', 'block_bcgt').
+                '<span class="editgroups"> - <a href="'.$CFG->wwwroot.
+                '/blocks/bcgt/forms/edit_user_groups.php">'.
+                get_string('editmygroups', 'block_bcgt').
+                '</a></span></p>';
+    }
+
 }
-$out .= '</select>';
-$out .= '</div></div>';
-if($useGroups)
-{
-    $out .= '<p class="bcgtqualfilterdesc">'.get_string('qualfilterdesc', 'block_bcgt').
-            '<span class="editgroups"> - <a href="'.$CFG->wwwroot.
-            '/blocks/bcgt/forms/edit_user_groups.php">'.
-            get_string('editmygroups', 'block_bcgt').
-            '</a></span></p>';
-}
+
 $searchString = 'searchstudent';
 if($grid == 's')
 {
@@ -377,11 +402,196 @@ elseif($grid == 'c')
     $searchString = 'searchclass';
     //then have a qual that is searchable.
 }
+
+elseif ($grid == 'r')
+{
+    
+    $out .= "<h2>".get_string('yourregistergroups', 'block_bcgt')."</h2>";
+        
+    $out .= "<p>";
+    
+    // If bedford college, we can use an MIS connection to get the groups
+    $script = $CFG->dataroot . '/bcgt/scripts/register_groups.php';
+    if ( file_exists($script) )
+    {
+        
+        include_once $script;
+        
+        $refresh = optional_param('refresh', false, PARAM_INT);
+        
+        if ($refresh)
+        {
+            
+            if ( function_exists('bcgt_ext_get_register_groups') ){
+
+                
+                // Is it confirmed?
+                if (isset($_POST['confirm']))
+                {
+                    
+                    $groupIDs = @$_POST['ids'];
+                    $out .= bcgt_ext_save_register_groups($groupIDs);
+                    
+                }
+                else
+                {
+                                
+                    $groups = bcgt_ext_get_register_groups($USER);
+
+                    $out .= "<form action='' method='post'>";
+                    $out .= "<table>";
+
+                        $out .= "<tr><th colspan='5'>Register Groups From MIS</th></tr>";
+                        $out .= "<tr><th><input type='checkbox' onclick='$(\".reggroup\").prop(\"checked\", this.checked);' /></th><th>ID</th><th>Event</th><th>Dates</th><th>Times</th><th>No. Learners</th></tr>";
+
+                        if ($groups)
+                        {
+
+                            foreach($groups as $group)
+                            {
+
+                                $out .= "<tr><td><input type='checkbox' class='reggroup' name='ids[]' value='{$group->id}' /></td><td>{$group->id}</td><td>{$group->name}</td><td>{$group->sdate} - {$group->edate}</td><td>{$group->stime} - {$group->etime}</td><td>{$group->cnt}</td></tr>";
+
+                            }
+
+                        }
+                        else
+                        {
+                            $out .= "<tr><td colspan='5'>".get_string('norecordsfound', 'block_bcgt')."</td></tr>";
+                        }
+
+                    $out .= "</table>";
+
+                    $out .= "<p><input type='submit' name='confirm' value='".get_string('update')."' /></p>";
+
+                    $out .= "</form>";
+                
+                }
+                
+
+            }
+            
+            
+        }
+        
+        $out .= "<a href='{$CFG->wwwroot}/blocks/bcgt/forms/grid_select.php?g=r&cID={$courseID}&il={$initialLoad}&refresh=1'><img src='".$OUTPUT->pix_url('t/reload')."' alt='refresh' /> ".get_string('refreshregistergroups', 'block_bcgt')."</a> &nbsp;&nbsp; ";
+        
+    }
+    
+    // otherwise link to import them
+    else
+    {
+        
+    }
+    
+    // Edit existing
+    $out .= "<a href='{$CFG->wwwroot}/blocks/bcgt/forms/grid_select.php?g=r&cID={$courseID}&il={$initialLoad}&edit=1'><img src='".$OUTPUT->pix_url('t/edit')."' alt='refresh' /> ".get_string('editregistergroups', 'block_bcgt')."</a>";
+
+    $out .= "</p>";
+    
+    $registerGroups = bcgt_get_users_register_groups($USER->id);
+    
+    if ($registerGroups)
+    {
+        
+        // Edit existing ones - delete them basically
+        $edit = optional_param('edit', false, PARAM_INT);
+        if ($edit == 1)
+        {
+            
+            if (isset($_POST['confirmedit']))
+            {
+                
+                // Wipe all links to the register groups for this user
+                $DB->delete_records("block_bcgt_user_reg_groups", array("userid" => $USER->id, "type" => "T"));
+                
+                // Add submitted ones back in
+                if (isset($_POST['ids']))
+                {
+                    foreach($_POST['ids'] as $id)
+                    {
+                        bcgt_add_user_to_register_group($id, $USER->id, "T");
+                    }
+                }
+                
+                $out .= "<h3>Saved!</h3>";
+                $registerGroups = bcgt_get_users_register_groups($USER->id);
+
+                
+            }
+            
+            $out .= "<form action='' method='post'>";
+            $out .= "<table>";
+
+                $out .= "<tr><th colspan='5'>".get_string('editregistergroups', 'block_bcgt')."</th></tr>";
+                $out .= "<tr><th><input type='checkbox' onclick='$(\".reggroupedit\").prop(\"checked\", this.checked);' /></th><th>ID</th><th>Event</th><th>Dates</th><th>Times</th></tr>";
+
+                    foreach($registerGroups as $group)
+                    {
+                        $out .= "<tr><td><input type='checkbox' class='reggroupedit' name='ids[]' value='{$group->id}' checked /></td><td>{$group->recordid}</td><td>{$group->name}</td><td>{$group->startdate} - {$group->enddate}</td><td>{$group->starttime} - {$group->endtime}</td></tr>";
+                    }
+
+
+            $out .= "</table>";
+
+            $out .= "<p><input type='submit' name='confirmedit' value='".get_string('update')."' /></p>";
+
+            $out .= "</form>";
+            
+        }
+        
+        
+        
+        $out .= "<div class='bcgt_admin_controls bcgtColumnConainer bcgt_float_container'>";
+        
+        $out .= "<div class='bcgt_col_one'>";
+        
+            $out .= "<div class='bcgtmainfilter'>";
+            
+            $out .= "<form action='{$CFG->wwwroot}/blocks/bcgt/forms/grid_select.php?g=r&cID={$courseID}&il={$initialLoad}' method='post'>";
+                        
+                $out .= '<div class="inputContainer"><div class="inputLeft">'.
+                '<label for="type">'.get_string('registergroup', 'block_bcgt').'</label></div>';
+                $out .= '<div class="inputRight">';
+        
+                    $out .= "<select name='registerGroupID'>";
+                    
+                        $out .= "<option value=''>".get_string('pleaseselect', 'block_bcgt')."</option>";
+                        
+                        foreach($registerGroups as $group)
+                        {
+                            $out .= "<option value='{$group->id}'>({$group->recordid}) {$group->name} ({$group->startdate} - {$group->enddate}) ({$group->starttime} - {$group->endtime})</option>";
+                        }
+                    
+                    $out .= "</select>";
+                    
+                    $out .= "<br><br>";
+                    $out .= '<input type="submit" class="filter_input" name="searchsubmit" value="'.get_string('filter', 'block_bcgt').'"/>';
+                    
+                $out .= '</div>';
+                
+            $out .= "</form>";
+                
+            $out .= "</div>";
+            
+        $out .= "</div>";
+        
+        $out .= "</div>";
+        
+    }
+    else
+    {
+        $out .= "<p>".get_string('norecordsfound', 'block_bcgt')."</p>";
+    }
+    
+    
+}
+
 elseif($grid == 'a')
 {
     $searchString = 'searchgradebook';
     //drop down of all activities. 
-    $userQualRole = $DB->get_record_select('role', 'shortname = ?', array('teacher'));
+    $userQualRole = $DB->get_record_select('role', 'shortname = ?', array('editingteacher'));
     $activities = bcgt_get_users_activities($USER->id, $userQualRole->id, $qualID, $courseID);
     if($activities)
     {
@@ -402,175 +612,190 @@ elseif($grid == 'a')
         $out .= '</div></div>';
     }
 }
-$out .= '<div class="inputContainer"><div class="inputLeft">'.
-'<label for="search">'.get_string($searchString, 'block_bcgt').'</label></div>';
-$out .= '<div class="inputRight"><input type="text" name="search" id="search"  value="'.$search.'"/>';
-$out .= '</div></div>';
 
-$out .= '</div>';
-$out .= '<p class="bcgtoptionalfilter">'.get_string('or', 'block_bcgt').'</p>';
-$out .= '<div id="'.$divID.'" class="bcgtmainfilter">';
-$out .= '<input id="grid" type="hidden" name="grid" value="'.$grid.'"/>';
-$out .= '<div class="inputContainer"><div class="inputLeft">'.
-            '<label for="course">'.get_string('mycourse', 'block_bcgt').'</label></div>';
-    $out .= '<div class="inputRight"><select name="courseID" id="course"><option value="-1">Please select one</option>';
-if($courses)
-{    
-    foreach($courses AS $course)
-    {
-//        if(count($courses) == 1)
-//        {
-//            $courseID = $course->id;
-//        }
-        $selected = '';
-        if(count($courses) == 1 || ($courseID != -1 && $courseID == $course->id))
-        {
-            $selected = 'selected';
-        }
-        $out .= '<option '.$selected.' value="'.$course->id.'">'.
-                $course->shortname.':'.$course->fullname.'</option>';
-    }
-}
-$out .= '</select>';
-$out .= '</div></div>';
-//if we are using groups:
-if($useGroups)
+if ($grid != 'r')
 {
-    $group = new Group();
-    //but we dont want groups that are for qualifications that
-    //we cant view a grid for. 
-    //e.g. Unit grid: no Alevels
-    $groupings = $group->get_my_groups($courseID, $qualExcludes);
-    //then we need to show an OR
-    $out .= '<div class="inputContainer"><div class="inputLeft">'.
-            '<label for="type">'.get_string('mygroupings', 'block_bcgt').'</label></div>';
-    $out .= '<div class="inputRight"><select name="grID" id="group"><option value="-1">Please select one</option>';
-    if($groupings)
-    {    
-        foreach($groupings AS $myGrouping)
-        {
-            $selected = '';
-            if($groupID == $myGrouping->id)
-            {
-                $selected = 'selected="selected"';
-            }
-            $out .= '<option '.$selected.' value="'.$myGrouping->id.'">'.
-                    $myGrouping->name.' ('.$myGrouping->shortname.')</option>';
-        }
-    }
-    $out .= '</select>';
-    $out .= '</div></div>';
-    $out .= '<p class="bcgtqualfilterdesc">'.get_string('groupfilterdesc', 'block_bcgt').
-            '<span class="editgroups"> - <a href="'.$CFG->wwwroot.
-            '/blocks/bcgt/forms/edit_user_groups.php">'.
-            get_string('editmygroups', 'block_bcgt').
-            '</a></span></p>';
-}
-//allow to filter by groups:
 
-$out .= '<input type="submit" class="filter_input" name="searchsubmit" value="'.get_string('filter', 'block_bcgt').'"/>';
-$out .= '</div>';
-$out .= '</fieldset>';
-
-if(has_capability('block/bcgt:viewallgrids', context_system::instance()) && $allQuals)
-{  
-    $out .= '<fieldset>';
-    $out .= '<legend>'.get_string('bcgtfullaccess', 'block_bcgt').'</legend>';
-    $out .= '<p class="gridSelectDesc">'.get_string('bcgtfullaccessdesc','block_bcgt').'</p>';
-    $out .= '<div class="bcgtmainfilter">';
     $out .= '<div class="inputContainer"><div class="inputLeft">'.
-            '<label for="type">'.get_string('allquals', 'block_bcgt').'</label></div>';
-    $out .= '<div class="inputRight"><select name="aqID" id="aqual"><option value="-1">Please select one</option>';
-    foreach($allQuals AS $qual)
-    {
-        if(count($allQuals) == 1)
-        {
-            $qualID = $qual->id;
-        }
-        $selected = '';
-        if(count($allQuals) == 1 || ($aQualID != -1 && $aQualID == $qual->id))
-        {
-            $selected = 'selected';
-        }
-        $out .= '<option '.$selected.' value="'.$qual->id.'">'.
-                bcgt_get_qualification_display_name($qual, true, ' ').'</option>';
-    }
-    $out .= '</select>';
+    '<label for="search">'.get_string($searchString, 'block_bcgt').'</label></div>';
+    $out .= '<div class="inputRight"><input type="text" name="search" id="search"  value="'.$search.'"/>';
     $out .= '</div></div>';
+
     $out .= '</div>';
     $out .= '<p class="bcgtoptionalfilter">'.get_string('or', 'block_bcgt').'</p>';
-    $out .= '<div class="bcgtmainfilter">';
+    $out .= '<div id="'.$divID.'" class="bcgtmainfilter">';
+    $out .= '<input id="grid" type="hidden" name="grid" value="'.$grid.'"/>';
     $out .= '<div class="inputContainer"><div class="inputLeft">'.
-            '<label for="acourseID">'.get_string('allcourse', 'block_bcgt').'</label></div>';
-    $out .= '<div class="inputRight"><select name="acourseID" id="acourse"><option value="-1">Please select one</option>';
-    foreach($allCourses AS $allCourse)
-    {
-//        if(count($allCourses) == 1)
-//        {
-//            $courseID = $course->id;
-//        }
-        $selected = '';
-        if(count($allCourses) == 1 || ($aCourseID != -1 && $aCourseID == $allCourse->id))
+                '<label for="course">'.get_string('mycourse', 'block_bcgt').'</label></div>';
+        $out .= '<div class="inputRight"><select name="courseID" id="course"><option value="-1">Please select one</option>';
+    if($courses)
+    {    
+        foreach($courses AS $course)
         {
-            $selected = 'selected';
+    //        if(count($courses) == 1)
+    //        {
+    //            $courseID = $course->id;
+    //        }
+            $selected = '';
+            if(count($courses) == 1 || ($courseID != -1 && $courseID == $course->id))
+            {
+                $selected = 'selected';
+            }
+            $out .= '<option '.$selected.' value="'.$course->id.'">'.
+                    $course->shortname.':'.$course->fullname.'</option>';
         }
-        $out .= '<option '.$selected.' value="'.$allCourse->id.'">'.
-                $allCourse->shortname.':'.$allCourse->fullname.'</option>';
     }
     $out .= '</select>';
     $out .= '</div></div>';
-    
+    //if we are using groups:
     if($useGroups)
     {
         $group = new Group();
-        //dont want to suggest groups for alevels for units, or BTEC for class
-        $groupings = $group->get_all_possible_groups($aCourseID, $qualExcludes);
+        //but we dont want groups that are for qualifications that
+        //we cant view a grid for. 
+        //e.g. Unit grid: no Alevels
+        $groupings = $group->get_my_groups($courseID, $qualExcludes);
         //then we need to show an OR
         $out .= '<div class="inputContainer"><div class="inputLeft">'.
-                '<label for="type">'.get_string('allgroupings', 'block_bcgt').'</label></div>';
-        $out .= '<div class="inputRight"><select name="agrID" id="agroup"><option value="-1">Please select one</option>';
+                '<label for="type">'.get_string('mygroupings', 'block_bcgt').'</label></div>';
+        $out .= '<div class="inputRight"><select name="grID" id="group"><option value="-1">Please select one</option>';
         if($groupings)
         {    
-            foreach($groupings AS $allGrouping)
+            foreach($groupings AS $myGrouping)
             {
                 $selected = '';
-                if($aGroupID == $allGrouping->id)
+                if($groupID == $myGrouping->id)
                 {
                     $selected = 'selected="selected"';
                 }
-                $out .= '<option '.$selected.' value="'.$allGrouping->id.'">'.
-                        $allGrouping->name.'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'.
-                        '--('.$allGrouping->shortname.')</option>';
+                $out .= '<option '.$selected.' value="'.$myGrouping->id.'">'.
+                        $myGrouping->name.' ('.$myGrouping->shortname.')</option>';
             }
         }
         $out .= '</select>';
         $out .= '</div></div>';
+        $out .= '<p class="bcgtqualfilterdesc">'.get_string('groupfilterdesc', 'block_bcgt').
+                '<span class="editgroups"> - <a href="'.$CFG->wwwroot.
+                '/blocks/bcgt/forms/edit_user_groups.php">'.
+                get_string('editmygroups', 'block_bcgt').
+                '</a></span></p>';
     }
-    $out .= '</div>';
+    //allow to filter by groups:
+
     $out .= '<input type="submit" class="filter_input" name="searchsubmit" value="'.get_string('filter', 'block_bcgt').'"/>';
+    $out .= '</div>';
     $out .= '</fieldset>';
+
+    if(has_capability('block/bcgt:viewallgrids', context_system::instance()) && $allQuals)
+    {  
+        $out .= '<fieldset>';
+        $out .= '<legend>'.get_string('bcgtfullaccess', 'block_bcgt').'</legend>';
+        $out .= '<p class="gridSelectDesc">'.get_string('bcgtfullaccessdesc','block_bcgt').'</p>';
+        $out .= '<div class="bcgtmainfilter">';
+        $out .= '<div class="inputContainer"><div class="inputLeft">'.
+                '<label for="type">'.get_string('allquals', 'block_bcgt').'</label></div>';
+        $out .= '<div class="inputRight"><select name="aqID" id="aqual"><option value="-1">Please select one</option>';
+        foreach($allQuals AS $qual)
+        {
+            if(count($allQuals) == 1)
+            {
+                $qualID = $qual->id;
+            }
+            $selected = '';
+            if(count($allQuals) == 1 || ($aQualID != -1 && $aQualID == $qual->id))
+            {
+                $selected = 'selected';
+            }
+            $out .= '<option '.$selected.' value="'.$qual->id.'">'.
+                    bcgt_get_qualification_display_name($qual, true, ' ').'</option>';
+        }
+        $out .= '</select>';
+        $out .= '</div></div>';
+        $out .= '</div>';
+        $out .= '<p class="bcgtoptionalfilter">'.get_string('or', 'block_bcgt').'</p>';
+        $out .= '<div class="bcgtmainfilter">';
+        $out .= '<div class="inputContainer"><div class="inputLeft">'.
+                '<label for="acourseID">'.get_string('allcourse', 'block_bcgt').'</label></div>';
+        $out .= '<div class="inputRight"><select name="acourseID" id="acourse"><option value="-1">Please select one</option>';
+        foreach($allCourses AS $allCourse)
+        {
+    //        if(count($allCourses) == 1)
+    //        {
+    //            $courseID = $course->id;
+    //        }
+            $selected = '';
+            if(count($allCourses) == 1 || ($aCourseID != -1 && $aCourseID == $allCourse->id))
+            {
+                $selected = 'selected';
+            }
+            $out .= '<option '.$selected.' value="'.$allCourse->id.'">'.
+                    $allCourse->shortname.':'.$allCourse->fullname.'</option>';
+        }
+        $out .= '</select>';
+        $out .= '</div></div>';
+
+        if($useGroups)
+        {
+            $group = new Group();
+            //dont want to suggest groups for alevels for units, or BTEC for class
+            $groupings = $group->get_all_possible_groups($aCourseID, $qualExcludes);
+            //then we need to show an OR
+            $out .= '<div class="inputContainer"><div class="inputLeft">'.
+                    '<label for="type">'.get_string('allgroupings', 'block_bcgt').'</label></div>';
+            $out .= '<div class="inputRight"><select name="agrID" id="agroup"><option value="-1">Please select one</option>';
+            if($groupings)
+            {    
+                foreach($groupings AS $allGrouping)
+                {
+                    $selected = '';
+                    if($aGroupID == $allGrouping->id)
+                    {
+                        $selected = 'selected="selected"';
+                    }
+                    $out .= '<option '.$selected.' value="'.$allGrouping->id.'">'.
+                            $allGrouping->name.'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'.
+                            '--('.$allGrouping->shortname.')</option>';
+                }
+            }
+            $out .= '</select>';
+            $out .= '</div></div>';
+        }
+        $out .= '</div>';
+        $out .= '<input type="submit" class="filter_input" name="searchsubmit" value="'.get_string('filter', 'block_bcgt').'"/>';
+        $out .= '</fieldset>';
+
+    }
+
+
+    $out .= '</div>';//closes column one
+    
     
 }
 
+    
+    $out .= '<div class="bcgt_col_two">';
+    if($courseID != -1 || $aCourseID != -1)
+    {
+        $courseDB = $DB->get_record_sql("SELECT * FROM {course} WHERE id = ? OR id = ?", array($courseID, $aCourseID));
+        if($courseDB)
+        {
+            $out .= '<h2>'.$courseDB->shortname.'</h2>';
+        }
+    }
+    if($groupID != -1 || $aGroupID != -1)
+    {
+        $groupDB = $DB->get_record_sql("SELECT * FROM {groups} WHERE id = ? OR id = ?", array($groupID, $aGroupID));
+        if($groupDB)
+        {
+            $out .= '<h2>'.$groupDB->name.'</h2>';
+        }
+    }
 
-$out .= '</div>';//closes column one
-$out .= '<div class="bcgt_col_two">';
-if($courseID != -1 || $aCourseID != -1)
-{
-    $courseDB = $DB->get_record_sql("SELECT * FROM {course} WHERE id = ? OR id = ?", array($courseID, $aCourseID));
-    if($courseDB)
-    {
-        $out .= '<h2>'.$courseDB->shortname.'</h2>';
-    }
-}
-if($groupID != -1 || $aGroupID != -1)
-{
-    $groupDB = $DB->get_record_sql("SELECT * FROM {groups} WHERE id = ? OR id = ?", array($groupID, $aGroupID));
-    if($groupDB)
-    {
-        $out .= '<h2>'.$groupDB->name.'</h2>';
-    }
-}
+
+
+
+
+
 
 $out .= '<div id="gridresults">';
 if($grid == 's')
@@ -711,6 +936,117 @@ elseif($grid == 'c')
         $out .= class_qual_select_grid(array($myQual), $cID, true, -1, -1);
         $out .= '</table>';
     }
+}
+elseif ($grid == 'r')
+{
+    
+    if ($registerGroupID > 0)
+    {
+        
+        // Check we are assigned to this register group
+        if (bcgt_is_user_in_register_group($USER->id, $registerGroupID) )
+        {
+            
+            $group = $DB->get_record("block_bcgt_register_groups", array("id" => $registerGroupID));
+            if ($group)
+            {
+            
+                $out .= "<h2>({$group->recordid}) {$group->name}</h2>";
+                
+                $out .= "<div class='tabtree'>";
+                $out .= "<ul class='tabrow0'><li><a href='#' onclick='$(\".reg_stud_grids\").show();$(\".reg_unit_grids\").hide();return false;'>".get_string('registerstudgrids', 'block_bcgt')."</a></li><li><a href='#' onclick='$(\".reg_stud_grids\").hide();$(\".reg_unit_grids\").show();return false;'>".get_string('registerunitgrids', 'block_bcgt')."</a></li></ul>";
+                $out .= "</div>";
+
+               
+
+                // Find users
+                $users = bcgt_get_register_group_users($registerGroupID);
+
+
+
+                // No way to know from a register group which qual it should be linked to
+                // So.. Find all the quals this teacher is on, then for each of them, loop through the students
+                // and see how many of them are on that qual.
+                // Then order by the amount of students on the qual, and display the lists for any with > 0 of
+                // the register group's students
+                $qualRegisterGroupStudents = array();
+
+                if ($quals)
+                {
+
+                    foreach($quals as $qual)
+                    {
+
+                        $qualRegisterGroupStudents[$qual->id] = array(
+                            'cnt' => 0,
+                            'students' => array()
+                        );                    
+
+                        // Loop through the register group students
+                        if ($users)
+                        {
+
+                            foreach($users as $user)
+                            {
+
+                                // Are they on this qual?
+                                $check = $DB->get_record("block_bcgt_user_qual", array("userid" => $user->id, "bcgtqualificationid" => $qual->id));
+                                if ($check)
+                                {
+                                    $qualRegisterGroupStudents[$qual->id]['cnt']++;
+                                    $qualRegisterGroupStudents[$qual->id]['students'][] = $user;
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+                // Order the array
+                uasort($qualRegisterGroupStudents, function($a, $b){
+                    return ($a['cnt'] < $b['cnt']);
+                });
+
+                // Now display the lists
+                if ($qualRegisterGroupStudents)
+                {
+
+                    foreach($qualRegisterGroupStudents as $qID => $info)
+                    {
+
+                        if ($info['cnt'] > 0)
+                        {
+
+                            $out .= "<div class='reg_stud_grids'>";
+                            $out .= bcgt_display_qual_grid_select($qID, $courseID, false, $info['students']);
+                            $out .= "</div>";
+                            $out .= "<div class='reg_unit_grids' style='display:none;'>";
+                            $out .= bcgt_display_unit_grid_select($qID, $courseID, false, array('regGrpID' => $registerGroupID));
+                            $out .= "</div>";
+                            $out .= "<br><br>";
+                        
+                        }
+
+                    }
+
+                }
+                                
+                
+                            
+            }
+            
+            
+        }
+        else
+        {
+            $out .= get_string('accessdenied', 'block_bcgt');
+        }
+                
+    }
+    
 }
 elseif($grid == 'fa')
 {

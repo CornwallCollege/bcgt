@@ -28,7 +28,13 @@ $studentID = optional_param('sID', -1, PARAM_INT);
 $forceLoad = optional_param('fload', true, PARAM_BOOL);
 $clearSession = optional_param('csess', true, PARAM_BOOL);
 $order = optional_param('order', 'spec', PARAM_TEXT);
+$rgID = optional_param('rgID', -1, PARAM_INT);
+$reload = optional_param('reload', false, PARAM_BOOL);
 
+// If the studentID is not ours, we need the viewstudentsgrids capability
+if ($studentID <> $USER->id && !has_capability('block/bcgt:viewstudentsgrids', $context)){
+    print_error('invalid access');
+}
 
 //TODO::::::
 //IF no qual id is passed down then load all quals for this student!!!!
@@ -86,10 +92,10 @@ else
 
 $url = '/blocks/bcgt/forms/student_grid.php';
 $PAGE->set_url($url, array());
-$PAGE->set_title(get_string('bcgtmydashboard', 'block_bcgt'));
+$PAGE->set_title(get_string('studentgrid', 'block_bcgt'));
 $PAGE->set_heading(get_string('bcgtmydashboard', 'block_bcgt'));
 $PAGE->set_cacheable(true);
-$PAGE->set_pagelayout('login');
+$PAGE->set_pagelayout( bcgt_get_layout() );
 $PAGE->add_body_class(get_string('bcgtmydashboard', 'block_bcgt'));
 $jsModule = array(
     'name'     => 'block_bcgt',
@@ -102,7 +108,16 @@ $link2 = null;
 if(has_capability('block/bcgt:viewclassgrids', $context))
 {
     $link1 = $CFG->wwwroot.'/blocks/bcgt/forms/grid_select.php?&cID='.$courseID;
-	$link2 = $CFG->wwwroot.'/blocks/bcgt/forms/my_dashboard.php?tab=track';
+    $link2 = $CFG->wwwroot.'/blocks/bcgt/forms/my_dashboard.php?tab=track&cID='.$courseID;
+}
+if($courseID != 1 && $courseID != -1)
+{
+    global $DB;
+    $course = $DB->get_record_sql("SELECT * FROM {course} WHERE id = ?", array($courseID));
+    if($course)
+    {
+        $PAGE->navbar->add($course->shortname,$CFG->wwwroot.'/course/view.php?id='.$courseID,'title');
+    }
 }
 $PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),$link2,'title');
 $PAGE->navbar->add(get_string('grids', 'block_bcgt'),$link1,'title');
@@ -133,22 +148,29 @@ if(!$qualification)
 }
 $studentInd = $DB->get_record_sql('SELECT * FROM {user} WHERE id = ?', array($studentID));
 $out = $OUTPUT->header();
-    $out .= '<form id="studentGridForm" method="POST" name="studentGridForm" action="student_grid.php?">';			
+    $out .= '<form id="studentGridForm" method="POST" name="studentGridForm" action="">';			
     $out .= '<input type="hidden" name="cID" value="'.$courseID.'"/>';  
-
+    $out .= "<input type='hidden' name='rgID' value='{$rgID}' />";
     // Menu
-    $out .= '<div class="bcgtGridMenu">';
+    $out .= '<div class="bcgtGridMenu">'; // div grid menu
     if(has_capability('block/bcgt:viewclassgrids', $context))
     {
+        
         $dropDowns = "yes";
         //Drop down of other students
         if($qualification)
         {
-            $students = $qualification->get_students();
+            
+            if ($rgID > 0){
+                $students = bcgt_get_register_group_users($rgID);
+            } else {
+                $students = $qualification->get_students();
+            }
+            
             if($students)
             {                
-                $out .= '<div class="bcgtStudentChange">';
-                $out .= '<label for="studentChange">Change Student to : </label>';
+                $out .= '<div class="bcgtStudentChange">'; // div studchange
+                $out .= '<label for="studentChange">Switch Student: </label>';
                 $out .= '<select id="studentChange" name="sID"><option value=""></option>';                
                 foreach($students AS $student)
                 {
@@ -163,7 +185,7 @@ $out = $OUTPUT->header();
                 }
                 
                 $out .= '</select><br />'; 
-                $out .= '</div>'; //bcgtStudentChange
+                $out .= '</div>'; //end div bcgtStudentChange
             }
         }
         //if we have the ability to see all, then we need to to see all here
@@ -171,8 +193,8 @@ $out = $OUTPUT->header();
         $qualifications = get_users_quals($studentID);
         if($qualifications)
         {
-            $out .= '<div class="bcgtQualChange">';
-            $out .= '<label for="qualChange">Change Qualification to : </label>';
+            $out .= '<div class="bcgtQualChange">'; // div qualchange
+            $out .= '<label for="qualChange">Switch Qualification : </label>';
             $out .= '<select id="qualChange" name="qID"><option value=""></option>';
             foreach($qualifications AS $qual)
             {
@@ -186,7 +208,7 @@ $out = $OUTPUT->header();
             }
 
             $out .= '</select>';
-            $out .= '</div>'; //bcgtQualChange 
+            $out .= '</div>'; //end div bcgtQualChange 
         }
         else
         {
@@ -201,26 +223,27 @@ $out = $OUTPUT->header();
     }
     $out .= '<input type="hidden" id="selects" name="selects" value="'.$dropDowns.'"/>'; 
     $out .= '<input type="hidden" id="user" name="user" value="'.$USER->id.'"/>';
+    $out .= '<input type="hidden" id="studentid" name="studentid" value="'.$studentID.'"/>';
     $out .= '<input type="hidden" name="gridType" value="student" />';
     
 
     // $out .= get_grid_menu($courseID);
-    $out .= get_grid_menu($studentID, $qualID);
-    $out .= '</div>';
+    $out .= get_grid_menu($studentID, -1, $qualID, $courseID);
+    $out .= '</div>'; // end div grid menu
 
     $heading = get_string('trackinggrid','block_bcgt');
 	if($studentInd)
 	{
 		$heading .= " - $studentInd->username : $studentInd->firstname $studentInd->lastname";
 	}
-    $out .= html_writer::tag('h2', $heading, 
-        array('class'=>'formheading'));
     
+    $out .= "<h2 class='formheading'>{$heading}</h2>";
+        
     $out .= '<input type="hidden" id="order" value="'.$order.'" name="order"/>';
     if($activities = bcgt_user_activities($qualID, $studentID, -1))
     {
         //if we have activities then show the other options
-        $out .= '<div class="tabs"><div class="tabtree">';
+        $out .= '<div class="tabs"><div class="tabtree">'; //div tabs & tabtree
         $out .= '<ul class="tabrow0">';
         if($order == '')
         {
@@ -241,14 +264,14 @@ $out = $OUTPUT->header();
                 '<a order="unitact" class="ordertab" href="?&sID='.$studentID.
                 '&qID='.$qualID.'&cID='.$courseID.'&order=unitact">'.
                 '<span>'.get_string('orderbyunitactivity', 'block_bcgt').'</span></a></li>';
+        $out .= '</div></div>';
     }
-    $out.= '</ul>';
-    $out.= '</div></div>';
+    $out.= '</ul>';// end div tabtree and tabs
+    $out.= '</div>'; // ??WTF ARE THESE FOR??? 
     
-    $out .= html_writer::start_tag('div', array('class'=>'bcgt_grid_outer', 
-    'id'=>'studentGridOuter'));
-    $out .= html_writer::tag('h3', $qualification->get_display_name(), 
-        array('class'=>'subTitle'));
+    $out .= "<div class='bcgt_grid_outer' id='studentGridOuter'>"; // div gridouter
+    $out .= "<h3 class='subTitle'>{$qualification->get_display_name()}</h3>";
+
     $loadParams = new stdClass;
     $loadParams->loadLevel = Qualification::LOADLEVELALL;
     $loadParams->loadAward = true;
@@ -256,6 +279,18 @@ $out = $OUTPUT->header();
     $loadParams->loadAddUnits = false;
     $qualification->load_student_information($studentID, $loadParams);
     
+    // If we want to reload the awards, do that now before we display it
+    if ($reload && $qualification->get_units())
+    {
+        foreach($qualification->get_units() as $unit)
+        {
+            if ($unit->is_student_doing())
+            {
+                $unit->calculate_unit_award($qualification->get_id());
+            }
+        }
+    }
+        
     //at this point we load it up into the session
 
     $out .= $qualification->display_student_grid(false, true);
@@ -268,9 +303,12 @@ $out = $OUTPUT->header();
     $_SESSION['session_stu_quals'] = urlencode(serialize($sessionQuals));
     //other options at the bottom
 
-    $out .= html_writer::end_tag('div');
+    $out .= "</div>"; // end div grid outer
+    $out .= "<br style='clear:both;' />";
     
     $out .= "<div id='bcgtblanket'></div>";
+    
+    // div pouopdiv
     $out .= '<div id="popUpDiv">
                 <div id="commentMove">&nbsp;</div>
                 <div id="commentClose"><a href="#"><img src="'.$CFG->wwwroot.'/blocks/bcgt/plugins/bcgtbtec/pix/grid_symbols/close.png" style="width:24px;" alt="Close" /></a></div><br class="cl" />
@@ -283,15 +321,16 @@ $out = $OUTPUT->header();
                 <input type="button" id="cancelComment" value="Cancel" />
                 &nbsp;&nbsp;&nbsp;&nbsp;
                 <input type="button" id="deleteComment" value="Delete" />
-            </div>';
-    $out .= '<div id="genericPopup" style="display:none;">
+            </div>'; // end div popupdiv
+    $out .= '<div id="genericPopup" style="display:none;"><div id="genericContent">
                 <div id="commentClose"><a href="#" onclick="popup.close();return false;"><img src="'.$CFG->wwwroot.'/blocks/bcgt/pix/close.png" style="width:24px;" alt="Close" /></a></div><br class="cl" /><!-- Toggle -->
                 <span id="popUpTitle"></span><br><br>
                     <div id="popUpSubTitle"></div><br>
                     <div id="popUpContent"></div>
                     <br>
-                    <input type="button" value="Close" onclick="popup.close();return false;" />    
+                    <input type="button" value="Close" onclick="popup.close();return false;" />
+                    </div>
             </div>';
-    
+        
 $out .= $OUTPUT->footer();
 echo $out;
