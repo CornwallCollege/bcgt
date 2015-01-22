@@ -632,6 +632,9 @@ class Criteria {
     public function delete_students_comments()
     {
         global $DB;
+        
+        $this->comments = null;
+        
         $obj = new stdClass();
         $obj->id = $this->studentCriteriaID;
         $obj->comments = null;

@@ -299,20 +299,20 @@ abstract class CoreReports {
                     if(is_a($cell, 'stdClass'))
                     {
                         $objPHPExcel->getActiveSheet()->setCellValueByColumnAndRow($col, $rowNum, $this->build_excell_cell($cell));
-                        $objPHPExcel->getActiveSheet()->getStyle(''.PHPExcel_Cell::stringFromColumnIndex($col).''.$rowNum)->applyFromArray(
-                            array(
-                                'fill' => array(
-                                    'type' => PHPExcel_Style_Fill::FILL_SOLID,
-                                    'color' => $this->get_excell_cell_color($cell)
-                                ),
-                                'borders' => array(
-                                    'outline' => array(
-                                        'style' => PHPExcel_Style_Border::BORDER_THIN,
-                                        'color' => array('rgb'=>'cfcfcf')
-                                    )
-                                )
-                            )
-                        );                        
+//                        $objPHPExcel->getActiveSheet()->getStyle(''.PHPExcel_Cell::stringFromColumnIndex($col).''.$rowNum)->applyFromArray(
+//                            array(
+//                                'fill' => array(
+//                                    'type' => PHPExcel_Style_Fill::FILL_SOLID,
+//                                    'color' => $this->get_excell_cell_color($cell)
+//                                ),
+//                                'borders' => array(
+//                                    'outline' => array(
+//                                        'style' => PHPExcel_Style_Border::BORDER_THIN,
+//                                        'color' => array('rgb'=>'cfcfcf')
+//                                    )
+//                                )
+//                            )
+//                        );                        
                         if(isset($cell->colspan) && $cell->colspan > 1)
                         {
                             $objPHPExcel->getActiveSheet()->mergeCells(''.PHPExcel_Cell::stringFromColumnIndex($col).

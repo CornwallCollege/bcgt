@@ -150,7 +150,7 @@ switch($action)
         } elseif ($params->grid == 'unit'){
             update_session_unit($params->studentID, $params->unitID, $unit, $params->qualID);
         }
-        
+                
         // Remove single quotes
         $params->comment = urlencode($params->comment);
         $params->comment = str_replace("'", "", $params->comment);

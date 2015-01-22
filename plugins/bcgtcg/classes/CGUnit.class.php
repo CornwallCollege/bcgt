@@ -1339,7 +1339,7 @@ class CGUnit extends Unit {
             else
             {
                 //no so we want to start at the page number times by how many we show per page
-                $i = ($pageRecords * ($pageNumber - 1)) + ($pageNumber - 1);
+                $i = ($pageRecords * ($pageNumber - 1));
             }
             //we want to loop over and only show the number of students in our page size. 
             $recordsEnd = ($i + $pageRecords);         

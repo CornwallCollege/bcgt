@@ -228,7 +228,7 @@ $out = $OUTPUT->header();
         if (count($quals) == 1)
         {
             $qual = reset($quals);
-            redirect($CFG->wwwroot . '/blocks/bcgt/forms/edit_students_units.php?a=q&qID=' . $qual->id);
+            redirect($CFG->wwwroot . '/blocks/bcgt/forms/edit_students_units.php?a=q&oCID='.$originalCourseID.'&qID=' . $qual->id);
         }
         
         if($quals)

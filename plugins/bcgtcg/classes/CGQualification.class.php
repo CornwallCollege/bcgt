@@ -12,7 +12,7 @@ require_once($CFG->dirroot.'/blocks/bcgt/plugins/bcgtcg/lib.php');
 
 //This can be abstract if the qualification class is never returned from the get_correct_qual_class
 //but doesnt always need to be used in an actual qualification target qual
-class CGQualification extends Qualification{
+class CGQualification extends Qualification {
 
     //these are hardcoded from the install. The tables dont have auto incremental
     //id's
@@ -1768,29 +1768,7 @@ class CGQualification extends Qualification{
             $cols++;
         }
         
-        $retval = '<div>';
-        
-//        if (!$basicView)
-//        {
-//        
-//            $retval .= "<div class='bcgtgridbuttons'>";
-//            $retval .= "<input type='submit' id='viewsimple' class='gridbuttonswitch viewsimple' name='viewsimple' value='View Simple'/>";
-//            $retval .= "<input type='submit' id='viewadvanced' class='gridbuttonswitch viewadvanced' name='viewadvanced' value='View Advanced'/>";
-//            $retval .= "<br>";  
-//            
-//            if($courseID != -1)
-//            {
-//                $context = context_course::instance($courseID);
-//            }
-//            if(has_capability('block/bcgt:editstudentgrid', $context))
-//            {	
-//                $retval .= "<input type='submit' id='editsimple' class='gridbuttonswitch editsimple' name='editsimple' value='Edit Simple'/>";
-//                $retval .= "<input type='submit' id='editadvanced' class='gridbuttonswitch editadvanced' name='editadvanced' value='Edit Advanced'/>"; 
-//            }
-//            $retval .= "</div>";
-//        
-//        }
-        
+        $retval = '<div>';        
         
         if (!$basicView)
         {
@@ -1858,21 +1836,7 @@ JS;
         $retval .= load_javascript(true, $basicView);
         
         $retval .= "<link rel='stylesheet' type='text/css' href='{$CFG->wwwroot}/blocks/bcgt/css/start/jquery-ui-1.10.3.custom.min.css' />";
-//        $retval .= "
-//		<div class='gridKey adminRight'>";
-//		if($studentView)
-//		{
-//			$retval .= "<h2>Key</h2>";
-//			//Are we looking at a student or just the actual criteria for the grid.
-//			//if students then get the key that tells everyone what things stand for
-//			$retval .= CGQualification::get_grid_key();
-//		}
-//		$retval .= "</div>";
-//        
-//        $retval .= "<br style='clear:both;' />";
-        
-        
-                
+               
         $unitGroups = $this->get_unit_groups();
         if ($unitGroups)
         {
@@ -1955,9 +1919,11 @@ JS;
             //>>BEDCOLL TODO this need to be taken from the qual object
             //as foundatonQual is different
             $retval .= '<table id="summaryAwardGrades">';
-                $retval .= $this->show_predicted_qual_award($this->predictedAward, $context);
+                $retval .= '<tr><th colspan="2">'.get_string('grade','block_bcgt').'</th>';
+                $retval .= $this->show_avg_gcse_score();
                 $retval .= $this->show_target_grade();    
                 $retval .= $this->show_aspirational_grade();
+                $retval .= $this->show_predicted_qual_award($this->predictedAward, $context);
             $retval .= '</table>';
             
         }
@@ -1973,6 +1939,26 @@ JS;
         
     }
     
+    
+    protected function show_avg_gcse_score()
+    {
+        
+        $retval = "";
+        
+        $retval .= "<tr>";
+		$retval .= "<td>".get_string('avggcsescore', 'block_bcgt')."</td>";
+		$retval .= "<td>";
+        
+        $R = new \Reporting();
+        $avgScore = $R->get_users_average_gcse_score($this->studentID);
+        $retval .= $avgScore;
+        
+        $retval .= "</td>";
+        $retval .= "</tr>";
+        
+        return $retval;
+        
+    }
     
     
     public function get_student_grid_data($advancedMode, $editing, 
@@ -3084,10 +3070,14 @@ JS;
     protected function show_target_grade()
     {
         
+        $grade = 'N/A';
+        
         $retval = "";
         
+        $retval .= "<tr><td>".get_string('targetgrade', 'block_bcgt')."</td><td>";
+        
         $userCourseTarget = new UserCourseTarget();
-        $targetGrade = $userCourseTarget->retrieve_users_target_grades($this->studentID, $this->id);
+        $targetGrade = $userCourseTarget->retrieve_users_target_grades($this->studentID, $this->id);        
         if($targetGrade)
         {
             $targetGradeObj = $targetGrade[$this->id];
@@ -3096,11 +3086,13 @@ JS;
                 if (isset($targetGradeObj->id) && $targetGradeObj->id > 0)
                 {
                     $grade = $targetGradeObj->grade;
-                    $retval .= "<tr><td>".get_string('targetgrade', 'block_bcgt')."</td><td>{$grade}</td></tr>";
                 }
             }
             
         }
+        
+        $retval .= $grade;
+        $retval .= "</td></tr>";
         
         return $retval;
         

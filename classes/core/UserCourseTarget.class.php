@@ -497,7 +497,7 @@ class UserCourseTarget {
     {
        
         global $DB;
-        
+                
         $qualFamily = $qualFamily = bcgt_get_family_for_qual($qual->get_id());
         $weighting = new QualWeighting(-1, null);
         $calculatingWeightings = $weighting->can_family_have_weighted_target_grades( $qualFamily );
@@ -549,11 +549,11 @@ class UserCourseTarget {
                 $params->bcgttargetgradesid = $record->bcgttargetgradesid;
             
             }
+            
+            $userCourseTarget = new UserCourseTarget(-1, $params); 
+            $userCourseTarget->save(true, $qual->get_id());
 
         }               
-        
-        $userCourseTarget = new UserCourseTarget(-1, $params); 
-        $userCourseTarget->save(true, $qual->get_id());    
         
         // Remove duplicates
         $this->remove_redundant_grade_records();
@@ -1300,11 +1300,13 @@ class UserCourseTarget {
                                     $userCourseTarget = new UserCourseTarget(-1, $params); 
                                     $userCourseTarget->save(true, $qual->id);                                    
                                     $successCount++;
-                                    
+                                                                        
                                     // Save to student_course_grades table as well, since we should be using this one
                                     if ($params->bcgttargetgradesid > 0){
                                         $this->set_student_course_grade($userID, 'target', $courseID, $qual->id, 'block_bcgt_target_grades', $params->bcgttargetgradesid);
-                                    } elseif ($params->bcgttargetbreakdownid > 0){
+                                    } 
+                                    
+                                    if ($params->bcgttargetbreakdownid > 0){
                                         $this->set_student_course_grade($userID, 'target', $courseID, $qual->id, 'block_bcgt_target_breakdown', $params->bcgttargetbreakdownid);
                                     }
                                                                     
@@ -1442,8 +1444,8 @@ class UserCourseTarget {
         $this->bcgtqualificationid = $params->bcgtqualificationid;
         $this->userid = $params->userid;
         $this->courseid = $params->courseid;
-        $this->bcgttargetbreakdownid = $params->bcgttargetbreakdownid;
-        $this->bcgttargetgradesid = $params->bcgttargetgradesid;
+        if(isset($params->bcgttargetbreakdownid)) $this->bcgttargetbreakdownid = $params->bcgttargetbreakdownid;
+        if(isset($params->bcgttargetgradesid)) $this->bcgttargetgradesid = $params->bcgttargetgradesid;
         if(isset($params->bcgtweightedbreakdownid)) $this->bcgtweightedbreakdownid = $params->bcgtweightedbreakdownid;
         if(isset($params->bcgtweightedgradeid)) $this->bcgtweightedgradeid = $params->bcgtweightedgradeid;
     }

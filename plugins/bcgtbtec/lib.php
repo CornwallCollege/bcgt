@@ -921,7 +921,7 @@
         global $CFG;
         $retval = '';
         $loadParams = new stdClass();
-        $loadParams->loadLevel = Qualification::LOADLEVELCRITERIA;
+        $loadParams->loadLevel = Qualification::LOADLEVELALL;
         $unit = Unit::get_unit_class_id($unitID, $loadParams);
         if($unit)
         {
@@ -967,6 +967,15 @@
                 foreach($criterias AS $criteria)
                 {
                     $retval .= '<th>'.$criteria->get_name().'</th>';
+                    
+                    if ($criteria->get_sub_criteria())
+                    {
+                        foreach($criteria->get_sub_criteria() as $sub)
+                        {
+                             $retval .= '<th>'.$sub->get_name().'</th>';
+                        }
+                    }
+                    
                 }
                 $retval .= '</tr>';
                 $retval .= '<tr>';
@@ -982,6 +991,30 @@
                         $checked = 'checked="checked"';
                     }                    
                     $retval .= '<td><input '.$checked.' type="checkbox" name="u_'.$unitID.'_c_'.$criteria->get_id().'"/></td>';
+                    
+                    
+                    if ($criteria->get_sub_criteria())
+                    {
+                        foreach($criteria->get_sub_criteria() as $sub)
+                        {
+                             
+                            $checked = '';
+                            if($new && isset($_POST['u_'.$unitID.'_c_'.$sub->get_id().'']))
+                            {
+                                $checked = 'checked="checked"';
+                            }
+                            elseif(!$new && array_key_exists($sub->get_id(), $criteriaOnActivity))
+                            {
+                                $checked = 'checked="checked"';
+                            }                    
+                            $retval .= '<td><input '.$checked.' type="checkbox" name="u_'.$unitID.'_c_'.$sub->get_id().'"/></td>';
+
+                            
+                        }
+                    }
+                    
+                    
+                    
                 }
                 if($modDirect)
                 {
@@ -1064,7 +1097,24 @@
                 $out .= '<td>';
                 if($dueDate)
                 {
-                    $out .= date('d M Y : H:m', $dueDate); 
+                    
+                    // Turnitin hax
+                    if ($activity->module == 'turnitintool')
+                    {
+                        $parts = bcgt_get_turnitin_parts($activity->instanceid);
+                        if ($parts)
+                        {
+                            foreach($parts as $part)
+                            {
+                                $out .= $part->partname . " (".date('d M Y : H:m', $part->dtdue).")<br>";
+                            }
+                        }
+                    }
+                    else
+                    {
+                        $out .= date('d M Y : H:m', $dueDate); 
+                    }
+                    
                 }
                 $out .= '</td>';
                 //now get the units that are on it. 
@@ -1177,7 +1227,21 @@
                         $out .= '<th>';
                         if($dueDate)
                         {
-                            $out .= date('d M Y : H:m', $dueDate); 
+                            if ($activity->module == 'turnitintool')
+                            {
+                                $parts = bcgt_get_turnitin_parts($activity->instanceid);
+                                if ($parts)
+                                {
+                                    foreach($parts as $part)
+                                    {
+                                        $out .= $part->partname . " (".date('d M Y : H:m', $part->dtdue).")<br>";
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                    $out .= date('d M Y : H:m', $dueDate); 
+                            }
                         }
                         $out .= '</th>';
                         $out .= '</tr>';
@@ -1271,7 +1335,7 @@
     function bcgt_btec_process_mod_unit_selection($courseModuleID, $unitID, $courseID, $attemptNo = 1)
     {
         $loadParams = new stdClass();
-        $loadParams->loadLevel = Qualification::LOADLEVELCRITERIA;
+        $loadParams->loadLevel = Qualification::LOADLEVELALL;
         $unit = Unit::get_unit_class_id($unitID, $loadParams);
         $criterias = $unit->get_criteria();
         $criteriasUsed = array();
@@ -1283,6 +1347,19 @@
                //then we want to insert it
                $criteriasUsed[] = $criteria->get_id();
            }
+           
+           if ($criteria->get_sub_criteria())
+           {
+               foreach($criteria->get_sub_criteria() as $sub)
+               {
+                   if(isset($_POST['u_'.$unitID.'_c_'.$sub->get_id().'']))
+                   {
+                        //then we want to insert it
+                        $criteriasUsed[] = $sub->get_id();
+                   }
+               }
+           }
+           
         }
         $qualsUnitOn = $unit->get_quals_on('', -1, -1, $courseID );
         //is it on a qual?
@@ -1317,7 +1394,7 @@
     function bcgt_btec_process_mod_selection_changes($courseModuleID, $unitID, $courseID, $attemptNo = 1)
     {
         $loadParams = new stdClass();
-        $loadParams->loadLevel = Qualification::LOADLEVELCRITERIA;
+        $loadParams->loadLevel = Qualification::LOADLEVELALL;
         $unit = Unit::get_unit_class_id($unitID, $loadParams);
         $qualsUnitOn = $unit->get_quals_on('', -1, -1, $courseID);
         //now check quals. 
@@ -1359,6 +1436,44 @@
                 delete_activity_by_criteria_from_unit($courseModuleID, $criteria->get_id(), $unitID);
             }
             //is it checked? 
+            
+            
+            if ($criteria->get_sub_criteria())
+            {
+                
+                foreach($criteria->get_sub_criteria() as $sub)
+                {
+                    
+                    if(isset($_POST['u_'.$unitID.'_c_'.$sub->get_id()])
+                            && !array_key_exists($sub->get_id(), $criteriaOnActivity))
+                    {
+                        //so its been checked and it wasnt in the array from the database
+                        //therefore INSERT!
+                        foreach($qualsUnitOn AS $qual)
+                        {
+                            $stdObj = new stdClass();
+                            $stdObj->coursemoduleid = $courseModuleID;
+                            $stdObj->bcgtunitid = $unitID;
+                            $stdObj->bcgtqualificationid = $qual->id;
+                            $stdObj->bcgtcriteriaid = $sub->get_id();
+                            $stdObj->attemptno = $attemptNo;
+                            insert_activity_onto_unit($stdObj);
+                        }
+                    }
+                    elseif(!isset($_POST['u_'.$unitID.'_c_'.$sub->get_id()])
+                            && array_key_exists($sub->get_id(), $criteriaOnActivity))
+                    {
+                        //its in the array from before and its no longer checked!
+                        //therefore delete
+                        delete_activity_by_criteria_from_unit($courseModuleID, $sub->get_id(), $unitID);
+                    }
+                    
+                }
+                
+            }
+            
+            
+            
         }
     }
     

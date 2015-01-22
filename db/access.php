@@ -875,8 +875,17 @@ $capabilities = array(
             'teacher' => CAP_PREVENT,
             'student' => CAP_PREVENT
         ),
-    )
+    ),
     
+    'block/bcgt:exportimportgriddata' => array(
+        'captype' => 'edit',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => array(
+            'editingteacher' => CAP_PREVENT,
+            'teacher' => CAP_PREVENT,
+            'student' => CAP_PREVENT
+        ),
+    )
     
     
 );

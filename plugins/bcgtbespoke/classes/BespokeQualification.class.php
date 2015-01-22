@@ -3122,6 +3122,11 @@ JS;
                 
         $now = time();
                 
+        $return = array(
+            'summary' => '',
+            'output' => ''
+        );
+        
         $output = "";
         
         if ($confirm)
@@ -3470,8 +3475,9 @@ JS;
             
         }
         
-        
-        return $output;
+        $return['summary'] = $cnt;
+        $return['output'] = $output;
+        return $return;
         
     }
     

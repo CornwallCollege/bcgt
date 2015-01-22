@@ -491,18 +491,22 @@ class AdminTab extends DashTab{
             $retval .= '<li><a href="'.$CFG->wwwroot.'/blocks/bcgt/forms/qual_select.php?cID='.$courseID.'">'.get_string('exportspec', 'block_bcgt').'</a></li>';
         }
         
-        if  ( has_capability('block/bcgt:importqualspec', $courseContext)){
-//            $retval .= '<li><a href="'.$CFG->wwwroot.'/blocks/bcgt/forms/import_spec.php">'.get_string('importspec', 'block_bcgt').'</a></li>';
+//        if  ( has_capability('block/bcgt:importqualspec', $courseContext)){
+////            $retval .= '<li><a href="'.$CFG->wwwroot.'/blocks/bcgt/forms/import_spec.php">'.get_string('importspec', 'block_bcgt').'</a></li>';
+//        }
+        
+        
+        if  ( has_capability('block/bcgt:exportimportgriddata', $courseContext)){
+            $retval .= '<li><a href="'.$CFG->wwwroot.'/blocks/bcgt/forms/grid_data.php?cID='.$courseID.'">'.get_string('impexpdata', 'block_bcgt').'</a></li>';
         }
         
-        $retval .= "</ul>";
-        $retval .= '<ul class="bcgt_list bcgt_admin_list">';
+        
         
         if(has_capability('block/bcgt:importdata', $courseContext))
         {
             $retval .= '<li><a href="'.$CFG->wwwroot.'/blocks/bcgt/forms/import.php?cID='.$courseID.'&a=pl"'. 
                     'title="'.get_string('importhelp', 'block_bcgt').'">'.
-                    get_string('import', 'block_bcgt').'</a></li>';
+                    get_string('importvarious', 'block_bcgt').'</a></li>';
         }
 //        if(has_capability('block/bcgt:exportdata', $courseContext))
 //        {

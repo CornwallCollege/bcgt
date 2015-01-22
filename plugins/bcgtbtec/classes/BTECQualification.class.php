@@ -9978,5 +9978,16 @@ JS;
         
     }
     
+    public function get_value_id($shortValue, $typeID)
+    {
+        
+        global $DB;
+        
+        $record = $DB->get_record("block_bcgt_value", array("bcgttypeid" => BTECQualification::ID, "shortvalue" => $shortValue));
+        
+        return ($record) ? $record->id : false;
+        
+    }
+    
     
 }

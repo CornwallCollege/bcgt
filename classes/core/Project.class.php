@@ -1943,17 +1943,27 @@ class Project {
                 $criteria->load_student_information($userID, $qualID);
                 //does the user already have a value?
                 $currentUserValue = $criteria->get_student_value();
-                if($currentUserValue)
+                
+                // In the case where there are multiple assessments for the same criteria, we want the
+                // latest to be displayed, so assuming each time this runs and gets called that will be
+                // the latest at that time, we want to change to whatever is relevant then.
+                // Unless they have already met the criteria of course
+                if ($currentUserValue && Value::is_met($currentUserValue->get_id()))
                 {
-                    $shortValue = $currentUserValue->get_short_value();
-                    if($shortValue != 'N/A' && $shortValue != 'WNS')
-                    {
-                        //if its WNS or N/A then we can overwrite it. 
-                        //WNS can be overwritten with IN or LATE. 
-                        mtrace("shortvalue already found : ($shortValue) for UNITID = $unitCriteria->bcgtunitid AND criteria id $unitCriteria->bcgtcriteriaid");
-                        continue;
-                    }
+                    mtrace("criteria for unitID $unitCriteria->bcgtunitid AND criteriaID $unitCriteria->bcgtcriteriaid is already met. So skipping.");
+                    continue;
                 }
+//                if($currentUserValue)
+//                {
+//                    $shortValue = $currentUserValue->get_short_value();
+//                    if($shortValue != 'N/A' && $shortValue != 'WNS')
+//                    {
+//                        //if its WNS or N/A then we can overwrite it. 
+//                        //WNS can be overwritten with IN or LATE. 
+//                        mtrace("shortvalue already found : ($shortValue) for UNITID = $unitCriteria->bcgtunitid AND criteria id $unitCriteria->bcgtcriteriaid");
+//                        continue;
+//                    }
+//                }
                 mtrace($value->get_short_value());
                 mtrace($value->get_id());
                 $criteria->set_student_value($value);

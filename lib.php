@@ -44,6 +44,7 @@ require_once($CFG->dirroot.'/blocks/bcgt/classes/core/Log.class.php');
 require_once($CFG->dirroot.'/blocks/bcgt/classes/core/RegisterGroupImport.class.php');
 require_once($CFG->dirroot.'/blocks/bcgt/classes/core/TargetQualWeighting.class.php');
 require_once($CFG->dirroot.'/blocks/bcgt/classes/core/Archive.class.php');
+require_once($CFG->dirroot.'/blocks/bcgt/classes/core/Value.class.php');
 require_once($CFG->dirroot.'/blocks/bcgt/bclib.php');
 
 define('BCGT_NUMBER_CORE_DASH_TABS', 11);
@@ -501,6 +502,31 @@ function bcgt_is_user_on_qual($qualID, $studentID)
         return true;
     }
     return false;
+}
+
+function bcgt_is_user_on_unit($userID, $unitID, $qualID = false)
+{
+    
+    global $DB;
+    
+    $params = array($userID, $unitID);
+    $sql = "SELECT id FROM {block_bcgt_user_unit}
+            WHERE userid = ? AND bcgtunitid = ?";
+    
+    if ($qualID){
+        $sql .= " AND bcgtqualificationid = ?";
+        $params[] = $qualID;
+    }
+    
+    if ($DB->get_records_sql($sql, $params))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+    
 }
 
 function bcgt_search_quals_2($params = null)
@@ -6738,7 +6764,7 @@ function class_qual_select_grid($quals, $cID, $canEdit, $courseID = -1, $groupin
             {
                 $hasAccess = Qualification::does_user_have_access($USER->id, $qual->id); 
             }
-            $out .= '<tr>'.$qualification->get_display_name(false, ' ', array(), 'Table').'';
+            $out .= '<tr>'.$qualification->get_display_name(false, ' ', array('additionalname'), 'Table').'';
             $out .= '<td>';
             $class = '';
             if(!$hasAccess)
@@ -8439,6 +8465,58 @@ function bcgt_course_has_criteria_module_links($courseID){
 }
 
 
+function bcgt_get_course_module_unit_links($cmID, $qualID = false)
+{
+    
+    global $DB;
+    
+    $sql = "SELECT DISTINCT bcgtunitid
+            FROM {block_bcgt_activity_refs}
+            WHERE coursemoduleid = ?";
+    
+    $params = array($cmID);
+    
+    if ($qualID > 0){
+        $sql .= " AND bcgtqualificationid = ?";
+        $params[] = $qualID;
+    }
+    
+    $records = $DB->get_records_sql($sql, $params);
+    $return = array();
+    
+    if ($records)
+    {
+        foreach($records as $record)
+        {
+            $return[] = $record->bcgtunitid;
+        }
+    }
+    
+    return $return;
+    
+}
+
+function bcgt_is_user_on_any_of_these_units($userID, $units)
+{
+    
+    $return = false;
+    
+    if ($units)
+    {
+        foreach($units as $unitID)
+        {
+            if (bcgt_is_user_on_unit($userID, $unitID))
+            {
+                $return = true;
+            }
+        }
+    }
+    
+    return $return;
+    
+}
+
+
 function bcgt_course_module_has_criteria_links($cmID, $qualID = false){
     
     global $DB;
@@ -8725,32 +8803,39 @@ function bcgt_apply_assignment_grading_box(&$mform, $instance, $mod, $userID)
                         if ($criteria)
                         {
                             $unit = Unit::get_unit_class_id($unitID, $loadParams);
+                            $unit->load_student_information($userID, $qualID, $loadParams);
                             if ($unit)
                             {
-                                $criteria = $unit->order_criteria_ids($criteria);
                                 $mform->addElement('html', $unit->get_display_name() . '<br>');
-                                foreach($criteria as $crit)
+                                if ($unit->is_student_doing())
                                 {
-                                    $criterion = $unit->get_single_criteria($crit['id']);
-                                    if ($criterion)
+                                    $criteria = $unit->order_criteria_ids($criteria);
+                                    foreach($criteria as $crit)
                                     {
-                                        $criterion->load_student_information($userID, $crit['qualID'], $unit->get_id());
-                                        $possibleValues = $criterion->get_possible_values_for_assignment_grading($crit['qualID']);
-                                        $el = $criterion->get_grading_form_select($crit, $mform);
-                                        if ($possibleValues)
+                                        $criterion = $unit->get_single_criteria($crit['id']);
+                                        if ($criterion)
                                         {
-                                            foreach($possibleValues as $val => $info)
+                                            $possibleValues = $criterion->get_possible_values_for_assignment_grading($crit['qualID']);
+                                            $el = $criterion->get_grading_form_select($crit, $mform);
+                                            if ($possibleValues)
                                             {
-                                                $criterion->add_grading_form_select_option($val, $info, $el);
+                                                foreach($possibleValues as $val => $info)
+                                                {
+                                                    $criterion->add_grading_form_select_option($val, $info, $el);
+                                                }
+                                            }
+
+                                            $studentValue = $criterion->get_student_value();
+                                            if ($studentValue)
+                                            {
+                                                $el->setSelected( $studentValue->get_id() );
                                             }
                                         }
-
-                                        $studentValue = $criterion->get_student_value();
-                                        if ($studentValue)
-                                        {
-                                            $el->setSelected( $studentValue->get_id() );
-                                        }
                                     }
+                                }
+                                else
+                                {
+                                    $mform->addElement('html', 'Student Not On Unit<br><br>');
                                 }
                             }
                         }
@@ -8811,7 +8896,7 @@ function bcgt_apply_assignment_grading_box(&$mform, $instance, $mod, $userID)
 }
 
 function bcgt_apply_assigment_grades($data, $userID){
-    
+        
     if (!$userID || !isset($data->criteria)) return false;
     
     $loadParams = new stdClass();
@@ -8835,10 +8920,14 @@ function bcgt_apply_assigment_grades($data, $userID){
                         {
                             
                             $criterion = $unit->get_single_criteria($critID);
+                            if ($criterion->get_student_ID() == $userID)
+                            {
                             
-                            // Update value
-                            $criterion->update_students_value($valueID);
-                            $criterion->save_student($qualID, true);    
+                                // Update value
+                                $criterion->update_students_value($valueID);
+                                $criterion->save_student($qualID, true);  
+                            
+                            }
                                     
                         }
                     }
@@ -9077,4 +9166,75 @@ function bcgt_get_criteria_on_course_module($cmID, $qualID, $unitID)
     
     return $records;
     
+}
+
+
+function bcgt_get_turnitin_parts($id)
+{
+    
+    global $DB;
+    return $DB->get_records("turnitintool_parts", array("turnitintoolid" => $id, "deleted" => 0));
+    
+}
+
+
+/**
+ * For a given file path create a code we can use to download that file
+ * @global type $DB
+ * @param type $path
+ * @return type
+ */
+function bcgt_create_data_path_code($path){
+    
+    global $DB;
+    
+    // See if one already exists for this path
+    $record = $DB->get_record("block_bcgt_files", array("path" => $path));
+    if ($record){
+        return $record->code;
+    }
+
+    // Create one
+    $code = bcgt_rand_str(10);
+
+    // Unlikely, but check if code has already been used
+    $cnt = $DB->count_records("block_bcgt_files", array("code" => $code));
+    while ($cnt > 0)
+    {
+        $code = bcgt_rand_str(10);
+        $cnt = $DB->count_records("block_bcgt_files", array("code" => $code));
+    }
+    
+
+    $ins = new \stdClass();
+    $ins->path = $path;
+    $ins->code = $code;
+
+    $DB->insert_record("block_bcgt_files", $ins);
+    return $code;
+    
+}
+
+
+/**
+ * Create a random string
+ * @param type $length
+ * @return string
+ */
+function bcgt_rand_str($length)
+{
+
+    $str = "987654321AaBbCcDdEeFfGgHhJjKkMmNnPpQqRrSsTtUuVvWwXxYyZz123456789";
+
+    $count = strlen($str) - 1;
+
+    $output = "";
+
+    for($i = 0; $i < $length; $i++)
+    {
+        $output .= $str[mt_rand(0, $count)];
+    }
+
+    return $output;
+
 }

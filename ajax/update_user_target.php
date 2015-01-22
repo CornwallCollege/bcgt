@@ -41,5 +41,3 @@ $output = array(
 		"retval" => $retval,
 	);
 	echo json_encode( $output );
-
-?>

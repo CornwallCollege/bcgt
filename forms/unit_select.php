@@ -28,7 +28,7 @@ $unitID = optional_param('unitID', -1, PARAM_INT);
 $redirect = '';
 if(isset($_POST['edit']))
 {
-	$redirect = 'edit_unit.php?unitID='.$unitID;
+	$redirect = 'edit_unit.php?cID='.$courseID.'&unitID='.$unitID;
 }
 if($redirect != '')
 {
@@ -195,7 +195,7 @@ $unitLevels = get_level_from_type(-1, $unitFamilyID);
 				echo '</form>';
 			echo '</div>';	
 			echo '<div id="unitsSelectList" class="bcgt_admin_right bcgt_col">';
-                echo '<form method="post" name="unitSelectForm" action="unit_select.php">';
+                echo '<form method="post" name="unitSelectForm" action="unit_select.php?cID='.$courseID.'">';
 					$select = '<select name="unitID" size="20" id="addselect">';
 					$loadParams = new stdClass();
                     $loadParams->loadLevel = Qualification::LOADLEVELUNITS;

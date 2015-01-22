@@ -784,10 +784,10 @@ if ($grid != 'r')
     }
     if($groupID != -1 || $aGroupID != -1)
     {
-        $groupDB = $DB->get_record_sql("SELECT * FROM {groups} WHERE id = ? OR id = ?", array($groupID, $aGroupID));
+        $groupDB = $DB->get_record_sql("SELECT * FROM {groupings} WHERE id = ? OR id = ?", array($groupID, $aGroupID));
         if($groupDB)
         {
-            $out .= '<h2>'.$groupDB->name.'</h2>';
+            $out .= '<h3>'.$groupDB->name.'</h3>';
         }
     }
 

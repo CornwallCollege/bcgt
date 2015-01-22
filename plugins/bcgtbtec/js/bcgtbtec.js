@@ -499,6 +499,7 @@ var reload_BTEC_edit_qual_form = function() {
     else{
         var typeID = Y.one('#tID').get('value');
     }
+    var courseID = Y.one("#cID").get('value');
     var qualID = Y.one('#qID').get('value');
     var index = Y.one("#qualFamilySelect").get('selectedIndex');
     var familyID = Y.one("#qualFamilySelect").get("options").item(index).getAttribute('value');
@@ -513,7 +514,7 @@ var reload_BTEC_edit_qual_form = function() {
         typeID = spec;
     }
     
-    self.location='edit_qual.php?fID='+familyID+'&tID='+typeID+'&qID='+qualID+'&level='+levelID+'&subtype='+subTypeID+'&spec='+spec;
+    self.location='edit_qual.php?fID='+familyID+'&tID='+typeID+'&qID='+qualID+'&level='+levelID+'&subtype='+subTypeID+'&spec='+spec+'&cID='+courseID;
 };
 
 M.mod_bcgtbtec.initstudunits = function(Y) {

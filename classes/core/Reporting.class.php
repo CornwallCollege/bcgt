@@ -524,7 +524,7 @@ class Reporting {
         }
                         
         $records = $DB->get_records_sql($sql, $params);
-                
+                        
         $qualArray = array();
         
         if($records)
@@ -548,6 +548,7 @@ class Reporting {
                 $params->ranking = $record->branking;
                 $params->bcgttargetqualid = $record->bcgttargetqualid;
                 $stdObj->breakdown = new Breakdown($record->breakdownid, $params);
+                $stdObj->breakdowngrade = $stdObj->breakdown->get_target_grade();
                 
                 $params = new stdClass();
                 $params->targetgrade = $record->wtargetgrade;
@@ -590,7 +591,7 @@ class Reporting {
                 $qualArray[$record->bcgtqualificationid] = $stdObj;
             }
         }
-        
+                        
         // Check elsewhere for target grades for quals who don't support auto calculations
         $qualID = ($qualID > 0) ? $qualID : false;
         $courseID = ($courseID > 0) ? $courseID : false;
@@ -600,7 +601,7 @@ class Reporting {
         {
             foreach($grades as $grade)
             {
-                if ($qualID){
+                if ($qualID && !isset($qualArray[$qualID])){
                     $qualArray[$qualID] = $grade;
                 } else {
                     $qualArray[] = $grade;
@@ -608,6 +609,7 @@ class Reporting {
                 
             }
         }
+        
 
         
         return ($qualArray) ? $qualArray : false;

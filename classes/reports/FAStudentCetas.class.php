@@ -326,6 +326,7 @@ class FAStudentCetas extends CoreReports{
         $userVA = new userVA();
         foreach($students AS $student)
         {
+            
             $studentSummaryObj = new stdClass();
             $data = array();
             $data[] = $this->create_cell(array("content"=>$student->username));
@@ -351,7 +352,7 @@ class FAStudentCetas extends CoreReports{
                     }
                     $studentCount[$qual->id] = $count;
                     //get the latest ceta for this qual.
-                    $grade = null;
+                    $grade = false;
                     $gradeRanking = $this->get_ranking_grade($qual->id, $student->id, $grade);
                                                             
                     if(isset($this->options['targetgrade']))
@@ -388,8 +389,8 @@ class FAStudentCetas extends CoreReports{
                         $content = $wTargetGradeObj ? $wTargetGradeObj->get_grade() : "";
                         $data[] = $this->create_cell(array("content"=>$content, "class"=>$aheadBehindClass));
                     }
-                    
-                    if($grade)
+                                        
+                    if($grade && $grade->id > 0)
                     {
                         
                         $data[] = $this->create_cell(array("content"=>$grade->$column, "class"=>$aheadBehindClass));

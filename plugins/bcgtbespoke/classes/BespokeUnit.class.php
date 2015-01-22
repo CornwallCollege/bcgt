@@ -2557,7 +2557,9 @@ class BespokeUnit extends Unit {
                 
         $now = time();
                 
+        $return = array();
         $output = "";
+        $cnt = 0;
         
         if ($confirm)
         {
@@ -2902,9 +2904,10 @@ class BespokeUnit extends Unit {
               
         }
         
-        
-        return $output;
-        
+        $return['summary'] = $cnt;
+        $return['output'] = $output;
+        return $return;
+                
     }
     
     

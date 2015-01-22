@@ -63,7 +63,7 @@ if ($toQualID){
 }
 
 $loadUnitParams = new stdClass();
-$loadUnitParams->loadLevel = Qualification::LOADLEVELCRITERIA;
+$loadUnitParams->loadLevel = Qualification::LOADLEVELALL;
 $loadUnitParams->loadAward = true;
 
 
@@ -217,6 +217,112 @@ if ($students && $units && $fromQual && $toQual && isset($_POST['submit_transfer
                                     }
                                         
                                     
+                                    // Sub Criteria
+                                    if ($crit->get_sub_criteria())
+                                    {
+                                        
+                                        foreach($crit->get_sub_criteria() as $sub)
+                                        {
+                                            
+                                            echo "Loaded criterion [{$sub->get_id()}] - {$sub->get_name()}...<br>";
+
+                                            $cID = $sub->get_id();
+                                            $fromCriteriaData = $DB->get_record("block_bcgt_user_criteria", array("userid" => $sID, "bcgtcriteriaid" => $cID, "bcgtqualificationid" => $fromQualID));
+                                            $toCriteriaData = $DB->get_record("block_bcgt_user_criteria", array("userid" => $sID, "bcgtcriteriaid" => $cID, "bcgtqualificationid" => $toQualID));
+
+                                            // Do they have data on the old one?
+                                            if ($fromCriteriaData)
+                                            {
+
+                                                if ($toCriteriaData)
+                                                {
+
+                                                    // Archive it
+                                                    $DB->execute( "INSERT INTO {block_bcgt_user_criteria_his} 
+                                                                    (bcgtusercriteriaid,
+                                                                    userid,
+                                                                    bcgtqualificationid,
+                                                                    bcgtcriteriaid,
+                                                                    bcgtrangeid,
+                                                                    bcgtvalueid,
+                                                                    setbyuserid,
+                                                                    dateset,
+                                                                    dateupdated,
+                                                                    updatedbyuserid,
+                                                                    comments,
+                                                                    bcgtprojectid,
+                                                                    userdefinedvalue,
+                                                                    targetdate,
+                                                                    bcgttargetgradesid,
+                                                                    bcgttargetbreakdownid,
+                                                                    flag,
+                                                                    awarddate) 
+                                                                SELECT 
+                                                                    id,
+                                                                    userid,
+                                                                    bcgtqualificationid,
+                                                                    bcgtcriteriaid,
+                                                                    bcgtrangeid,
+                                                                    bcgtvalueid,
+                                                                    setbyuserid,
+                                                                    dateset,
+                                                                    dateupdated,
+                                                                    updatedbyuserid,
+                                                                    comments,
+                                                                    bcgtprojectid,
+                                                                    userdefinedvalue,
+                                                                    targetdate,
+                                                                    bcgttargetgradesid,
+                                                                    bcgttargetbreakdownid,
+                                                                    flag,
+                                                                    awarddate
+                                                                FROM {block_bcgt_user_criteria} WHERE id = ?", array($toCriteriaData->id) );
+
+                                                        echo "Archived existing user criteria data...<br>";
+
+                                                        $oldValue = new Value($toCriteriaData->bcgtvalueid);
+                                                        $oldValueName = ($oldValue->get_id() > 0) ? $oldValue->get_short_value() : 'N/A';
+
+                                                        $toRecordID = $toCriteriaData->id;
+                                                        $toCriteriaData = $fromCriteriaData;
+                                                        $toCriteriaData->id = $toRecordID;
+                                                        $toCriteriaData->bcgtqualificationid = $toQualID;
+
+                                                        // Update
+                                                        $DB->update_record("block_bcgt_user_criteria", $toCriteriaData);
+
+                                                        $value = new Value($toCriteriaData->bcgtvalueid);
+                                                        $valueName = ($value->get_id() > 0) ? $value->get_short_value() : 'N/A';
+
+                                                        echo "Updated user criteria record to: {$valueName}, overriding previous value ({$oldValueName})...<br>";
+
+
+                                                }
+                                                else
+                                                {
+
+                                                    // Insert new
+                                                    $toCriteriaData = $fromCriteriaData;
+                                                    unset($toCriteriaData->id);
+                                                    $toCriteriaData->bcgtqualificationid = $toQualID;
+                                                    $DB->insert_record("block_bcgt_user_criteria", $toCriteriaData);
+
+                                                    $value = new Value($toCriteriaData->bcgtvalueid);
+                                                    $valueName = ($value->get_id() > 0) ? $value->get_short_value() : 'N/A';
+
+                                                    echo "Inserted user criteria record ({$valueName})...<br>";
+
+                                                }
+
+                                            }
+                                            
+                                        }
+                                        
+                                    }
+                                    
+                                    
+                                    
+                                    
                                     
                                 }
                                 
@@ -260,9 +366,6 @@ if ($students && $units && $fromQual && $toQual && isset($_POST['submit_transfer
 // Stage 5 - Confirmation of transfer
 elseif ($students && $units && $fromQual && $toQual)
 {
-    
-    
-    
     
     echo "<small>Transferring from: {$fromQual->get_display_name()}</small><br>";
     echo "<small>Transferring to: {$toQual->get_display_name()}</small><br>";
@@ -360,6 +463,19 @@ elseif ($students && $units && $fromQual && $toQual)
                                             echo "<span class='CRITHOVER FROM_S{$sID}Q{$fromQualID}U{$unit->get_id()}C{$crit->get_id()}' cc='S{$sID}Q{$fromQualID}U{$unit->get_id()}C{$crit->get_id()}'>".$crit->get_name() . $val . "</span>, ";
                                         }
                                         
+                                        // Sub criteria
+                                        if ($crit->get_sub_criteria())
+                                        {
+                                            foreach($crit->get_sub_criteria() as $sub)
+                                            {
+                                                $val = $sub->get_student_value();
+                                                if ($val){
+                                                    $val = " ({$val->get_short_value()})";
+                                                    echo "<span class='CRITHOVER FROM_S{$sID}Q{$fromQualID}U{$unit->get_id()}C{$sub->get_id()}' cc='S{$sID}Q{$fromQualID}U{$unit->get_id()}C{$sub->get_id()}'>".$sub->get_name() . $val . "</span>, ";
+                                                }
+                                            }
+                                        }
+                                        
                                     }
                                 }
                             
@@ -421,6 +537,18 @@ elseif ($students && $units && $fromQual && $toQual)
                                             echo "<span class='CRITHOVERTO TO_S{$sID}Q{$fromQualID}U{$unit->get_id()}C{$crit->get_id()}' cc='S{$sID}Q{$fromQualID}U{$unit->get_id()}C{$crit->get_id()}'>".$crit->get_name() . $val . "</span>, ";
                                         }
                                         
+                                        // Sub criteria
+                                        if ($crit->get_sub_criteria())
+                                        {
+                                            foreach($crit->get_sub_criteria() as $sub)
+                                            {
+                                                $val = $sub->get_student_value();
+                                                if ($val){
+                                                    $val = " ({$val->get_short_value()})";
+                                                    echo "<span class='CRITHOVER FROM_S{$sID}Q{$fromQualID}U{$unit->get_id()}C{$sub->get_id()}' cc='S{$sID}Q{$fromQualID}U{$unit->get_id()}C{$sub->get_id()}'>".$sub->get_name() . $val . "</span>, ";
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             

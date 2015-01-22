@@ -150,62 +150,124 @@ function bcgt_process_mod_wns($modName, $modTable, $modDueField, $courseField,
 {
     global $DB;
     mtrace("BCGT: Finding all $modName mods with deadlines in the alloted time");
-    $assignments = bcgt_find_deadline_submission_mods($modTable, $modDueField, $startTime, $finishTime);
-    if($assignments)
+    
+    // Turnitin hax
+    if ($modName == 'turnitintool')
     {
-        mtrace("Found ".count($assignments)." that have been due in the alloted time");
-        foreach($assignments AS $assignment)
+        
+        // Find parts
+        $parts = $DB->get_records_sql("SELECT * FROM {turnitintool_parts} WHERE dtdue >= ? AND dtdue <= ?", array($startTime, $finishTime));
+        if ($parts)
         {
-            $id = $assignment->id;
-            $courseID = $assignment->$courseField;
-            $course = $DB->get_record_sql("SELECT * FROM {course} course WHERE id = ?", array($courseID));
-            if(!$course)
+            foreach($parts as $part)
             {
-                mtrace("No Course found for id: $courseID");
-                continue;
-            }
-            //we have the id,
-            //we have the courseid
-            // 
-            //we need to get the course module id:
-            $courseModule = get_coursemodule_from_instance($modName, $id, $courseID);
-            if(!$courseModule)
-            {
-                mtrace("No $courseModule found for courseid: $courseID type = $modName AND instance = $id");
-                continue;
-            }
-            //is the mod attached to any quals, units, critera?
-            //if yes:
-            $project = new Project();
-            if($project->is_course_mod_attached_qual($courseModule->id))
-            {
-                mtrace("This $modName is attached to a qualification");
-                //now we need to find all of the students on the course
-                //in the grouping (groups -> students)
-                $users = $project->get_users_on_course_mod($courseModule);
-                if($users)
+             
+                $overallAssignment = $DB->get_record("turnitintool", array("id" => $part->turnitintoolid));
+                if (!$overallAssignment) continue;
+                
+                $course = $DB->get_record_sql("SELECT * FROM {course} course WHERE id = ?", array($overallAssignment->course));
+                if(!$course)
                 {
-                    foreach($users AS $user)
+                    mtrace("No Course found for id: $overallAssignment->course");
+                    continue;
+                }
+                
+                // Get course module for the overall assignment
+                $courseModule = get_coursemodule_from_instance($modName, $overallAssignment->id, $overallAssignment->course);
+                if(!$courseModule)
+                {
+                    mtrace("No $courseModule found for courseid: $courseID type = $modName AND instance = $id");
+                    continue;
+                }
+                
+                $project = new Project();
+                if($project->is_course_mod_attached_qual($courseModule->id))
+                {
+                    
+                    $users = $project->get_users_on_course_mod($courseModule);
+                    if($users)
                     {
-                        //have any of them not submitted?
-                        //have any of these got a blank section in the grade tracker?
-                        $submission = bcgt_find_submission_mod_user($submissionTable, 
-                                $submissionUserField, $user->id, $dbModIDField, $id);
-                        if(!$submission)
+                        foreach($users AS $user)
                         {
-                            //then we need to update the users qualification.
-                            mtrace("BCGT: Updating $user->id($user->username) Course: ($course->shortname) $modName: $assignment->name to WNS");
-                            $project->update_users_qual_cron($user->id, $courseModule->id, 'WNS');
+                            
+                            $submission = $DB->get_record("turnitintool_submissions", array("userid" => $user->id, "turnitintoolid" => $overallAssignment->id, "submission_part" => $part->id));
+                            if(!$submission)
+                            {
+                                //then we need to update the users qualification.
+                                mtrace("BCGT: Updating $user->id($user->username) Course: ($course->shortname) $modName: {$overallAssignment->name} ({$part->partname}) to WNS");
+                                $project->update_users_qual_cron($user->id, $courseModule->id, 'WNS');
+                            }
+                        }
+                    }
+                    
+                }
+                
+            }
+        }
+                
+    }
+    else
+    {
+    
+        $assignments = bcgt_find_deadline_submission_mods($modTable, $modDueField, $startTime, $finishTime);
+        if($assignments)
+        {
+            mtrace("Found ".count($assignments)." that have been due in the alloted time");
+            foreach($assignments AS $assignment)
+            {
+                $id = $assignment->id;
+                $courseID = $assignment->$courseField;
+                $course = $DB->get_record_sql("SELECT * FROM {course} course WHERE id = ?", array($courseID));
+                if(!$course)
+                {
+                    mtrace("No Course found for id: $courseID");
+                    continue;
+                }
+                //we have the id,
+                //we have the courseid
+                // 
+                //we need to get the course module id:
+                $courseModule = get_coursemodule_from_instance($modName, $id, $courseID);
+                if(!$courseModule)
+                {
+                    mtrace("No $courseModule found for courseid: $courseID type = $modName AND instance = $id");
+                    continue;
+                }
+                //is the mod attached to any quals, units, critera?
+                //if yes:
+                $project = new Project();
+                if($project->is_course_mod_attached_qual($courseModule->id))
+                {
+                    mtrace("This $modName is attached to a qualification");
+                    //now we need to find all of the students on the course
+                    //in the grouping (groups -> students)
+                    $users = $project->get_users_on_course_mod($courseModule);
+                    if($users)
+                    {
+                        foreach($users AS $user)
+                        {
+                            //have any of them not submitted?
+                            //have any of these got a blank section in the grade tracker?
+                            $submission = bcgt_find_submission_mod_user($submissionTable, 
+                                    $submissionUserField, $user->id, $dbModIDField, $id);
+                            if(!$submission)
+                            {
+                                //then we need to update the users qualification.
+                                mtrace("BCGT: Updating $user->id($user->username) Course: ($course->shortname) $modName: $assignment->name to WNS");
+                                $project->update_users_qual_cron($user->id, $courseModule->id, 'WNS');
+                            }
                         }
                     }
                 }
             }
         }
+        else
+        {
+            mtrace("No Activities found");
+        }
+    
     }
-    else
-    {
-        mtrace("No Activities found");
-    }
+    
 }
 
 function bcgt_process_mod_graded($mod, $startTime, $finishTime)
@@ -280,11 +342,8 @@ function bcgt_process_mod_graded($mod, $startTime, $finishTime)
                     
                 }
                 
-                
             }
-            
-            
-        
+                    
         }
         
     }
@@ -300,72 +359,152 @@ function bcgt_process_mod_inlate($modName, $submissionTable, $submissionModified
 {
     global $DB;
     mtrace("BCGT: Finding all $modName mod submissions in the alloted time");
-    $assignmentSubmissions = bcgt_find_deadline_submission_mods($submissionTable, $submissionModifiedField, $startTime, $finishTime);
-    if($assignmentSubmissions)
+    
+    // Turnitin hax
+    if ($modName == 'turnitintool')
     {
-        mtrace("Found ".count($assignmentSubmissions)." that have been submitted in the alloted time");
-        foreach($assignmentSubmissions AS $submission)
+        
+        // Find parts
+        $parts = $DB->get_records_sql("SELECT * FROM {turnitintool_parts} WHERE dtdue >= ? AND dtdue <= ?", array($startTime, $finishTime));        
+        if ($parts)
         {
-            //this is each student
-            //we need to find the mod that this belongs to
-            $mod = bcgt_get_mod($modTable, $submission->$submissionModIDField);
-            if(!$mod)
+            foreach($parts as $part)
             {
-                continue;
-            }
-            //need to find the course module id that corresponds to this
-            $courseModule = get_coursemodule_from_instance($modName, $mod->id, $mod->$modCourseField);
-            if(!$courseModule)
-            {
-                mtrace("No $courseModule found for courseid: $mod->$modCourseField type = $modName AND instance = $mod->id");
-                continue;
-            }
-            
-            $user = $DB->get_record_sql("SELECT * FROM {user} WHERE id = ?", array($submission->$submissionUserField));
-            if(!$user)
-            {
-                mtrace("BCGT: NO User found: {$submission->$submissionUserField}");
-                continue;
-            }
-            
-            $course = $DB->get_record_sql("SELECT * FROM {course} WHERE id = ?", array($mod->$modCourseField));
-            if(!$course)
-            {
-                mtrace("BCGT: No course found: $mod->$modCourseField");
-                continue;
-            }
-            //is the mod attached to any quals, units, critera?
-            //if yes:
-            $project = new Project();
-            if($project->is_course_mod_attached_qual($courseModule->id))
-            {
-                mtrace("This $modName is attached to a qualification");
-
-                //NEED to see if it is LATE or IN. 
-                $dueDate = $mod->$modDueField;
-                $action = 'N/A';
-                $dateSubmitted = $submission->$submissionModifiedField;
-                if($dueDate >= $dateSubmitted)
+             
+                $overallAssignment = $DB->get_record("turnitintool", array("id" => $part->turnitintoolid));
+                if (!$overallAssignment) continue;
+                
+                $course = $DB->get_record_sql("SELECT * FROM {course} course WHERE id = ?", array($overallAssignment->course));
+                if(!$course)
                 {
-                    //we are IN
-                    $action = 'WS';
+                    mtrace("No Course found for id: $overallAssignment->course");
+                    continue;
                 }
-                else 
+                
+                // Get course module for the overall assignment
+                $courseModule = get_coursemodule_from_instance($modName, $overallAssignment->id, $overallAssignment->course);
+                if(!$courseModule)
                 {
-                    //we are late
-                    $action = 'L';
+                    mtrace("No $courseModule found for courseid: $course->id type = $modName AND instance = $overallAssignment->id");
+                    continue;
+                }
+                
+                $project = new Project();
+                if($project->is_course_mod_attached_qual($courseModule->id))
+                {
+                    
+                    $users = $project->get_users_on_course_mod($courseModule);
+                    if($users)
+                    {
+                        foreach($users AS $user)
+                        {
+                            
+                            $submission = $DB->get_record("turnitintool_submissions", array("userid" => $user->id, "turnitintoolid" => $overallAssignment->id, "submission_part" => $part->id));
+                            if ($submission)
+                            {
+                                
+                                $dueDate = $part->dtdue;
+                                $action = 'N/A';
+                                $dateSubmitted = $submission->submission_modified;
+                                if($dueDate >= $dateSubmitted)
+                                {
+                                    //we are IN
+                                    $action = 'WS';
+                                }
+                                else 
+                                {
+                                    //we are late
+                                    $action = 'L';
+
+                                }
+                                
+                                mtrace("BCGT: Updating $user->id($user->username) Course: ($course->shortname) $modName: {$overallAssignment->name} ({$part->partname}) to $action");
+                                $project->update_users_qual_cron($user->id, $courseModule->id, $action); 
+                                
+                            }
+                            
+                            
+                        }
+                    }
                     
                 }
-                mtrace("BCGT: Updating $user->id($user->username) Course: ($course->shortname) $modName: $mod->name to $action");
-                $project->update_users_qual_cron($user->id, $courseModule->id, $action); 
+                
             }
-            
         }
+                
     }
     else
     {
-        mtrace("Found no submissions");
+        
+        $assignmentSubmissions = bcgt_find_deadline_submission_mods($submissionTable, $submissionModifiedField, $startTime, $finishTime);
+        if($assignmentSubmissions)
+        {
+            mtrace("Found ".count($assignmentSubmissions)." that have been submitted in the alloted time");
+            foreach($assignmentSubmissions AS $submission)
+            {
+                //this is each student
+                //we need to find the mod that this belongs to
+                $mod = bcgt_get_mod($modTable, $submission->$submissionModIDField);
+                if(!$mod)
+                {
+                    continue;
+                }
+                //need to find the course module id that corresponds to this
+                $courseModule = get_coursemodule_from_instance($modName, $mod->id, $mod->$modCourseField);
+                if(!$courseModule)
+                {
+                    mtrace("No $courseModule found for courseid: $mod->$modCourseField type = $modName AND instance = $mod->id");
+                    continue;
+                }
+
+                $user = $DB->get_record_sql("SELECT * FROM {user} WHERE id = ?", array($submission->$submissionUserField));
+                if(!$user)
+                {
+                    mtrace("BCGT: NO User found: {$submission->$submissionUserField}");
+                    continue;
+                }
+
+                $course = $DB->get_record_sql("SELECT * FROM {course} WHERE id = ?", array($mod->$modCourseField));
+                if(!$course)
+                {
+                    mtrace("BCGT: No course found: $mod->$modCourseField");
+                    continue;
+                }
+                //is the mod attached to any quals, units, critera?
+                //if yes:
+                $project = new Project();
+                if($project->is_course_mod_attached_qual($courseModule->id))
+                {
+                    mtrace("This $modName is attached to a qualification");
+
+                    //NEED to see if it is LATE or IN. 
+                    $dueDate = $mod->$modDueField;
+                    $action = 'N/A';
+                    $dateSubmitted = $submission->$submissionModifiedField;
+                    if($dueDate >= $dateSubmitted)
+                    {
+                        //we are IN
+                        $action = 'WS';
+                    }
+                    else 
+                    {
+                        //we are late
+                        $action = 'L';
+
+                    }
+                    mtrace("BCGT: Updating $user->id($user->username) Course: ($course->shortname) $modName: $mod->name to $action");
+                    $project->update_users_qual_cron($user->id, $courseModule->id, $action); 
+                }
+
+            }
+        }
+        else
+        {
+            mtrace("Found no submissions");
+        }
+        
     }
+        
 }
 
 

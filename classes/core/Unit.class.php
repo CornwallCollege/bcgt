@@ -312,6 +312,17 @@ abstract class Unit {
 	{
 		return $this->unitTypeID;
 	}
+    
+    public function get_unit_type_name()
+    {
+        global $DB;
+        
+        $id = Unit::get_unit_tracking_type($this->id);
+        $record = $DB->get_record("block_bcgt_type", array("id" => $id));
+        
+        return ($record) ? $record->type : false;
+        
+    }
 	
 	public function get_level_id()
 	{
@@ -528,7 +539,8 @@ abstract class Unit {
         if($qualID != -1)
         {
             $onThisUnit = $this->student_doing_unit($qualID); 
-        }                       
+        }           
+                
 		if($onThisUnit)
 		{
 			$this->studentDoing = true;

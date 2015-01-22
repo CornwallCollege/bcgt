@@ -215,7 +215,7 @@ $string['alpscoefficients'] = 'Alps Coefficients';
 $string['alpsmultiplier'] = 'Alps Multiplier';
 $string['any'] = 'Any';
 $string['archive'] = 'Archive';
-$string['archivedata'] = 'Acrhive Data';
+$string['archivedata'] = 'Archive Data';
 $string['archivestudentdata'] = 'Archive Student Data';
 $string['archivestudentdatahelp'] = 'This allows historical data to be archived off. Examples are AS to A2 Students. Archiving the data off will allow the old AS data to be shown on an A2 page.';
 $string['archiveoptions'] = 'Archive Options';
@@ -654,6 +654,7 @@ $string['exportdatasheet'] = 'Export Data Sheet';
 $string['exportspec'] = 'Export Qualification Specification';
 $string['exportrun'] = 'Export & Run';
 $string['exportoptions'] = 'Export Options';
+$string['expdata'] = 'Export Grid Data';
 
 //F
 $string['family'] = 'Family';
@@ -665,6 +666,7 @@ $string['famimportsum3'] = 'Number of CETA Grades Not Found';
 $string['famimportsum4'] = 'Number of Assessment marks submitted';
 $string['faview'] = 'Formal Assessment View';
 $string['filterbyqual'] = 'Filter By Qual';
+$string['filenotfound'] = 'File not found';
 $string['firstname'] = 'Firstname';
 $string['fullname'] = 'Fullname';
 $string['formalassessment'] = 'FA';
@@ -740,7 +742,15 @@ $string['historicalqualifications'] = 'Historical Qualifications';
 
 //I
 $string['ignoreautocalculation'] = 'Ignore Auto Calculations';
+$string['impexpdata'] = 'Import/Export Grid Data';
+$string['impexpdata:stage1'] = 'Stage 1 - Choose a Qualification';
+$string['impexpdata:stage2'] = 'Stage 2 - Choose to Export by Students or Units';
+$string['impexpdata:stage3s'] = 'Stage 3 - Choose Student(s)';
+$string['impexpdata:stage3u'] = 'Stage 3 - Choose Unit(s)';
+
+
 $string['import'] = 'Import';
+$string['importvarious'] = 'Import (Various)';
 $string['importexportdata'] = 'Import, Export and Data Cleansing';
 $string['importhelp'] = 'A place to import data such as Prior Learning, Target Grades, Tracker Data and Qualification data';
 $string['importdesc'] = 'Import, Export and Data';
@@ -772,6 +782,10 @@ $string['importwarning'] = 'Some of the criteria values in the system have been 
 $string['importspec'] = 'Import Qualification Specification';
 $string['includeprojects'] = "Export Including Formal Asessments";
 $string['isresit'] = 'Is this a resubmission?';
+$string['impdata'] = 'Import Grid Data';
+$string['impdata:stage1'] = 'Stage 1 - Choose a Qualification';
+$string['impdata:stage2'] = 'Stage 2 - Upload a CSV File';
+$string['impdata:stage1:desc'] = 'This is the qualification you want to import the data into';
 
 //J
 
@@ -1112,7 +1126,9 @@ $string['reports:bcgt:numassbtecd'] = 'No. Assignment D Criteria (BTEC)';
 $string['reports:bcgt:numassbtecpach'] = 'No. Achieved Assignment P Criteria (BTEC)';
 $string['reports:bcgt:numassbtecmach'] = 'No. Achieved Assignment M Criteria (BTEC)';
 $string['reports:bcgt:numassbtecdach'] = 'No. Achieved Assignment D Criteria (BTEC)';
-
+$string['reports:bcgt:numachpcrit'] = 'No. Achieved P Criteria (BTEC)';
+$string['reports:bcgt:numachmcrit'] = 'No. Achieved M Criteria (BTEC)';
+$string['reports:bcgt:numachdcrit'] = 'No. Achieved D Criteria (BTEC)';
 
 
 $string['reportingcats'] = 'Reporting Course Categories';

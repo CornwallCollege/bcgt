@@ -416,7 +416,7 @@ class BTECUnit extends Unit{
         {
             $cols++;
         }
-                
+                        
         $criteriaNames = $this->get_used_criteria_names();
         
         if($order == 'btec')
@@ -561,7 +561,7 @@ class BTECUnit extends Unit{
                     $this->students = $studentsArray;
                 }
                 $totalNoStudents = count($studentsArray);
-                $noPages = ceil($totalNoStudents/$pageRecords);
+                $noPages = ceil($totalNoStudents/$pageRecords);                
                 $retval .= '<div class="bcgt_pagination">'.get_string('pagenumber', 'block_bcgt').' : ';
 
                     for ($i = 1; $i <= $noPages; $i++)
@@ -1004,11 +1004,12 @@ class BTECUnit extends Unit{
             else
             {
                 //no so we want to start at the page number times by how many we show per page
-                $i = ($pageRecords * ($pageNumber - 1)) + ($pageNumber - 1);
+                $i = ($pageRecords * ($pageNumber - 1));
             }
+            
             //we want to loop over and only show the number of students in our page size. 
             $recordsEnd = ($i + $pageRecords);
-            for($i;$i<=$recordsEnd;$i++)
+            for($i;$i<$recordsEnd;$i++)
             {
                 //gets the student object from the array by the key that we are looking at.
                 if (isset($keys[$i]) && isset($studentsArray[$keys[$i]]))

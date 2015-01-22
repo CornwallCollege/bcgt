@@ -13,6 +13,7 @@ $mod = $_POST['mod'];
 $id = $_POST['id'];
 $studentID = (isset($_POST['studentID'])) ? $_POST['studentID'] : false;
 $showVals = (isset($_POST['showVals'])) ? $_POST['showVals'] : false;
+$partID = (isset($_POST['partID'])) ? $_POST['partID'] : false;
 
 $modLink = get_mod_linking_by_name($mod);
 if (!$modLink){
@@ -33,6 +34,15 @@ $endField = $modLink->modtableduedatefname;
 
 $start = $module->$startField;
 $end = $module->$endField;
+$name = $module->$titleField;
+
+if ($mod == 'turnitintool' && $partID > 0)
+{
+    $part = $DB->get_record("turnitintool_parts", array("id" => $partID, "turnitintoolid" => $id));
+    $start = $part->dtstart;
+    $end = $part->dtdue;
+    $name = $part->partname . " ({$name})";
+}
 
 // Course module
 $courseModule = bcgt_get_course_module($module->$courseField, $modLink->moduleid, $module->id);
@@ -182,7 +192,7 @@ if ($criteria)
 }
 
 $return = array(
-    "title" => $module->$titleField,
+    "title" => $name,
     "content" => $content,
 );
 echo json_encode( $return );

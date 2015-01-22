@@ -193,15 +193,15 @@ elseif($unit)
 	$typeID = $unit->get_typeID();
 }
 
-$url = '/blocks/bcgt/forms/edit_unit.php';
+$url = '/blocks/bcgt/forms/edit_unit.php?cID='.$courseID;
 $PAGE->set_url($url, array());
 $PAGE->set_title(get_string('editunit', 'block_bcgt'));
 $PAGE->set_heading(get_string('editunit', 'block_bcgt'));
 $PAGE->set_pagelayout( bcgt_get_layout() );
 $PAGE->add_body_class('editunit');
-$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php?tab=track','title');
+$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php?tab=track&cID='.$courseID,'title');
 //$PAGE->navbar->add(get_string('bcgtmydashboard', 'block_bcgt'),'my_dashboard.php?tab=dash','title');
-$PAGE->navbar->add(get_string('dashtabadm', 'block_bcgt'),'my_dashboard.php?tab=adm','title');
+$PAGE->navbar->add(get_string('dashtabadm', 'block_bcgt'),'my_dashboard.php?tab=adm&cID='.$courseID,'title');
 $PAGE->navbar->add(get_string('editunit', 'block_bcgt'));
 $jsModule = array(
     'name'     => 'block_bcgt',

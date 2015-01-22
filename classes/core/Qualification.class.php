@@ -1819,7 +1819,7 @@ abstract class Qualification {
     public function display_qual_assessments($editing, $save, $projectID = -1, $view = '', $groupingID = -1)
     {
         global $COURSE, $CFG;
-                
+                        
         $fromPortal = (isset($_SESSION['pp_user'])) ? true : false;
         
         $courseID = optional_param('cID', -1, PARAM_INT);
@@ -2273,7 +2273,6 @@ abstract class Qualification {
                             }
                             if($projectID != -1 || $fromPortal || $printGrid)
                             {
-                                $comments = nl2br($comments);
                                 $retval .= '<td class="'.$class.'">';
                                 if($editing)
                                 {
@@ -2283,6 +2282,7 @@ abstract class Qualification {
                                 }
                                 else 
                                 {
+                                    $comments = format_text($comments, FORMAT_PLAIN);
                                     $retval .= "<div id='project_comments_{$studentID}_{$this->id}_{$project->get_id()}' style='display:none;width:500px !important;'><small>{$comments}</small></div>";
                                     if ($fromPortal && strlen($comments) > 100){
                                         $comments = substr($comments, 0, 100) . '...<br><a href="#" onclick="showProjectCommentsPopup('.$studentID.', '.$this->id.', '.$project->get_id().', \''.$project->get_name().'\');return false;"><small>[Read more...]</small></a>';
@@ -2410,19 +2410,52 @@ abstract class Qualification {
         {
             case 'breakdown':
                 $record->bcgttargetbreakdownid = $value;
+                $location = 'block_bcgt_target_breakdown';
                 break;
             case 'grade':
                 $record->bcgttargetgradesid = $value;
+                $location = 'block_bcgt_target_grades';
                 break;
         }
         if($update)
         {
+            $id = $record->id;
             $DB->update_record('block_bcgt_user_course_trgts', $record);
         }
         else 
         {
-            $DB->insert_record('block_bcgt_user_course_trgts', $record);
+            $id = $DB->insert_record('block_bcgt_user_course_trgts', $record);
         }
+        
+        
+        
+        // Store in other table
+        $check = $DB->get_record("block_bcgt_stud_course_grade", array("userid" => $userID, "qualid" => $this->id, "type" => "target"));
+        if ($check)
+        {
+            $check->recordid = $value;
+            $check->location = $location;
+            $check->setbyuserid = $USER->id;
+            $check->settime = time();
+            $DB->update_record("block_bcgt_stud_course_grade", $check);
+        }
+        else
+        {
+
+            $ins = new stdClass();
+            $ins->userid = $userID;
+            $ins->qualid = $this->id;
+            $ins->courseid = $courseID;
+            $ins->type = "target";
+            $ins->recordid = $value;
+            $ins->location = $location;
+            $ins->setbyuserid = $USER->id;
+            $ins->settime = time();
+            $DB->insert_record("block_bcgt_stud_course_grade", $ins);
+
+        }
+        
+        
         
         // Calculate weighted
         $UCT = new UserCourseTarget();
@@ -3687,6 +3720,7 @@ abstract class Qualification {
 		$hasUnits = false;
         if($this->has_units())
         {
+            
             $hasUnits = true;
             $possibleUnitValues = $this->get_possible_unit_awards();
             foreach($possibleUnitValues AS $unitValue)
@@ -3703,6 +3737,7 @@ abstract class Qualification {
 //            $sql .= ", dissaward.disscount";
             $sql .= ", COALESCE(unitscount.unitcount, 0) AS unitcount";
             $sql .= ", COALESCE(unitawarded.unitsawarded, 0) AS unitsawarded";
+            
         }
 		$sql .= ", awardgrade.grade AS gradeaward, awardgrade.ranking as gradeawardranking"; 
         $sql .= ", awardbreakdown.targetgrade AS breakdownaward, awardbreakdown.ranking as breakdownawardranking"; 
@@ -4629,6 +4664,13 @@ abstract class Qualification {
                 $header .= "<th colspan='2'>".get_string($string, 'block_bcgt')."</th>";
             }
             
+            // BTEC - PMDs
+            if ($this->get_family() == 'BTEC')
+            {
+                $header .= "<th>No. P</th>";
+                $header .= "<th>No. M</th>";
+                $header .= "<th>No. D</th>";
+            }
 
 //            $retval .= "<th colspan='2'>".get_string('nomerit', 'block_bcgt')."</th>";
 //
@@ -4820,6 +4862,55 @@ abstract class Qualification {
                         $field = strtolower($unitValue).'count';
                         $retval .= "<td colspan='2'>".$student->$field."</td>";
                     }
+                    
+                    // BTEC
+                    if ($this->get_family() == 'BTEC')
+                    {
+                        
+                        // P
+                        $countP = $DB->count_records_sql("select count(c.id)
+                                                            from {block_bcgt_user_criteria} uc
+                                                            inner join {block_bcgt_criteria} c on c.id = uc.bcgtcriteriaid
+                                                            inner join {block_bcgt_value} v ON v.id = uc.bcgtvalueid
+                                                            where uc.userid = ? and c.name LIKE 'P%' and v.specialval = 'A' and uc.bcgtqualificationid = ?", array($student->userid, $this->id));
+                        
+                        $countPTotal = $DB->count_records_sql("select count(c.id)
+                                                                from {block_bcgt_criteria} c
+                                                                inner join {block_bcgt_user_unit} uu ON uu.bcgtunitid = c.bcgtunitid
+                                                                where uu.bcgtqualificationid = ? AND c.name LIKE 'P%' AND uu.userid = ?", array($this->id, $student->userid));
+                        
+                        // M
+                        $countM = $DB->count_records_sql("select count(c.id)
+                                                            from {block_bcgt_user_criteria} uc
+                                                            inner join {block_bcgt_criteria} c on c.id = uc.bcgtcriteriaid
+                                                            inner join {block_bcgt_value} v ON v.id = uc.bcgtvalueid
+                                                            where uc.userid = ? and c.name LIKE 'M%' and v.specialval = 'A' and uc.bcgtqualificationid = ?", array($student->userid, $this->id));
+                        
+                        $countMTotal = $DB->count_records_sql("select count(c.id)
+                                                                from {block_bcgt_criteria} c
+                                                                inner join {block_bcgt_user_unit} uu ON uu.bcgtunitid = c.bcgtunitid
+                                                                where uu.bcgtqualificationid = ? AND c.name LIKE 'M%' AND uu.userid = ?", array($this->id, $student->userid));
+                       
+                        // P
+                        $countD = $DB->count_records_sql("select count(c.id)
+                                                            from {block_bcgt_user_criteria} uc
+                                                            inner join {block_bcgt_criteria} c on c.id = uc.bcgtcriteriaid
+                                                            inner join {block_bcgt_value} v ON v.id = uc.bcgtvalueid
+                                                            where uc.userid = ? and c.name LIKE 'D%' and v.specialval = 'A' and uc.bcgtqualificationid = ?", array($student->userid, $this->id));
+                        
+                        $countDTotal = $DB->count_records_sql("select count(c.id)
+                                                                from {block_bcgt_criteria} c
+                                                                inner join {block_bcgt_user_unit} uu ON uu.bcgtunitid = c.bcgtunitid
+                                                                where uu.bcgtqualificationid = ? AND c.name LIKE 'D%' AND uu.userid = ?", array($this->id, $student->userid));
+                        
+                                                
+                        $retval .= "<td>{$countP}/{$countPTotal}</td>";
+                        $retval .= "<td>{$countM}/{$countMTotal}</td>";
+                        $retval .= "<td>{$countD}/{$countDTotal}</td>";
+                        
+                    }
+                    
+                    
                 }
 				$retval .= "<td><a href='{$CFG->wwwroot}/blocks/bcgt/grids/student_grid.php?qID=$this->id&sID=$student->userid&cID=$cID'>View Grid</a></td>";
 				$retval .= "</tr>";
@@ -6356,5 +6447,15 @@ abstract class Qualification {
         return $rowNum;
     }
     
+    public function get_value_id($shortValue, $typeID)
+    {
+        
+        global $DB;
+        
+        $record = $DB->get_record("block_bcgt_value", array("bcgttypeid" => $typeID, "shortvalue" => $shortValue));
+        
+        return ($record) ? $record->id : false;
+        
+    }
     
 }

@@ -26,24 +26,24 @@ require_login();
 $qualID = optional_param('qualID', -1, PARAM_INT);
 if(isset($_POST['edit']))
 {
-    redirect('edit_qual.php?qID='.$qualID);
+    redirect('edit_qual.php?qID='.$qualID.'&cID='.$courseID);
 }
 if(isset($_POST['addUnits']))
 {
-    redirect('edit_qual_units.php?qID='.$qualID);
+    redirect('edit_qual_units.php?qID='.$qualID.'&cID='.$courseID);
 }
 if(isset($_POST['addSudents']))
 {
-    redirect('edit_qual_stu.php?qID='.$qualID);
+    redirect('edit_qual_stu.php?qID='.$qualID.'&cID='.$courseID);
     //redirect('edit_qual_user.php?qID='.$qualID);
 }
 if(isset($_POST['addStaff']))
 {
-    redirect('edit_teacher_qual.php?qID='.$qualID);
+    redirect('edit_teacher_qual.php?qID='.$qualID.'&cID='.$courseID);
 }
 if(isset($_POST['editstudentsunits']))
 {
-    redirect('edit_students_units.php?qID='.$qualID);
+    redirect('edit_students_units.php?qID='.$qualID.'&oCID='.$courseID);
 }
 
 if (isset($_POST['copy']) && $qualID > 0){
@@ -161,6 +161,7 @@ echo'<h2 class="bcgt_form_heading">'.get_string('selectqual', 'block_bcgt').'</h
 			//echo '<div class="bcgt_admin_right bcgt_col">';
                                 echo '<br /><br />';
 				echo '<form method="post" name="qualificationSelectForm" action="qual_select.php?">';
+                    echo '<input type="hidden" name="cID" value="'.$courseID.'"/>';
 					echo '<select name="qualID" size="20">';
 						if($searchResults)
 						{

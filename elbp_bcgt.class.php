@@ -131,6 +131,9 @@ class elbp_bcgt extends Plugin {
         $DB->insert_record("lbp_plugin_report_elements", array("pluginid" => $this->id, "getstringname" => "reports:bcgt:numassbtecdach", "getstringcomponent" => "block_bcgt"));        
         $DB->insert_record("lbp_plugin_report_elements", array("pluginid" => $this->id, "getstringname" => "reports:bcgt:numasspending", "getstringcomponent" => "block_bcgt"));        
         $DB->insert_record("lbp_plugin_report_elements", array("pluginid" => $this->id, "getstringname" => "reports:bcgt:numass", "getstringcomponent" => "block_bcgt"));        
+        $DB->insert_record("lbp_plugin_report_elements", array("pluginid" => $this->id, "getstringname" => "reports:bcgt:numachpcrit", "getstringcomponent" => "block_bcgt"));        
+        $DB->insert_record("lbp_plugin_report_elements", array("pluginid" => $this->id, "getstringname" => "reports:bcgt:numachmcrit", "getstringcomponent" => "block_bcgt"));        
+        $DB->insert_record("lbp_plugin_report_elements", array("pluginid" => $this->id, "getstringname" => "reports:bcgt:numachdcrit", "getstringcomponent" => "block_bcgt"));        
         
         // Hooks
         $DB->insert_record("lbp_hooks", array("pluginid" => $this->id, "name" => "Units"));
@@ -351,6 +354,18 @@ class elbp_bcgt extends Plugin {
             \mtrace("## Inserted plugin_report_element data for plugin: {$this->title}");
         }
         
+        if ($version < 2015011200)
+        {
+            
+            $DB->insert_record("lbp_plugin_report_elements", array("pluginid" => $this->id, "getstringname" => "reports:bcgt:numachpcrit", "getstringcomponent" => "block_bcgt"));        
+            $DB->insert_record("lbp_plugin_report_elements", array("pluginid" => $this->id, "getstringname" => "reports:bcgt:numachmcrit", "getstringcomponent" => "block_bcgt"));        
+            $DB->insert_record("lbp_plugin_report_elements", array("pluginid" => $this->id, "getstringname" => "reports:bcgt:numachdcrit", "getstringcomponent" => "block_bcgt"));  
+            $this->version = 2015011200;
+            $this->updatePlugin();
+            \mtrace("## Inserted plugin_report_element data for plugin: {$this->title}");
+            
+        }
+        
         return $result;
         
     }
@@ -493,6 +508,9 @@ class elbp_bcgt extends Plugin {
         $elementsCriteriaArray[] = 'reports:bcgt:numdcrit';
         $elementsCriteriaArray[] = 'reports:bcgt:nummcrit';
         $elementsCriteriaArray[] = 'reports:bcgt:numpcrit';
+        $elementsCriteriaArray[] = 'reports:bcgt:numachpcrit';
+        $elementsCriteriaArray[] = 'reports:bcgt:numachmcrit';
+        $elementsCriteriaArray[] = 'reports:bcgt:numachdcrit';
         
         
         $elementsCreditsArray = array();
@@ -528,9 +546,14 @@ class elbp_bcgt extends Plugin {
         $totalAboveCredits = 0;
         $totalBelowCredits = 0;
         $creditsOnQual = '-';
-        $totalBtecPCriteria = 0;
-        $totalBtecMCriteria = 0;
-        $totalBtecDCriteria = 0;
+        $btecPCriteriaArray = array();
+        $btecMCriteriaArray = array();
+        $btecDCriteriaArray = array();
+        $btecPCriteriaAchievedArray = array();
+        $btecMCriteriaAchievedArray = array();
+        $btecDCriteriaAchievedArray = array();
+        
+        
         $qualCorrectCreditsArray = array(); // Not used yet...
         
         $totalAheadOfTarget = 0;
@@ -560,7 +583,9 @@ class elbp_bcgt extends Plugin {
         $assignmentPCriteriaAchievedCount = 0;
         $assignmentMCriteriaAchievedCount = 0;
         $assignmentDCriteriaAchievedCount = 0;
-        
+        $totalBtecPAssignmentCriteria = array();
+        $totalBtecMAssignmentCriteria = array();
+        $totalBtecDAssignmentCriteria = array();
         
         
         
@@ -643,7 +668,6 @@ class elbp_bcgt extends Plugin {
                     
                     $qualObj->load_student_information($student->id, $load);
                     
-                    
                     // Target progress stuff
                     if (array_intersect($elementsTargetsArray, $elementNames))
                     {
@@ -694,25 +718,133 @@ class elbp_bcgt extends Plugin {
                         {
                             foreach($units as $unit)
                             {
-                                
-                                // Simple count of criteria - BTEC only
-                                if ($qualObj->get_type() == 'BTEC' && array_intersect( array('reports:bcgt:numpcrit', 'reports:bcgt:nummcrit', 'reports:bcgt:numdcrit'), $elementNames ))
+                                                     
+                                // Is student doing the unit?
+                                if (!$unit->is_student_doing())
                                 {
-                                    $totalBtecPCriteria += $DB->count_records_select("block_bcgt_criteria", "bcgtunitid = ? AND name LIKE 'P%'", array($unit->get_id()));
-                                    $totalBtecMCriteria += $DB->count_records_select("block_bcgt_criteria", "bcgtunitid = ? AND name LIKE 'M%'", array($unit->get_id()));
-                                    $totalBtecDCriteria += $DB->count_records_select("block_bcgt_criteria", "bcgtunitid = ? AND name LIKE 'D%'", array($unit->get_id()));
+                                    continue;
                                 }
-                                
+                                                                
+                                // Simple count of criteria - BTEC only
+                                if ( strpos($qualObj->get_type(), 'BTEC') !== false && array_intersect( array('reports:bcgt:numpcrit', 'reports:bcgt:nummcrit', 'reports:bcgt:numdcrit', 'reports:bcgt:numachpcrit', 'reports:bcgt:numachmcrit', 'reports:bcgt:numachdcrit'), $elementNames ))
+                                {
+                                    
+                                    // P Criteria
+                                    $check = $DB->get_records_select("block_bcgt_criteria", "bcgtunitid = ? AND name LIKE 'P%'", array($unit->get_id()));
+                                    if ($check)
+                                    {
+                                        foreach($check as $crit)
+                                        {
+                                            if (!array_key_exists($crit->id, $btecPCriteriaArray))
+                                            {
+                                                $btecPCriteriaArray[$crit->id] = $crit->id;
+                                            }
+                                        }
+                                    }
+                                    
+                                    // M Criteria
+                                    $check = $DB->get_records_select("block_bcgt_criteria", "bcgtunitid = ? AND name LIKE 'M%'", array($unit->get_id()));
+                                    if ($check)
+                                    {
+                                        foreach($check as $crit)
+                                        {
+                                            if (!array_key_exists($crit->id, $btecMCriteriaArray))
+                                            {
+                                                $btecMCriteriaArray[$crit->id] = $crit->id;
+                                            }
+                                        }
+                                    }
+                                    
+                                    // D Criteria
+                                    $check = $DB->get_records_select("block_bcgt_criteria", "bcgtunitid = ? AND name LIKE 'D%'", array($unit->get_id()));
+                                    if ($check)
+                                    {
+                                        foreach($check as $crit)
+                                        {
+                                            if (!array_key_exists($crit->id, $btecDCriteriaArray))
+                                            {
+                                                $btecDCriteriaArray[$crit->id] = $crit->id;
+                                            }
+                                        }
+                                    }
+                                                                        
+                                    // Achieved
+                                    if ($btecPCriteriaArray)
+                                    {
+                                        foreach($btecPCriteriaArray as $P)
+                                        {
+                                            $userValue = $DB->get_record_sql("SELECT uc.*
+                                                                              FROM {block_bcgt_user_criteria} uc
+                                                                              INNER JOIN {block_bcgt_criteria} c ON c.id = uc.bcgtcriteriaid
+                                                                              WHERE uc.userid = ? AND uc.bcgtqualificationid = ? AND uc.bcgtcriteriaid = ? AND c.bcgtunitid = ?", array($student->id, $qual->id, $P, $unit->get_id()));
+                                            if ($userValue)
+                                            {
+                                                $userValueObj = new \Value($userValue->bcgtvalueid);
+                                                if ($userValueObj->is_criteria_met_bool())
+                                                {
+                                                    $btecPCriteriaAchievedArray[] = $P;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    
+                                    
+                                    if ($btecMCriteriaArray)
+                                    {
+                                        foreach($btecMCriteriaArray as $M)
+                                        {
+
+                                            $userValue = $DB->get_record_sql("SELECT uc.*
+                                                                              FROM {block_bcgt_user_criteria} uc
+                                                                              INNER JOIN {block_bcgt_criteria} c ON c.id = uc.bcgtcriteriaid
+                                                                              WHERE uc.userid = ? AND uc.bcgtqualificationid = ? AND uc.bcgtcriteriaid = ? AND c.bcgtunitid = ?", array($student->id, $qual->id, $M, $unit->get_id()));
+                                            
+                                            if ($userValue)
+                                            {
+                                                $userValueObj = new \Value($userValue->bcgtvalueid);
+                                                if ($userValueObj->is_criteria_met_bool())
+                                                {
+                                                    $btecMCriteriaAchievedArray[] = $M;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    
+                                    
+                                    if ($btecDCriteriaArray)
+                                    {
+                                        foreach($btecDCriteriaArray as $D)
+                                        {
+
+                                            $userValue = $DB->get_record_sql("SELECT uc.*
+                                                                              FROM {block_bcgt_user_criteria} uc
+                                                                              INNER JOIN {block_bcgt_criteria} c ON c.id = uc.bcgtcriteriaid
+                                                                              WHERE uc.userid = ? AND uc.bcgtqualificationid = ? AND uc.bcgtcriteriaid = ? AND c.bcgtunitid = ?", array($student->id, $qual->id, $D, $unit->get_id()));
+                                            
+                                            if ($userValue)
+                                            {
+                                                $userValueObj = new \Value($userValue->bcgtvalueid);
+                                                if ($userValueObj->is_criteria_met_bool())
+                                                {
+                                                    $btecDCriteriaAchievedArray[] = $D;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    
+                                    
+                                }
+                                                                
                                 // Assignment criteria linking stuff
                                 if ($qualIDsArray && $courseIDsArray)
                                 {
                                     
                                     // To start off with, get the number of open/closed/pending assignments
-                                    if (array_intersect( array('reports:bcgt:numass', 'reports:bcgt:numassclosed', 'reports:bcgt:numassopen', 'reports:bcgt:numasspending'), $elementNames ))
+                                    if (array_intersect( array('reports:bcgt:numass', 'reports:bcgt:numassclosed', 'reports:bcgt:numassopen', 'reports:bcgt:numasspending', 'reports:bcgt:numasssubmissions', 'reports:bcgt:numasslate', 'reports:bcgt:numassnon', 'reports:bcgt:numassbtecp', 'reports:bcgt:numassbtecm', 'reports:bcgt:numassbtecd', 'reports:bcgt:numassbtecpach', 'reports:bcgt:numassbtecmach', 'reports:bcgt:numassbtecdach'), $elementNames ))
                                     {
                                         
                                         $modules = \bcgt_get_course_modules_in_course_qual($courseIDsArray, $qualIDsArray);
-                                                                                
+                                                                                                       
                                         // Count up those that are closed, open or pending                                        
                                         if ($modules)
                                         {
@@ -787,11 +919,9 @@ class elbp_bcgt extends Plugin {
                                                 }
                                                 
                                                 
-                                                
-                                                
-                                                
+                                                                                                
                                                 // BTEC - Count PMD criteria
-                                                if ($qualObj->get_type() == 'BTEC')
+                                                if (strpos($qualObj->get_type(), 'BTEC') !== false)
                                                 {
                                                     
                                                     $moduleCriteria = bcgt_get_criteria_on_course_module($module->courseModuleID, $qualObj->get_id(), $unit->get_id());
@@ -817,21 +947,31 @@ class elbp_bcgt extends Plugin {
                                                                     $assignmentPCriteriaArray[$modCrit->id]->load_student_information($student->id, $qualObj->get_id());
                                                                 }
                                                                 
-                                                                $assignmentPCriteriaCount++;
                                                                 
                                                                 // Is it achieved?
                                                                 $assCritObj = $assignmentPCriteriaArray[$modCrit->id];
                                                                                                                                 
                                                                 if ($assCritObj->is_met())
                                                                 {
-                                                                    if (!array_key_exists($modCrit->id, $assignmentPCriteriaAchievedArray))
+                                                                    if (!array_key_exists($modCrit->id . ":" . $student->id, $assignmentPCriteriaAchievedArray))
                                                                     {
-                                                                        $assignmentPCriteriaAchievedArray[$modCrit->id] = true;
+                                                                        $assignmentPCriteriaAchievedArray[$modCrit->id . ":" . $student->id] = true;
+                                                                        $assignmentPCriteriaAchievedCount++;
                                                                     }
-                                                                    $assignmentPCriteriaAchievedCount++;
                                                                 }
                                                                 
+                                                                
+                                                                // Total to use for achieved
+                                                                if (!array_key_exists($modCrit->id . ":" . $student->id, $totalBtecPAssignmentCriteria))
+                                                                {
+                                                                    $totalBtecPAssignmentCriteria[$modCrit->id . ":" . $student->id] = $modCrit->id;
+                                                                }
+                                                                
+                                                                
+                                                                
                                                             }
+                                                            
+                                                            
                                                             // M
                                                             elseif (stripos($modCrit->name, "M") === 0)
                                                             {
@@ -848,18 +988,26 @@ class elbp_bcgt extends Plugin {
                                                                     $assignmentMCriteriaArray[$modCrit->id]->load_student_information($student->id, $qualObj->get_id());
                                                                 }
                                                                 
-                                                                $assignmentMCriteriaCount++;
                                                                 
                                                                 // Is it achieved?
                                                                 $assCritObj = $assignmentMCriteriaArray[$modCrit->id];
                                                                 if ($assCritObj->is_met())
                                                                 {
-                                                                    if (!array_key_exists($modCrit->id, $assignmentMCriteriaAchievedArray))
+                                                                    if (!array_key_exists($modCrit->id . ":" . $student->id, $assignmentMCriteriaAchievedArray))
                                                                     {
-                                                                        $assignmentMCriteriaAchievedArray[$modCrit->id] = true;
+                                                                        $assignmentMCriteriaAchievedArray[$modCrit->id . ":" . $student->id] = true;
+                                                                        $assignmentMCriteriaAchievedCount++;
                                                                     }
-                                                                    $assignmentMCriteriaAchievedCount++;
+                                                                    
                                                                 }
+                                                                
+                                                                
+                                                                // Total to use for achieved
+                                                                if (!array_key_exists($modCrit->id . ":" . $student->id, $totalBtecMAssignmentCriteria))
+                                                                {
+                                                                    $totalBtecMAssignmentCriteria[$modCrit->id . ":" . $student->id] = $modCrit->id;
+                                                                }
+                                                                
                                                                 
                                                             }
                                                             // D
@@ -878,38 +1026,33 @@ class elbp_bcgt extends Plugin {
                                                                     $assignmentDCriteriaArray[$modCrit->id]->load_student_information($student->id, $qualObj->get_id());
                                                                 }
                                                                 
-                                                                $assignmentDCriteriaCount++;
                                                                 
                                                                 // Is it achieved?
                                                                 $assCritObj = $assignmentDCriteriaArray[$modCrit->id];
                                                                 if ($assCritObj->is_met())
                                                                 {
-                                                                    if (!array_key_exists($modCrit->id, $assignmentDCriteriaAchievedArray))
+                                                                    if (!array_key_exists($modCrit->id . ":" . $student->id, $assignmentDCriteriaAchievedArray))
                                                                     {
-                                                                        $assignmentDCriteriaAchievedArray[$modCrit->id] = true;
+                                                                        $assignmentDCriteriaAchievedArray[$modCrit->id . ":" . $student->id] = true;
+                                                                        $assignmentDCriteriaAchievedCount++;
                                                                     }
-                                                                    $assignmentDCriteriaAchievedCount++;
                                                                 }
                                                                 
+                                                                
+                                                                // Total to use for achieved
+                                                                if (!array_key_exists($modCrit->id . ":" . $student->id, $totalBtecDAssignmentCriteria))
+                                                                {
+                                                                    $totalBtecDAssignmentCriteria[$modCrit->id . ":" . $student->id] = $modCrit->id;
+                                                                }
+                                                                
+                                                                
                                                             }
-                                                            
                                                         }
                                                     }
-                                                    
-                                                    
                                                 }
-                                                
                                             }
                                         }
-                                        
-                                        
                                     }
-                                    
-                                    
-                                    // Get the criteria linked to assignments on these quals & courses
-                                    
-                                    
-                                    
                                 }
                             }
                         }
@@ -1084,7 +1227,7 @@ class elbp_bcgt extends Plugin {
                 
                 
             }
-                        
+         
             
         }
                        
@@ -1113,9 +1256,9 @@ class elbp_bcgt extends Plugin {
         $data['reports:bcgt:targetprogress'] = $targetProgress;
         $data['reports:bcgt:numquals'] = count($qualArray);
         $data['reports:bcgt:numqualscorrectcredits'] = count($qualCorrectCreditsArray); // ?
-        $data['reports:bcgt:numpcrit'] = $totalBtecPCriteria;
-        $data['reports:bcgt:nummcrit'] = $totalBtecMCriteria;
-        $data['reports:bcgt:numdcrit'] = $totalBtecDCriteria;
+        $data['reports:bcgt:numpcrit'] = count($btecPCriteriaArray);
+        $data['reports:bcgt:nummcrit'] = count($btecMCriteriaArray);
+        $data['reports:bcgt:numdcrit'] = count($btecDCriteriaArray);
         $data['reports:bcgt:numass'] = count($assignmentsArray);
         $data['reports:bcgt:numassopen'] = count($assignmentsOpenArray);
         $data['reports:bcgt:numassclosed'] = count($assignmentsClosedArray);
@@ -1126,10 +1269,13 @@ class elbp_bcgt extends Plugin {
         $data['reports:bcgt:numassbtecp'] = count($assignmentPCriteriaArray);
         $data['reports:bcgt:numassbtecm'] = count($assignmentMCriteriaArray);
         $data['reports:bcgt:numassbtecd'] = count($assignmentDCriteriaArray);
-        $data['reports:bcgt:numassbtecpach'] = $assignmentPCriteriaAchievedCount . ' / ' . $assignmentPCriteriaCount;
-        $data['reports:bcgt:numassbtecmach'] = $assignmentMCriteriaAchievedCount . ' / ' . $assignmentMCriteriaCount;
-        $data['reports:bcgt:numassbtecdach'] = $assignmentDCriteriaAchievedCount . ' / ' . $assignmentDCriteriaCount;
-        
+        $data['reports:bcgt:numassbtecpach'] = $assignmentPCriteriaAchievedCount . ' / ' . count($totalBtecPAssignmentCriteria);
+        $data['reports:bcgt:numassbtecmach'] = $assignmentMCriteriaAchievedCount . ' / ' . count($totalBtecMAssignmentCriteria);
+        $data['reports:bcgt:numassbtecdach'] = $assignmentDCriteriaAchievedCount . ' / ' . count($totalBtecDAssignmentCriteria);
+        $data['reports:bcgt:numachpcrit'] = count($btecPCriteriaAchievedArray);
+        $data['reports:bcgt:numachmcrit'] = count($btecMCriteriaAchievedArray);
+        $data['reports:bcgt:numachdcrit'] = count($btecDCriteriaAchievedArray);
+
         // Percentages
         // [not at the moment]
 

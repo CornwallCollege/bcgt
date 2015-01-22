@@ -143,7 +143,6 @@ class AssessmentTracker {
                         
             $this->courses = $newCourseArray;
             
-            
         }
         
                 
@@ -516,6 +515,7 @@ class AssessmentTracker {
                     {
                         foreach($activeMods as $activeMod)
                         {
+                            
                             $mod = get_mod_linking_by_name($activeMod->modtype);
                             
                             $sField = $mod->modtablestartdatefname;
@@ -664,7 +664,7 @@ class AssessmentTracker {
     
     private function getCourseTrackerDay($day, $month, $year){
         
-        global $CFG;
+        global $CFG, $DB;
         
         $output = "";
         
@@ -709,7 +709,7 @@ class AssessmentTracker {
                 $courseModule = bcgt_get_course_module($this->course->id, $activeMod->modid , $activeMod->id);
                 $info = get_mod_linking_by_name($activeMod->modtype);
                 $dueField = $info->modtableduedatefname;
-                                
+                                                
                 if ($courseModule)
                 {
                 
@@ -722,6 +722,14 @@ class AssessmentTracker {
                     if ($courseModule->visible == 0 && $visibleSetting == 1){
                         continue;
                     }
+                    
+                    // Turnitin needs a hack, since the dates on the assignment are irrelvant, the dates
+                    // we want are in the turnitintool_parts table, so we have to display them individually
+                    if ($activeMod->modtype == 'turnitintool')
+                    {
+                        continue;                       
+                    }
+                    
 
                     $i = $this->tmpColArray[$activeMod->modtype];
                     $colour = $this->getColour($i);
@@ -753,6 +761,61 @@ class AssessmentTracker {
 
             }
         }
+        
+        
+        // Now the turnitintool_parts hack
+        $activeParts = $this->getActiveTurnitinParts($start, $end, $this->course);
+        if ($activeParts)
+        {
+            
+            $mod = get_mod_linking_by_name('turnitintool');
+            
+            foreach($activeParts as $activePart)
+            {
+                
+                $courseModule = bcgt_get_course_module($this->course->id, $mod->moduleid , $activePart->turnitintoolid);
+                
+                // If we only want criteria linked ones, and this has none, skip
+                if ($checkModLinks && !bcgt_course_module_has_criteria_links($courseModule->id)){
+                    continue;
+                }
+
+                // If not visible yet, and we don't want to see invisible ones, skip
+                if ($courseModule->visible == 0 && $visibleSetting == 1){
+                    continue;
+                }
+
+               
+                $i = $this->tmpColArray['turnitintool'];
+                $colour = $this->getColour($i);
+                $opacity = ($activePart->dtstart < $now) ? 'opacity:0.4;' : '';
+                $name = $activePart->partname . " ({$activePart->name})";
+
+                $output .= "<div class='mod_item' style='background-color:#{$colour['bg']};color:#{$colour['font']};{$opacity}' moduleType='turnitintool' moduleID='{$activePart->turnitintoolid}' partID='{$activePart->id}'>";
+
+                    // See if there is an icon
+                    $icon = $CFG->dirroot . '/mod/turnitintool/pix/icon.png';
+                    if (file_exists($icon)){
+
+                        $icon = str_replace($CFG->dirroot, $CFG->wwwroot, $icon);
+                        $output .= "<img class='icn' src='{$icon}' /> ";
+
+                    }
+
+                    // Name of the mod
+                    $output .= $name;
+
+                $output .= "</div>";
+                
+                
+                
+            }
+            
+        }
+        
+
+        
+        
                         
         return $output;
         
@@ -798,20 +861,29 @@ class AssessmentTracker {
         
         foreach($this->courses as $course){
             
-            $activeMods = $this->getActiveModules($start, $end, $course);
-                        
+            $activeMods = $this->getActiveModules($start, $end, $course);                        
             if ($activeMods){
                 
                 foreach($activeMods as $activeMod){
                     
                     $courseModule = bcgt_get_course_module($course->id, $activeMod->modid , $activeMod->id);
-                    
+                                        
                     if ($courseModule)
                     {
                     
                         // If we only want criteria linked ones, and this has none, skip
                         if ($checkModLinks && !bcgt_course_module_has_criteria_links($courseModule->id)){
                             continue;
+                        }
+                        
+                        // If there are criteria links, make sure the student is on at least 1 of those units
+                        if (bcgt_course_module_has_criteria_links($courseModule->id))
+                        {
+                            $courseModuleUnits = bcgt_get_course_module_unit_links($courseModule->id);
+                            if (!bcgt_is_user_on_any_of_these_units($this->student->id, $courseModuleUnits))
+                            {
+                                continue;
+                            }
                         }
 
                         // If not visible yet, and we don't want to see invisible ones, skip
@@ -822,6 +894,13 @@ class AssessmentTracker {
                         // If this activity is assigned to a particular group, and user is not in that group, skip
                         if ($courseModule->groupingid > 0 && !bcgt_is_user_in_grouping($this->student->id, $courseModule->groupingid)){
                             continue;
+                        }
+                        
+                        // Turnitin needs a hack, since the dates on the assignment are irrelvant, the dates
+                        // we want are in the turnitintool_parts table, so we have to display them individually
+                        if ($activeMod->modtype == 'turnitintool')
+                        {
+                            continue;                       
                         }
 
 
@@ -852,6 +931,70 @@ class AssessmentTracker {
                                         
                 }
             }
+            
+            
+            
+            // Now the turnitintool_parts hack
+            $activeParts = $this->getActiveTurnitinParts($start, $end, $course);
+            if ($activeParts)
+            {
+
+                $mod = get_mod_linking_by_name('turnitintool');
+
+                foreach($activeParts as $activePart)
+                {
+
+                    $courseModule = bcgt_get_course_module($course->id, $mod->moduleid , $activePart->turnitintoolid);
+
+                    // If we only want criteria linked ones, and this has none, skip
+                    if ($checkModLinks && !bcgt_course_module_has_criteria_links($courseModule->id)){
+                        continue;
+                    }
+                    
+                    // If there are criteria links, make sure the student is on at least 1 of those units
+                    if (bcgt_course_module_has_criteria_links($courseModule->id))
+                    {
+                        $courseModuleUnits = bcgt_get_course_module_unit_links($courseModule->id);
+                        if (!bcgt_is_user_on_any_of_these_units($this->student->id, $courseModuleUnits))
+                        {
+                            continue;
+                        }
+                    }
+                    
+                    
+
+                    // If not visible yet, and we don't want to see invisible ones, skip
+                    if ($courseModule->visible == 0 && $visibleSetting == 1){
+                        continue;
+                    }
+
+
+                    $colour = $this->getColour($i);
+                    $name = $activePart->partname . " ({$activePart->name})";
+
+                    $output .= "<div class='mod_item' style='background-color:#{$colour['bg']};color:#{$colour['font']};' moduleType='turnitintool' moduleID='{$activePart->turnitintoolid}' partID='{$activePart->id}'>";
+
+                        // See if there is an icon
+                        $icon = $CFG->dirroot . '/mod/turnitintool/pix/icon.png';
+                        if (file_exists($icon)){
+
+                            $icon = str_replace($CFG->dirroot, $CFG->wwwroot, $icon);
+                            $output .= "<img class='icn' src='{$icon}' /> ";
+
+                        }
+
+                        // Name of the mod
+                        $output .= $name;
+
+                    $output .= "</div>";
+
+
+
+                }
+
+            }
+            
+            
             
             $i++;
             
@@ -982,7 +1125,7 @@ class AssessmentTracker {
                             }
                         
                         }
-
+                        
                         $activeMods = $activeModsArray;
                         
                         if ($activeMods)
@@ -1092,6 +1235,7 @@ class AssessmentTracker {
                                 }
 
                             $output .= "</tr>";
+                            
                         }
                     
                     }
@@ -1283,6 +1427,15 @@ class AssessmentTracker {
                         if ($courseModule->visible == 0 && $visibleSetting == 1){
                             continue;
                         }
+                        
+                        // Turnitin needs a hack, since the dates on the assignment are irrelvant, the dates
+                        // we want are in the turnitintool_parts table, so we have to display them individually
+                        if ($activeMod->modtype == 'turnitintool')
+                        {
+                            continue;                       
+                        }
+                        
+                        
 
                         $i = $this->tmpColArray[$activeMod->modtype];
                         $colour = $this->getColour($i);
@@ -1312,6 +1465,61 @@ class AssessmentTracker {
                                         
                 }
             }
+            
+            
+            
+            
+            // Now the turnitintool_parts hack
+            $activeParts = $this->getActiveTurnitinParts($start, $end, $course);
+            if ($activeParts)
+            {
+
+                $mod = get_mod_linking_by_name('turnitintool');
+
+                foreach($activeParts as $activePart)
+                {
+
+                    $courseModule = bcgt_get_course_module($course->id, $mod->moduleid , $activePart->turnitintoolid);
+
+                    // If we only want criteria linked ones, and this has none, skip
+                    if ($checkModLinks && !bcgt_course_module_has_criteria_links($courseModule->id)){
+                        continue;
+                    }
+
+                    // If not visible yet, and we don't want to see invisible ones, skip
+                    if ($courseModule->visible == 0 && $visibleSetting == 1){
+                        continue;
+                    }
+
+
+                    $i = $this->tmpColArray['turnitintool'];
+                    $colour = $this->getColour($i);
+                    $name = $activePart->partname . " ({$activePart->name})";
+
+                    $output .= "<div class='mod_item' style='background-color:#{$colour['bg']};color:#{$colour['font']};' moduleType='turnitintool' moduleID='{$activePart->turnitintoolid}' partID='{$activePart->id}'>";
+
+                        // See if there is an icon
+                        $icon = $CFG->dirroot . '/mod/turnitintool/pix/icon.png';
+                        if (file_exists($icon)){
+
+                            $icon = str_replace($CFG->dirroot, $CFG->wwwroot, $icon);
+                            $output .= "<img class='icn' src='{$icon}' /> ";
+
+                        }
+
+                        // Name of the mod
+                        $output .= $name;
+
+                    $output .= "</div>";
+
+
+
+                }
+
+            }
+
+            
+            
                         
         }
         
@@ -1323,7 +1531,38 @@ class AssessmentTracker {
     
     
     
-    
+    private function getActiveTurnitinParts($start, $end, $course){
+        
+        global $DB;
+        
+        $return = array();
+
+        $mod = get_mod_linking_by_name("turnitintool");
+
+        if ($mod)
+        {
+
+            $sql = "SELECT p.*, t.name
+                    FROM {turnitintool_parts} p
+                    INNER JOIN {turnitintool} t ON t.id = p.turnitintoolid
+                    WHERE t.course = ?
+                    AND p.dtdue >= ?
+                    AND p.dtdue <= ?";
+                        
+            $params = array($course->id, $start, $end);
+
+            $records = $DB->get_records_sql($sql, $params);
+            if ($records){
+                foreach($records as $record){
+                    $return[] = $record;
+                }
+            }
+
+        }
+                                    
+        return $return;
+        
+    }
     
     
     private function getActiveModules($start, $end, $course){
@@ -1342,11 +1581,9 @@ class AssessmentTracker {
                 {
                     
                     $modID = $mod->moduleid;
-
-                    $sql = "SELECT *, '{$type}' as modtype, '{$modID}' as modid, {$mod->modtitlefname} as name
-                            FROM {{$mod->modtablename}}
-                            WHERE {$mod->modtablecoursefname} = ?
-                            AND 
+                    
+                    /*
+                     *  AND 
                             (
                                 (
                                     {$mod->modtablestartdatefname} >= ?
@@ -1359,9 +1596,16 @@ class AssessmentTracker {
                                 )
 
                             )
-                            AND {$mod->modtableduedatefname} >= ?";
+                     */
+
+                    // Only get it if it's the due date
+                    $sql = "SELECT *, '{$type}' as modtype, '{$modID}' as modid, {$mod->modtitlefname} as name
+                            FROM {{$mod->modtablename}}
+                            WHERE {$mod->modtablecoursefname} = ?
+                            AND {$mod->modtableduedatefname} >= ?
+                            AND {$mod->modtableduedatefname} <= ?";
                             
-                    $params = array($course->id, $start, $end, $start, $start);
+                    $params = array($course->id, $start, $end);
 
                     $records = $DB->get_records_sql($sql, $params);
                     if ($records){

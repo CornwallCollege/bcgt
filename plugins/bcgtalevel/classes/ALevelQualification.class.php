@@ -998,7 +998,7 @@ class AlevelQualification extends Qualification{
                                 true, ' ', array('family', 'trackinglevel'));
                         
                     } else {
-                        $retval .= '<a href="'.$CFG->wwwroot.'/blocks/bcgt/grids/student_grid.php?qID='.$qual->id.'&sID='.$this->studentID.'&g=s">'.bcgt_get_qualification_display_name($qual, 
+                        $retval .= '<a href="'.$CFG->wwwroot.'/blocks/bcgt/grids/student_grid.php?qID='.$qual->id.'&sID='.$this->studentID.'&g=s&cID='.$courseID.'">'.bcgt_get_qualification_display_name($qual, 
                                 true, ' ', array('family', 'trackinglevel')).'</a>';
                     }
                             
@@ -1848,6 +1848,11 @@ class AlevelQualification extends Qualification{
         {
             $courses = $this->get_courses_by_user();
         }
+        
+        // Decimal points
+        $roundTo = get_config('core', 'grade_decimalpoints');
+        $roundTo = ($roundTo) ? (int)$roundTo : 0;
+        
         $alpsHeader = '';
         $entriesCount = 0;
         if($courses)
@@ -1895,7 +1900,7 @@ class AlevelQualification extends Qualification{
                         $subHead .= '<th class="'.$courseClass.' gradebook">'.$gradeObj->itemname.'</th>';
                         if(!$courseInGeneral)
                         {
-                            $grade = $this->get_user_course_gradebook_values($course->id, $gradeObj->id);
+                            $grade = $this->get_user_course_gradebook_values($course->id, $gradeObj->id);                            
                             $gradeCount++;
                             $gradeClass = 'gradeb';
                             if($gradeCount % 2)
@@ -1963,6 +1968,21 @@ class AlevelQualification extends Qualification{
                                     $gridGrade = $grade->finalgrade; 
                                 }
                             } 
+                            
+                            if (is_numeric($gridGrade)){
+                                
+                                // If there is a max, then turn it into a %
+                                if (isset($grade->grademax) && $grade->grademax > 0)
+                                {
+                                    $gridGrade = round(($gridGrade / $grade->grademax) * 100, $roundTo) . "%";
+                                }
+                                else
+                                {
+                                    $gridGrade = round($gridGrade, $roundTo);
+                                }
+                                
+                            }
+                            
                             $body .= '<td class="'.$class.' '.$courseClass.' '.$gradeClass.' gradebook">'.$gridGrade.'</td>';
                         }
                         $entriesCount++;
@@ -2017,7 +2037,7 @@ class AlevelQualification extends Qualification{
     {
         global $DB;
         $sql = "SELECT grades.id, items.itemname, items.itemtype,items.itemmodule, 
-            grades.rawgrade, grades.finalgrade, grades.feedback, scale.scale 
+            grades.rawgrade, grades.finalgrade, grades.feedback, scale.scale, items.grademax
             FROM {course} course 
             JOIN {context} context ON context.instanceid = course.id
             JOIN {role_assignments} roleass ON roleass.contextid = context.id 
@@ -2192,14 +2212,14 @@ class AlevelQualification extends Qualification{
                             $colspan = 3;
                             $subRowSpan = 2;
                             $subColSpan = 2;
-                            $thirdRow .= '<th class="fa">'.get_string('t', 'block_bcgt').
-                                    '</th><th class="fa">'.get_string('wt', 'block_bcgt').
+                            $thirdRow .= '<th class="formalass">'.get_string('t', 'block_bcgt').
+                                    '</th><th class="formalass">'.get_string('wt', 'block_bcgt').
                                     '</th>';
                         }
-                        $subRow1 .= '<th rowspan="'.$subRowSpan.'" class="fa">'.get_string('current', 'block_bcgt').'</th>';
-                        $subRow1 .= '<th colspan="'.$subColSpan.'" class="fa">'.get_string('va', 'block_bcgt').'</th>';
+                        $subRow1 .= '<th rowspan="'.$subRowSpan.'" class="formalass">'.get_string('current', 'block_bcgt').'</th>';
+                        $subRow1 .= '<th colspan="'.$subColSpan.'" class="formalass">'.get_string('va', 'block_bcgt').'</th>';
                     }
-                    $retval .= '<th colspan="'.$colspan.'" class="fa">'.get_string('formalassessment', 'block_bcgt').'</th>';
+                    $retval .= '<th colspan="'.$colspan.'" class="formalass">'.get_string('formalassessment', 'block_bcgt').'</th>';
                 }
                 if(get_config('bcgt', 'aleveluseceta'))
                 {

@@ -222,7 +222,7 @@ echo $OUTPUT->header();
 echo'<h2 class="bcgt_form_heading">'.get_string('addeditqualsheading', 'block_bcgt').'</h2>';
 	echo "<div id='bcgtEditQualForm' class='bcgt_admin_controls'>";
 		echo "<form method='POST' name='editQualificationForm' id='editQualificationForm' action='edit_qual.php?'>";
-			echo '<input type="hidden" name="cID" value="'.$courseID.'"/>';
+			echo '<input type="hidden" name="cID" id="cID" value="'.$courseID.'"/>';
             echo "<input type='hidden' name='qID' id='qID' value='$qualID'/>";
 			echo "<input type='hidden' name='tID' id='tID' value='$typeID'/>";
 			$disabled = '';

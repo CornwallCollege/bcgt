@@ -28,7 +28,21 @@
                     <tr>
                         <td><?= $qual->get_display_name() ?></td>
                         <td><?= (isset($qual->aspirationalGrade) && isset($qual->aspirationalGrade->grade)) ? $qual->aspirationalGrade->grade : '-'; ?></td>
-                        <td><?= (isset($qual->targetGrade) && isset($qual->targetGrade->grade)) ? $qual->targetGrade->grade : '-'; ?></td>
+                        <td>
+                            <?php if (isset($qual->targetGrade) && isset($qual->targetGrade->grade) && !empty($qual->targetGrade->grade)): ?>
+                                
+                                <?= $qual->targetGrade->grade ?>
+                                
+                            <?php elseif (isset($qual->targetGrade) && isset($qual->targetGrade->breakdowngrade) && !empty($qual->targetGrade->breakdowngrade)): ?>
+                                
+                                <?= $qual->targetGrade->breakdowngrade ?>
+                            
+                            <?php else: ?>
+                            
+                                <?= '-'; ?>
+                                
+                            <?php endif; ?>
+                        </td>
                     </tr>
                     <?php endforeach; ?>
                 <?php endif; ?>

@@ -4,6 +4,7 @@ M.mod_bcgtalevel.aleveliniteditqual = function(Y) {
     Y.one('#save').set('disabled', 'disabled');
     var alevelSubType = Y.one('#qualSubtype');
     alevelSubType.on('change', function(e){
+        var cID = Y.one("#cID").get('value');
         var typeID = -1;
         var qualID = Y.one('#qID').get('value');
         var index = Y.one("#qualFamilySelect").get('selectedIndex');
@@ -11,7 +12,7 @@ M.mod_bcgtalevel.aleveliniteditqual = function(Y) {
         var index2 = Y.one("#qualSubtype").get('selectedIndex');
         var subTypeID = Y.one("#qualSubtype").get("options").item(index2).getAttribute('value');
         var levelID = Y.one("#qualLevel").get('value');
-        self.location='edit_qual.php?fID='+familyID+'&tID='+typeID+'&qID='+qualID+'&level='+levelID+'&subtype='+subTypeID;
+        self.location='edit_qual.php?fID='+familyID+'&tID='+typeID+'&qID='+qualID+'&level='+levelID+'&subtype='+subTypeID+'&cID='+cID;
     });
     
 //    var addUnit = Y.one('#addUnit');
@@ -292,7 +293,8 @@ M.mod_bcgtalevel.initstudentgrid = function(Y, qualID, studentID, grid) {
     viewsimple.on('click', function(e){
         e.preventDefault();
         Y.one('#grid').set('value', 's');
-        self.location='student_grid.php?qID='+qualID+'&sID='+studentID+'&g=s';
+        var cID =  Y.one('#cID').get('value');
+        self.location='student_grid.php?qID='+qualID+'&sID='+studentID+'&g=s&cID='+cID;
 //        redraw_ALEVEL_student_table(qualID, studentID, 's');
     });
     
@@ -300,7 +302,8 @@ M.mod_bcgtalevel.initstudentgrid = function(Y, qualID, studentID, grid) {
     editsimple.on('click', function(e){
         e.preventDefault();
         Y.one('#grid').set('value', 'se');
-        self.location='student_grid.php?qID='+qualID+'&sID='+studentID+'&g=se';
+        var cID =  Y.one('#cID').get('value');
+        self.location='student_grid.php?qID='+qualID+'&sID='+studentID+'&g=se&cID='+cID;
 //        redraw_ALEVEL_student_table(qualID, studentID, 'se');
     });
 }

@@ -2648,6 +2648,7 @@ function bind_mod_items(studentID){
 
         var mod = $(this).attr('moduleType');
         var id = $(this).attr('moduleID');
+        var partID = $(this).attr('partID');
 
         $('#assessment_tracker_info').hide();
         $('#loading').show();
@@ -2655,6 +2656,10 @@ function bind_mod_items(studentID){
         var showVals = $('input[name="showvalues"]:checked').val();
 
         var params = { id: id, mod: mod, studentID: studentID, showVals: showVals };
+        if (partID !== undefined)
+        {
+            params.partID = partID;
+        }
 
         $.post(M.cfg.wwwroot + '/blocks/bcgt/ajax/load_mod_info.php', params, function(data){
 

@@ -4065,8 +4065,63 @@ function xmldb_block_bcgt_upgrade($oldversion = 0)
 
         // Bcgt savepoint reached.
         upgrade_block_savepoint(true, 2014102300, 'bcgt');
+        
     }
 
+    
+    if ($oldversion < 2014121000)
+    {
+        
+        // Changing type of field comments on table block_bcgt_user_activity_ref to text.
+        $table = new xmldb_table('block_bcgt_user_activity_ref');
+        $field = new xmldb_field('comments', XMLDB_TYPE_TEXT, null, null, null, null, null, 'bcgtvalueid');
+
+        // Launch change of type for field comments.
+        $dbman->change_field_type($table, $field);
+        
+    }
+    
+    
+    if ($oldversion < 2015010501) {
+
+        // Define table block_bcgt_files to be created.
+        $table = new xmldb_table('block_bcgt_files');
+
+        // Adding fields to table block_bcgt_files.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('path', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('code', XMLDB_TYPE_CHAR, '10', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table block_bcgt_files.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Conditionally launch create table for block_bcgt_files.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Bcgt savepoint reached.
+        upgrade_block_savepoint(true, 2015010501, 'bcgt');
+    }
+
+    if ($oldversion < 2015010800) {
+        
+        // Changing type of field recordid on table block_bcgt_register_groups to char.
+        $table = new xmldb_table('block_bcgt_register_groups');
+        $field = new xmldb_field('recordid', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'id');
+
+        // Launch change of type for field recordid.
+        $dbman->change_field_type($table, $field);
+
+        // Bcgt savepoint reached.
+        upgrade_block_savepoint(true, 2015010800, 'bcgt');
+        
+    }
+
+    
+    
+    
+    
     
     
     global $CFG;
