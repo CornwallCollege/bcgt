@@ -81,14 +81,17 @@ $url = '/blocks/bcgt/forms/edit_course_qual.php';
 $PAGE->set_url($url, array());
 $PAGE->set_title(get_string('editcoursequal', 'block_bcgt'));
 $PAGE->set_heading(get_string('editcoursequal', 'block_bcgt'));
-$PAGE->set_pagelayout('login');
+$PAGE->set_pagelayout( bcgt_get_layout() );
 $PAGE->add_body_class(get_string('editcoursequal', 'block_bcgt'));
 if($originalCourseID != -1 && $originalCourseID != 1)
 {
     global $DB;
     $course = $DB->get_record_sql("SELECT * FROM {course} WHERE id = ?", array($originalCourseID));
-    $PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php','title');
-    $PAGE->navbar->add($course->shortname,$CFG->wwwroot.'/course/view.php?id='.$originalCourseID,'title');
+    $PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php?tab=track','title');
+    if($course)
+    {
+        $PAGE->navbar->add($course->shortname,$CFG->wwwroot.'/course/view.php?id='.$originalCourseID,'title');
+    }
     $PAGE->navbar->add(get_string('editcoursequal', 'block_bcgt'),null,'title');
 }
 elseif($cID != 1)
@@ -96,13 +99,16 @@ elseif($cID != 1)
     global $DB;
     $course = $DB->get_record_sql("SELECT * FROM {course} WHERE id = ?", array($cID));
     $PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php','title');
-    $PAGE->navbar->add($course->shortname,$CFG->wwwroot.'/course/view.php?id='.$cID,'title');
+    if($course)
+    {
+        $PAGE->navbar->add($course->shortname,$CFG->wwwroot.'/course/view.php?id='.$cID,'title');
+    }
     $PAGE->navbar->add(get_string('editcoursequal', 'block_bcgt'),null,'title');
 }
 else
 {
     $PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php','title');
-    $PAGE->navbar->add(get_string('myDashboard', 'block_bcgt'),'my_dashboard.php?tab=dash','title');
+    $PAGE->navbar->add(get_string('bcgtmydashboard', 'block_bcgt'),'my_dashboard.php?tab=dash','title');
     $PAGE->navbar->add(get_string('dashtabadm', 'block_bcgt'),'my_dashboard.php','title');
 }
 
@@ -155,9 +161,9 @@ if($currentQuals)
                     $out .= "<option value='$qual->id'>$qual->displaytype Level $qual->level ".
                     "$qual->subtype $qual->name </option>";
                 } else {
-        
+                            
                     $out .= '<option value="'.$qual->id.'" title="'.$qual->name.'">'.
-                    $qual->family.' '.$qual->trackinglevel.' '.$qual->subtype.
+                    $qual->type.' '.$qual->trackinglevel.' '.$qual->subtype.
                     ' '.$qual->name.'</option>';	
         
                 }

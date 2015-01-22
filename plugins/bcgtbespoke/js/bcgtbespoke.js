@@ -38,39 +38,164 @@ M.mod_bcgtbespoke.bespokeiniteditunit = function(Y) {
 }
 
 
+function draw_grid(id, data, view, grid, freezeCols){
+            
+    // Destroy current tinytbl, if exists
+    $('.ui-tinytbl').each( function(){
+        
+        var role = $(this).attr('role');
+        if (role === id){
+            $('#'+id).tinytbl('destroy');
+        }
+        
+    } );
+    
+    // Replace table data
+    if (data !== ''){
+        $('#'+id+ ' tbody').html(data);
+    }
+    
+    
+//    // if editing, increase the size of the headers
+//    if (view === 'se' || view ==='ae'){
+//        
+//        $('.criteriaName').css('width', '100px');
+//        $('.criteriaName').css('min-width', '100px');
+//        $('.criteriaName').css('max-width', '100px');
+//        
+//        $('.criteriaCell').css('width', '100px');
+//        $('.criteriaCell').css('min-width', '100px');
+//        $('.criteriaCell').css('max-width', '100px');
+//        
+//        $('#toggleCommentsButton').removeAttr('disabled');
+//                
+//        $('.unitCommentCell').css('width', '65px');
+//        $('.unitCommentCell').css('min-width', '65px');
+//        $('.unitCommentCell').css('max-width', '65px');
+//        
+//    } else {
+//        
+//        $('.criteriaName').css('width', '40px');
+//        $('.criteriaName').css('min-width', '40px');
+//        $('.criteriaName').css('max-width', '40px');
+//        
+//        $('.criteriaCell').css('width', '40px');
+//        $('.criteriaCell').css('min-width', '40px');
+//        $('.criteriaCell').css('max-width', '40px');
+//        
+//        $('.unitCommentCell').css('width', '40px');
+//        $('.unitCommentCell').css('min-width', '40px');
+//        $('.unitCommentCell').css('max-width', '40px');
+//        
+//        $('#toggleCommentsButton').attr('disabled', 'disabled');
+//        
+//    }
+//        
+//    var activityUnits = $('.activityUnitName');
+//    $.each(activityUnits, function(){
+//        
+//        var unitID = $(this).attr('unitID');
+//        var cnt = $('.criterionUnit_'+unitID).length;
+//        var cWidth = $($('.criterionUnit_'+unitID)[0]).outerWidth();
+//        var newWidth = cnt * cWidth;
+//        $(this).css('width', newWidth + 'px');
+//        $(this).css('min-width', newWidth + 'px');
+//        $(this).css('max-width', newWidth + 'px');
+//        $(this).css('padding-left', '0px');
+//        $(this).css('padding-right', '0px');
+//        
+//    });
+//    
+    
+    
+    
+    
+    $('#toggleCommentsButton').removeClass('active');
+        
+    
+    // Draw tinytbl again
+    var windowHeight = window.innerHeight;
+    var height = $('#'+id).height();
+    var maxHeight = 800;
+    var minHeight = 400;
+    
+    if (height < minHeight){
+        height = 400;
+    }
+    else if (height > maxHeight) {
+        height = maxHeight;
+    }
+    
+    // If too big for window, now make smaller
+    if (height >= windowHeight)
+    {
+        height = windowHeight - 80;
+    }
+    
+    var freezeRows = 1;
+            
+    $('#'+id).tinytbl({
+            'body': {
+                'useclass': null,
+                'autofocus':false
+            },
+            'head': {
+                'useclass':null
+            },
+            'cols': {
+                'frozen': freezeCols
+            },
+            'rows': {
+                'frozen': freezeRows
+            },
+            'rtl':0,
+            'width': 'auto',
+            'height': ''+height+''
+        });
 
-M.mod_bcgtbespoke.initstudentgrid = function(Y, qualID, studentID, grid) {
+    // Width fix
+    $('#tinytbl-1').width( $('#tinytbl-1').width() + 20);
+    
+    $('#loading').hide();
+    apply_grid_stuff();
+    
+}
+
+
+M.mod_bcgtbespoke.initstudentgrid = function(Y, qualID, studentID, grid, freezeCols) {
         
     $(document).ready(function(){
         
-        $('#bespokeStudentGrid table').fixedHeaderTable({ 
-            footer: true,
-            cloneHeadToFoot: true,
-            altClass: 'odd',
-            autoShow: true
-        });
+        draw_grid('bespokeStudentGridTable', '', grid, 'student', freezeCols);    
         
-        $('#loading').hide();
-        apply_grid_stuff();
+        var doResize;
+        
+        $(window).resize( function(){
+            clearTimeout(doResize);
+            $('#loading').show();
+            doResize = setTimeout( function(){
+                draw_grid('bespokeStudentGridTable', '', grid, 'student', freezeCols);    
+            }, 100 );
+        } );
         
     });
     
 }
 
 
-M.mod_bcgtbespoke.initunitgrid = function(Y, qualID, unitID, grid) {
+M.mod_bcgtbespoke.initunitgrid = function(Y, qualID, unitID, grid, freezeCols) {
         
     $(document).ready(function(){
         
-        $('#bespokeUnitGrid table').fixedHeaderTable({ 
-            footer: true,
-            cloneHeadToFoot: true,
-            altClass: 'odd',
-            autoShow: true
-        });
+        draw_grid('bespokeUnitGridTable', '', grid, 'unit', freezeCols); 
         
-        $('#loading').hide();
-        apply_grid_stuff();
+        $(window).resize( function(){
+            clearTimeout(doResize);
+            $('#loading').show();
+            doResize = setTimeout( function(){
+            draw_grid('bespokeUnitGridTable', '', grid, 'unit', freezeCols); 
+            }, 100 );
+        } );
         
     });
     
@@ -365,161 +490,329 @@ function apply_grid_stuff(){
             qualID: qualID
         };
         
-        
         update('update_unit_award', params);
         
     });
     
     
+    $('.qualAwardSelect').unbind('change');
+    $('.qualAwardSelect').change( function(e){
+        
+        var value = $(this).val();
+        var studentID = $(this).attr('studentID');
+        var qualID = $(this).attr('qualID');
+        
+        var params = {
+            value: value,
+            studentID: studentID,
+            qualID: qualID
+        };
+        
+        update('update_qual_award', params);
+        
+    } );
+    
+    
+    
+    $('.bcgt_comments_dialog').each( function(indx, item){
+        
+        if (!$(item).hasClass('ui-dialog-content')){
+        
+            var cellID = $(item).attr('id');
+            var studentID = $(item).attr('studentID');
+            var critID = $(item).attr('critID');
+            var qualID = $(item).attr('qualID');
+            var unitID = $(item).attr('unitID');
+            var grid = $(item).attr('grid');
+            var imgID = $(item).attr('imgID');
+            
+            $(item).dialog({
+
+                autoOpen: false,
+                show: {
+                    effect: "fade",
+                    duration: 500
+                },
+                hide: {
+                    effect: "fade",
+                    duration: 500
+                },
+                buttons: {
+                    "Save": function(){
+                        
+                        var comments = $(item).find('.dialogCommentText').val();
+                        comments = encodeURIComponent(comments);
+                        var params = {action: 'add_criteria_comment', params: {element: cellID, studentID: studentID, qualID: qualID, unitID: unitID, criteriaID: critID, grid: grid, comment: comments, imgID: imgID} };
+                         $.post( M.cfg.wwwroot+'/blocks/bcgt/plugins/bcgtbespoke/ajax/update.php', params, function(data){
+                            eval(data);
+                         });
+                    },
+                    Cancel: function(){
+                        $(this).dialog("close");
+                    }
+                }
+
+            });
+        
+        }
+        
+    } );
+    
+    
+    $('.bcgt_unit_comments_dialog').each( function(indx, item){
+        
+        if (!$(item).hasClass('ui-dialog-content')){
+        
+            var cellID = $(item).attr('id');
+            var studentID = $(item).attr('studentID');
+            var qualID = $(item).attr('qualID');
+            var unitID = $(item).attr('unitID');
+            var grid = $(item).attr('grid');
+            var imgID = $(item).attr('imgID');
+            
+            $(item).dialog({
+
+                autoOpen: false,
+                show: {
+                    effect: "fade",
+                    duration: 500
+                },
+                hide: {
+                    effect: "fade",
+                    duration: 500
+                },
+                buttons: {
+                    "Save": function(){
+                        
+                        var comments = $(item).find('.dialogCommentText').val();
+                        comments = encodeURIComponent(comments);
+                        var params = {action: 'add_unit_comment', params: {element: cellID, studentID: studentID, qualID: qualID, unitID: unitID, grid: grid, comment: comments, imgID: imgID} };
+                        $.post( M.cfg.wwwroot+'/blocks/bcgt/plugins/bcgtbespoke/ajax/update.php', params, function(data){
+                            eval(data);
+                        });
+                    },
+                    Cancel: function(){
+                        $(this).dialog("close");
+                    }
+                }
+
+            });
+        
+        }
+        
+    } );
+    
+    
+    
+    
+    
+    
     $('.addComments').unbind('click');
     $('.addComments').bind('click', function(){
-             
-        var idAttr = $(this).attr('id');
         
-        var criteriaID = $(this).attr("criteriaid");
-        var unitID = $(this).attr("unitid");
-        var studentID = $(this).attr("studentid");
-        var qualID = $(this).attr("qualid");
-
-        var username = $(this).attr("username");
-        var name = $(this).attr("fullname");
-        var unitName = $(this).attr("unitname");
-        var critName = $(this).attr("critname");
-        
-        var grid = $(this).attr("grid");
-        
-        cmt.setup(qualID, unitID, criteriaID, studentID, idAttr, grid);
-        cmt.create("popUpDiv", username, name, unitName, critName);
+        var idAttr = $(this).attr("id");
+        var criteriaID = idAttr.split('_')[2];
+        var studentID = idAttr.split('_')[6];
+        var qualID = idAttr.split('_')[8];
                 
+        $('#dialog_'+studentID+'_'+criteriaID+'_'+qualID).dialog("open");
         
     } );
     
     $('.editComments').unbind('click');
-    $('.editComments').unbind('mouseover');
     $('.editComments').bind('click', function(){
-                        
-        var idAttr = $(this).attr('id');
         
-        var criteriaID = $(this).attr("criteriaid");
-        var unitID = $(this).attr("unitid");
-        var studentID = $(this).attr("studentid");
-        var qualID = $(this).attr("qualid");
-
-        var username = $(this).attr("username");
-        var name = $(this).attr("fullname");
-        var unitName = $(this).attr("unitname");
-        var critName = $(this).attr("critname");
-        
-        var grid = $(this).attr("grid");
-        
-        var text = $(this).siblings('.tooltipContent').html();
-        
-        cmt.setup(qualID, unitID, criteriaID, studentID, idAttr, grid);
-        cmt.create("popUpDiv", username, name, unitName, critName, text);
+        var idAttr = $(this).attr("id");
+        var criteriaID = idAttr.split('_')[2];
+        var studentID = idAttr.split('_')[6];
+        var qualID = idAttr.split('_')[8];
                 
+        $('#dialog_'+studentID+'_'+criteriaID+'_'+qualID).dialog("open");
         
     } );
     
     
     // Unit Comments
-    $('.addUnitComments').unbind('click');
-    $('.addUnitComments').bind('click', function(){
+    $('.addCommentsUnit').unbind('click');
+    $('.addCommentsUnit').bind('click', function(){
         
         var idAttr = $(this).attr("id");
-        
         var unitID = idAttr.split('_')[2];
         var studentID = idAttr.split('_')[4];
         var qualID = idAttr.split('_')[6];
-
-        var username = $(this).attr("username");
-        var name = $(this).attr("fullname");
-        var unitName = $(this).attr("unitname");
-        var critName = $(this).attr("critname");
-        
-        var grid = $(this).attr("grid");
-        
-        cmt.setup(qualID, unitID, -1, studentID, idAttr, grid);
-        cmt.create("popUpDiv", username, name, unitName, critName);
                 
+        $('#dialog_S'+studentID+'_U'+unitID+'_Q'+qualID).dialog("open");
         
     } );
     
     
-    $('.editUnitComments').unbind('click');
-    $('.editUnitComments').unbind('mouseover');
-    $('.editUnitComments').bind('click', function(){
+    $('.editCommentsUnit').unbind('click');
+    $('.editCommentsUnit').unbind('mouseover');
+    $('.editCommentsUnit').bind('click', function(){
         
         var idAttr = $(this).attr("id");
-        
         var unitID = idAttr.split('_')[2];
         var studentID = idAttr.split('_')[4];
         var qualID = idAttr.split('_')[6];
-
-        var username = $(this).attr("username");
-        var name = $(this).attr("fullname");
-        var unitName = $(this).attr("unitname");
-        var critName = $(this).attr("critname");
-        
-        var grid = $(this).attr("grid");
-        var text = $(this).siblings('.tooltipContent').html();
-        
-        cmt.setup(qualID, unitID, -1, studentID, idAttr, grid);
-        cmt.create("popUpDiv", username, name, unitName, critName, text);
                 
+        $('#dialog_S'+studentID+'_U'+unitID+'_Q'+qualID).dialog("open");
         
     } );
     
     
-    $('#commentClose a, #cancelComment').unbind('click');
-    $('#commentClose a, #cancelComment').bind('click', function(){
-        cmt.reset();
-        cmt.cancel();
-    });
     
-    $('#saveComment').unbind('click');
-    $('#saveComment').bind('click', function(){
-        
-        var comments = encodeURIComponent( $('#commentText').val() );
-        
-        // Criteria Comment
-        if (critID > 0){
-            var params = {action: 'add_criteria_comment', params: {element: cellID, studentID: studentID, qualID: qualID, unitID: unitID, criteriaID: critID, grid: grid, comment: comments} };
-        }
-        
-        // Unit Comment
-        else if(critID < 0 && unitID > 0){
-            var params = {action: 'add_unit_comment', params: {element: cellID, studentID: studentID, qualID: qualID, unitID: unitID, grid: grid, comment: comments} };
-        }
-        
-        $.post( M.cfg.wwwroot+'/blocks/bcgt/plugins/bcgtbespoke/ajax/update.php', params, function(data){
-            eval(data);
-        });
-        
-                
-    });
     
-    $('#deleteComment').unbind('click');
-    $('#deleteComment').bind('click', function(){
-        
-        $('#commentText').val('');
-        var comments = '';
-        
-         // Criteria Comment
-        if (critID > 0){
-            var params = {action: 'add_criteria_comment', params: {element: cellID, studentID: studentID, qualID: qualID, unitID: unitID, criteriaID: critID, grid: grid, comment: comments} };
-        }
-        
-        // Unit Comment
-        else if(critID < 0 && unitID > 0){
-            var params = {action: 'add_unit_comment', params: {element: cellID, studentID: studentID, qualID: qualID, unitID: unitID, grid: grid, comment: comments} };
-        }
-        
-        $.post( M.cfg.wwwroot+'/blocks/bcgt/plugins/bcgtbespoke/ajax/update.php', params, function(data){
-            eval(data);
-        });
-        
-        
-    });
+    
+//    
+//    $('.addComments').unbind('click');
+//    $('.addComments').bind('click', function(){
+//             
+//        var idAttr = $(this).attr('id');
+//        
+//        var criteriaID = $(this).attr("criteriaid");
+//        var unitID = $(this).attr("unitid");
+//        var studentID = $(this).attr("studentid");
+//        var qualID = $(this).attr("qualid");
+//
+//        var username = $(this).attr("username");
+//        var name = $(this).attr("fullname");
+//        var unitName = $(this).attr("unitname");
+//        var critName = $(this).attr("critname");
+//        
+//        var grid = $(this).attr("grid");
+//        
+//        cmt.setup(qualID, unitID, criteriaID, studentID, idAttr, grid);
+//        cmt.create("popUpDiv", username, name, unitName, critName);
+//                
+//        
+//    } );
+//    
+//    $('.editComments').unbind('click');
+//    $('.editComments').unbind('mouseover');
+//    $('.editComments').bind('click', function(){
+//                        
+//        var idAttr = $(this).attr('id');
+//        
+//        var criteriaID = $(this).attr("criteriaid");
+//        var unitID = $(this).attr("unitid");
+//        var studentID = $(this).attr("studentid");
+//        var qualID = $(this).attr("qualid");
+//
+//        var username = $(this).attr("username");
+//        var name = $(this).attr("fullname");
+//        var unitName = $(this).attr("unitname");
+//        var critName = $(this).attr("critname");
+//        
+//        var grid = $(this).attr("grid");
+//        
+//        var text = $(this).siblings('.tooltipContent').html();
+//        
+//        cmt.setup(qualID, unitID, criteriaID, studentID, idAttr, grid);
+//        cmt.create("popUpDiv", username, name, unitName, critName, text);
+//                
+//        
+//    } );
+//    
+//    
+//    // Unit Comments
+//    $('.addUnitComments').unbind('click');
+//    $('.addUnitComments').bind('click', function(){
+//        
+//        var idAttr = $(this).attr("id");
+//        
+//        var unitID = idAttr.split('_')[2];
+//        var studentID = idAttr.split('_')[4];
+//        var qualID = idAttr.split('_')[6];
+//
+//        var username = $(this).attr("username");
+//        var name = $(this).attr("fullname");
+//        var unitName = $(this).attr("unitname");
+//        var critName = $(this).attr("critname");
+//        
+//        var grid = $(this).attr("grid");
+//        
+//        cmt.setup(qualID, unitID, -1, studentID, idAttr, grid);
+//        cmt.create("popUpDiv", username, name, unitName, critName);
+//                
+//        
+//    } );
+//    
+//    
+//    $('.editUnitComments').unbind('click');
+//    $('.editUnitComments').unbind('mouseover');
+//    $('.editUnitComments').bind('click', function(){
+//        
+//        var idAttr = $(this).attr("id");
+//        
+//        var unitID = idAttr.split('_')[2];
+//        var studentID = idAttr.split('_')[4];
+//        var qualID = idAttr.split('_')[6];
+//
+//        var username = $(this).attr("username");
+//        var name = $(this).attr("fullname");
+//        var unitName = $(this).attr("unitname");
+//        var critName = $(this).attr("critname");
+//        
+//        var grid = $(this).attr("grid");
+//        var text = $(this).siblings('.tooltipContent').html();
+//        
+//        cmt.setup(qualID, unitID, -1, studentID, idAttr, grid);
+//        cmt.create("popUpDiv", username, name, unitName, critName, text);
+//                
+//        
+//    } );
+//    
+//    
+//    $('#commentClose a, #cancelComment').unbind('click');
+//    $('#commentClose a, #cancelComment').bind('click', function(){
+//        cmt.reset();
+//        cmt.cancel();
+//    });
+//    
+//    $('#saveComment').unbind('click');
+//    $('#saveComment').bind('click', function(){
+//        
+//        var comments = encodeURIComponent( $('#commentText').val() );
+//        
+//        // Criteria Comment
+//        if (critID > 0){
+//            var params = {action: 'add_criteria_comment', params: {element: cellID, studentID: studentID, qualID: qualID, unitID: unitID, criteriaID: critID, grid: grid, comment: comments} };
+//        }
+//        
+//        // Unit Comment
+//        else if(critID < 0 && unitID > 0){
+//            var params = {action: 'add_unit_comment', params: {element: cellID, studentID: studentID, qualID: qualID, unitID: unitID, grid: grid, comment: comments} };
+//        }
+//        
+//        $.post( M.cfg.wwwroot+'/blocks/bcgt/plugins/bcgtbespoke/ajax/update.php', params, function(data){
+//            eval(data);
+//        });
+//        
+//                
+//    });
+//    
+//    $('#deleteComment').unbind('click');
+//    $('#deleteComment').bind('click', function(){
+//        
+//        $('#commentText').val('');
+//        var comments = '';
+//        
+//         // Criteria Comment
+//        if (critID > 0){
+//            var params = {action: 'add_criteria_comment', params: {element: cellID, studentID: studentID, qualID: qualID, unitID: unitID, criteriaID: critID, grid: grid, comment: comments} };
+//        }
+//        
+//        // Unit Comment
+//        else if(critID < 0 && unitID > 0){
+//            var params = {action: 'add_unit_comment', params: {element: cellID, studentID: studentID, qualID: qualID, unitID: unitID, grid: grid, comment: comments} };
+//        }
+//        
+//        $.post( M.cfg.wwwroot+'/blocks/bcgt/plugins/bcgtbespoke/ajax/update.php', params, function(data){
+//            eval(data);
+//        });
+//        
+//        
+//    });
 
     
     
@@ -552,10 +845,21 @@ function apply_grid_stuff(){
     });
     
     
+//     // Set class for background yellow on comments
+//    $('.editComments, .editCommentsUnit, .tooltipContent').parents('td').addClass('criteriaComments');
+//    $('.editComments, .editCommentsUnit, .tooltipContent').parents('td').attr('title', '');
+    // if IE, change button links to have onclick, because as we all know, IE is shit and plays by its own rules
+    if (navigator.appName === 'Microsoft Internet Explorer')
+    {
+        $('a input.btn').click(function(){
+            window.location = $(this).closest('a').attr('href');
+        });
+    }
     
     
-    $("#popUpDiv").draggable();
     
+    
+        
     
 }
 
@@ -600,73 +904,73 @@ function apply_stuff(){
 
 
 
-
-
-var cmt = "";
-var unitID = -1;
-var critID = -1;
-var cellID = "";
-var qualID = -1;
-var studentID = -1;
-var grid = "";
-
-cmt = {
-
-    setup: function(q, u, c, s, id, g){
-        unitID = u;
-        critID = c;
-        cellID = id;
-        studentID = s;
-        qualID = q;
-        grid = g;
-    },
-
-    create : function(div, un, fn, unit, crit, text){ /* Create the popup with the textarea to add a comment */
-
-        /* First assign the values to the spans */
-        $("#commentBoxUsername").html(un);
-        $("#commentBoxFullname").html(fn);
-        $("#commentBoxUnit").html(unit);
-        $("#commentBoxCriteria").html(crit);
-        
-        if (text !== undefined){
-            /* Strip crap from body if only just added */
-            var regex = /<br\s*[\/]?>/gi;
-            text = text.replace(regex, "\n");
-
-            $("#commentText").val(text);
-        }
-
-        
-        css_popup(div); /* Call function from cssPopup.js */
-
-    },
-
-    cancel : function(){ /* Cancel editing/submitting a comment - basically just close the popup */
-
-        /* Reset values */
-        $("#commentBoxUsername").html("");
-        $("#commentBoxFullname").html("");
-        $("#commentBoxUnit").html("");
-        $("#commentBoxCriteria").html("");
-        $("#commentText").val("");
-
-        /* Close Divs */
-        $("#bcgtblanket").css("display", "none");
-        $("#popUpDiv").css("display", "none");
-
-    },
-
-    reset : function(){
-        unitID = -1;
-        critID = -1;
-        cellID = "";
-        studentID = -1;
-        qualID = -1;
-    }
-
-};
-
+//
+//
+//var cmt = "";
+//var unitID = -1;
+//var critID = -1;
+//var cellID = "";
+//var qualID = -1;
+//var studentID = -1;
+//var grid = "";
+//
+//cmt = {
+//
+//    setup: function(q, u, c, s, id, g){
+//        unitID = u;
+//        critID = c;
+//        cellID = id;
+//        studentID = s;
+//        qualID = q;
+//        grid = g;
+//    },
+//
+//    create : function(div, un, fn, unit, crit, text){ /* Create the popup with the textarea to add a comment */
+//
+//        /* First assign the values to the spans */
+//        $("#commentBoxUsername").html(un);
+//        $("#commentBoxFullname").html(fn);
+//        $("#commentBoxUnit").html(unit);
+//        $("#commentBoxCriteria").html(crit);
+//        
+//        if (text !== undefined){
+//            /* Strip crap from body if only just added */
+//            var regex = /<br\s*[\/]?>/gi;
+//            text = text.replace(regex, "\n");
+//
+//            $("#commentText").val(text);
+//        }
+//
+//        
+//        css_popup(div); /* Call function from cssPopup.js */
+//
+//    },
+//
+//    cancel : function(){ /* Cancel editing/submitting a comment - basically just close the popup */
+//
+//        /* Reset values */
+//        $("#commentBoxUsername").html("");
+//        $("#commentBoxFullname").html("");
+//        $("#commentBoxUnit").html("");
+//        $("#commentBoxCriteria").html("");
+//        $("#commentText").val("");
+//
+//        /* Close Divs */
+//        $("#bcgtblanket").css("display", "none");
+//        $("#popUpDiv").css("display", "none");
+//
+//    },
+//
+//    reset : function(){
+//        unitID = -1;
+//        critID = -1;
+//        cellID = "";
+//        studentID = -1;
+//        qualID = -1;
+//    }
+//
+//};
+//
 
 
 

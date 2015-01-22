@@ -2860,11 +2860,11 @@ function xmldb_block_bcgt_upgrade($oldversion = 0)
         //does the dir exist in the moodledata folder?
         if(!file_exists($CFG->dataroot.'/bcgt') && !is_dir($CFG->dataroot.'/bcgt'))
         {
-            mkdir($CFG->dataroot.'/bcgt');
+            mkdir($CFG->dataroot.'/bcgt', 0775);
         }
         if(!file_exists($CFG->dataroot.'/bcgt/import') && !is_dir($CFG->dataroot.'/bcgt/import'))
         {
-            mkdir($CFG->dataroot.'/bcgt/import');
+            mkdir($CFG->dataroot.'/bcgt/import', 0775);
         }
     }
 
@@ -2979,7 +2979,7 @@ function xmldb_block_bcgt_upgrade($oldversion = 0)
         }
     }
     
-    if ($oldversion < 2014010600)
+    if ($oldversion < 2014040400)
     {
         
         // Define field courseid to be added to block_bcgt_custom_grades
@@ -2992,8 +2992,12 @@ function xmldb_block_bcgt_upgrade($oldversion = 0)
         }
         
     }
+        
     
-    if ($oldversion < 2014012900) {
+
+    
+    
+    if ($oldversion < 2014040400) {
 
          // Define table block_bcgt_user_group to be created
         $table = new xmldb_table('block_bcgt_user_grouping');
@@ -3022,7 +3026,7 @@ function xmldb_block_bcgt_upgrade($oldversion = 0)
         }
     }
     
-    if($oldversion < 2014012900)
+    if($oldversion < 2014040400)
     {
         $sql = "SELECT * FROM {config} WHERE name = ? AND value = ?";
         if(!$DB->get_record_sql($sql, array('dImp_default_staff_group_file', 'tutorongroup.csv')))
@@ -3030,7 +3034,11 @@ function xmldb_block_bcgt_upgrade($oldversion = 0)
             $record = new stdClass();
             $record->name = 'dImp_default_staff_group_file';
             $record->value = 'tutorongroup.csv';
-            $DB->insert_record('config', $record);
+            $check = $DB->get_record_sql("SELECT * FROM {config} WHERE name = ?",array('dImp_default_staff_group_file'));
+            if(!$check)
+            {
+                $DB->insert_record('config', $record);
+            }
         }
         
         if(!$DB->get_record_sql($sql, array('dImp_archive_staff_groups', 'staffgroups')))
@@ -3038,7 +3046,11 @@ function xmldb_block_bcgt_upgrade($oldversion = 0)
             $record = new stdClass();
             $record->name = 'dImp_archive_staff_groups';
             $record->value = 'staffgroups';
-            $DB->insert_record('config', $record);
+            $check = $DB->get_record_sql("SELECT * FROM {config} WHERE name = ?",array('dImp_archive_staff_groups'));
+            if(!$check)
+            {
+                $DB->insert_record('config', $record);
+            }
         }
         
         if(!$DB->get_record_sql($sql, array('dImp_errors_staff_group_file', 'staffgroupError')))
@@ -3046,7 +3058,11 @@ function xmldb_block_bcgt_upgrade($oldversion = 0)
             $record = new stdClass();
             $record->name = 'dImp_errors_staff_group_file';
             $record->value = 'staffgroupError';
-            $DB->insert_record('config', $record);
+            $check = $DB->get_record_sql("SELECT * FROM {config} WHERE name = ?",array('dImp_errors_staff_group_file'));
+            if(!$check)
+            {
+                $DB->insert_record('config', $record);
+            }
         }
         
         if(!$DB->get_record_sql($sql, array('dImp_errors_staff_group', 'staffgroup')))
@@ -3054,11 +3070,15 @@ function xmldb_block_bcgt_upgrade($oldversion = 0)
             $record = new stdClass();
             $record->name = 'dImp_errors_staff_group';
             $record->value = 'staffgroup';
-            $DB->insert_record('config', $record);
+            $check = $DB->get_record_sql("SELECT * FROM {config} WHERE name = ?",array('dImp_errors_staff_group'));
+            if(!$check)
+            {
+                $DB->insert_record('config', $record);
+            }
         }
     }
     
-    if ($oldversion < 2014021708) {
+    if ($oldversion < 2014040400) {
 
         // Define table block_bcgt_mod_linking to be created
         $table = new xmldb_table('block_bcgt_mod_linking');
@@ -3101,7 +3121,11 @@ function xmldb_block_bcgt_upgrade($oldversion = 0)
                 $stdObj->submissiondatefname = 'timecreated';
                 $stdObj->submissionmodidfname = 'assignment';
                 $stdObj->checkforautotracking = 1;
-                $DB->insert_record('block_bcgt_mod_linking', $stdObj);
+                $check = $DB->get_record_sql("SELECT * FROM {block_bcgt_mod_linking} WHERE modouleid = ?",array($assign->id));
+                if(!$check)
+                {
+                    $DB->insert_record('block_bcgt_mod_linking', $stdObj);
+                }
             }
 
             //assignment
@@ -3118,7 +3142,11 @@ function xmldb_block_bcgt_upgrade($oldversion = 0)
                 $stdObj->submissiondatefname = 'timecreated';
                 $stdObj->submissionmodidfname = 'assignment';
                 $stdObj->checkforautotracking = 1;
-                $DB->insert_record('block_bcgt_mod_linking', $stdObj);
+                $check = $DB->get_record_sql("SELECT * FROM {block_bcgt_mod_linking} WHERE modouleid = ?",array($assignment->id));
+                if(!$check)
+                {
+                    $DB->insert_record('block_bcgt_mod_linking', $stdObj);
+                }
             }
 
             //quiz
@@ -3135,7 +3163,11 @@ function xmldb_block_bcgt_upgrade($oldversion = 0)
                 $stdObj->submissiondatefname = 'timefinish';
                 $stdObj->submissionmodidfname = 'quiz';
                 $stdObj->checkforautotracking = 1;
-                $DB->insert_record('block_bcgt_mod_linking', $stdObj);
+                $check = $DB->get_record_sql("SELECT * FROM {block_bcgt_mod_linking} WHERE modouleid = ?",array($quiz->id));
+                if(!$check)
+                {
+                    $DB->insert_record('block_bcgt_mod_linking', $stdObj);
+                }
             }
 
             //urnitindirect
@@ -3152,13 +3184,952 @@ function xmldb_block_bcgt_upgrade($oldversion = 0)
                 $stdObj->submissiondatefname = 'submission_modified';
                 $stdObj->submissionmodidfname = 'turnitintoolid';
                 $stdObj->checkforautotracking = 1;
-                $DB->insert_record('block_bcgt_mod_linking', $stdObj);
+                $check = $DB->get_record_sql("SELECT * FROM {block_bcgt_mod_linking} WHERE modouleid = ?",array($turnitin->id));
+                if(!$check)
+                {
+                    $DB->insert_record('block_bcgt_mod_linking', $stdObj);
+                }
             }
         }
         
         
     }
     
+    
+    
+    if ($oldversion < 2014040400) {
+
+        // Define table block_bcgt_repsys_reports to be created
+        $table = new xmldb_table('block_bcgt_repsys_reports');
+
+        // Adding fields to table block_bcgt_repsys_reports
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('name', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('createdbyuserid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '20', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('updatedbyuserid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('timeupdated', XMLDB_TYPE_INTEGER, '20', null, null, null, null);
+        $table->add_field('lastrunbyuserid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('timelastrun', XMLDB_TYPE_INTEGER, '20', null, null, null, null);
+        $table->add_field('runs', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('data', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
+        $table->add_field('del', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table block_bcgt_repsys_reports
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('cbuid_fk', XMLDB_KEY_FOREIGN, array('createdbyuserid'), 'user', array('id'));
+        $table->add_key('pbuid_fk', XMLDB_KEY_FOREIGN, array('updatedbyuserid'), 'user', array('id'));
+        $table->add_key('lrbuid_fk', XMLDB_KEY_FOREIGN, array('lastrunbyuserid'), 'user', array('id'));
+
+        // Conditionally launch create table for block_bcgt_repsys_reports
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // bcgt savepoint reached
+        upgrade_block_savepoint(true, 2014040400, 'bcgt');
+    }
+    
+    if ($oldversion < 2014040400) {
+
+         // Define table block_bcgt_user_group to be created
+        $table = new xmldb_table('block_bcgt_user_grouping');
+
+        // Adding fields to table block_bcgt_user_group
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '18', null, null, null, null);
+        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '18', null, null, null, null);
+        $table->add_field('groupingid', XMLDB_TYPE_INTEGER, '18', null, null, null, null);
+
+        // Adding keys to table block_bcgt_user_group
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Adding indexes to table block_bcgt_user_group
+        $table->add_index('userid-ind', XMLDB_INDEX_NOTUNIQUE, array('userid'));
+        $table->add_index('courseid-ind', XMLDB_INDEX_NOTUNIQUE, array('courseid'));
+        $table->add_index('groupingid-ind', XMLDB_INDEX_NOTUNIQUE, array('groupingid'));
+        $table->add_index('userid_courseid_ind', XMLDB_INDEX_NOTUNIQUE, array('userid', 'courseid'));
+        $table->add_index('userid_groupingid_ind', XMLDB_INDEX_NOTUNIQUE, array('userid', 'groupingid'));
+        $table->add_index('courseid_groupingid_ind', XMLDB_INDEX_NOTUNIQUE, array('courseid', 'groupingid'));
+        $table->add_index('userid_courseid_groupingid_ind', XMLDB_INDEX_NOTUNIQUE, array('userid', 'courseid', 'groupingid'));
+
+        // Conditionally launch create table for block_bcgt_user_group
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+    }
+    
+    
+    if ($oldversion < 2014040400){
+        
+        // Define field specificawardtype to be added to block_bcgt_unit_history
+        $table = new xmldb_table('block_bcgt_unit_history');
+        $field = new xmldb_field('specificawardtype', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'aestheticname');
+
+        // Conditionally launch add field specificawardtype
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        
+        // Define field pathwaytypeid to be added to block_bcgt_unit_history
+        $table = new xmldb_table('block_bcgt_unit_history');
+        $field = new xmldb_field('pathwaytypeid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'specificawardtype');
+
+        // Conditionally launch add field pathwaytypeid
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        
+    }
+    
+    if($oldversion < 2014040400)
+    {
+        //I HATE MOODLE!!!!!!!!!!!!
+        
+        //Really Moodle. I need to drop the 5 indexes to change the null of the 
+        //field
+        
+        //and then re add them???
+        
+        //dropping indexes:
+        // Define index coursemoduleid-ind (not unique) to be dropped form block_bcgt_activity_refs
+        $table = new xmldb_table('block_bcgt_activity_refs');
+        $index = new xmldb_index('coursemoduleid-ind', XMLDB_INDEX_NOTUNIQUE, array('coursemoduleid'));
+
+        // Conditionally launch drop index coursemoduleid-ind
+        if ($dbman->index_exists($table, $index)) {
+            $dbman->drop_index($table, $index);
+        }
+
+        // Define index coursemoduleid_bcgtprojectid-ind (not unique) to be dropped form block_bcgt_activity_refs
+        $table = new xmldb_table('block_bcgt_activity_refs');
+        $index = new xmldb_index('coursemoduleid_bcgtprojectid-ind', XMLDB_INDEX_NOTUNIQUE, array('coursemoduleid', 'bcgtprojectid'));
+
+        // Conditionally launch drop index coursemoduleid_bcgtprojectid-ind
+        if ($dbman->index_exists($table, $index)) {
+            $dbman->drop_index($table, $index);
+        }
+        
+        // Define index coursemoduleid_qualid-ind (not unique) to be dropped form block_bcgt_activity_refs
+        $table = new xmldb_table('block_bcgt_activity_refs');
+        $index = new xmldb_index('coursemoduleid_qualid-ind', XMLDB_INDEX_NOTUNIQUE, array('coursemoduleid', 'bcgtqualificationid'));
+
+        // Conditionally launch drop index coursemoduleid_qualid-ind
+        if ($dbman->index_exists($table, $index)) {
+            $dbman->drop_index($table, $index);
+        }
+        
+        // Define index coursemodule_qualid_projectid-ind (not unique) to be dropped form block_bcgt_activity_refs
+        $table = new xmldb_table('block_bcgt_activity_refs');
+        $index = new xmldb_index('coursemodule_qualid_projectid-ind', XMLDB_INDEX_NOTUNIQUE, array('coursemoduleid', 'bcgtqualificationid', 'bcgtprojectid'));
+
+        // Conditionally launch drop index coursemodule_qualid_projectid-ind
+        if ($dbman->index_exists($table, $index)) {
+            $dbman->drop_index($table, $index);
+        }
+        
+        // Define index coursemoduleid_qualid_unitid-ind (not unique) to be dropped form block_bcgt_activity_refs
+        $table = new xmldb_table('block_bcgt_activity_refs');
+        $index = new xmldb_index('coursemoduleid_qualid_unitid-ind', XMLDB_INDEX_NOTUNIQUE, array('coursemoduleid', 'bcgtqualificationid', 'bcgtunitid'));
+
+        // Conditionally launch drop index coursemoduleid_qualid_unitid-ind
+        if ($dbman->index_exists($table, $index)) {
+            $dbman->drop_index($table, $index);
+        }
+        
+        // Define index coursemoduleid_qualid_unitid_projectid-ind (not unique) to be dropped form block_bcgt_activity_refs
+        $table = new xmldb_table('block_bcgt_activity_refs');
+        $index = new xmldb_index('coursemoduleid_qualid_unitid_projectid-ind', XMLDB_INDEX_NOTUNIQUE, array('coursemoduleid', 'bcgtqualificationid', 'bcgtunitid', 'bcgtprojectid'));
+
+        // Conditionally launch drop index coursemoduleid_qualid_unitid_projectid-ind
+        if ($dbman->index_exists($table, $index)) {
+            $dbman->drop_index($table, $index);
+        }
+        
+        // Changing nullability of field coursemoduleid on table block_bcgt_activity_refs to null
+        $table = new xmldb_table('block_bcgt_activity_refs');
+        $field = new xmldb_field('coursemoduleid', XMLDB_TYPE_INTEGER, '18', null, null, null, null, 'id');
+
+        // Launch change of nullability for field coursemoduleid
+        $dbman->change_field_notnull($table, $field);
+        
+        // Define index coursemoduleid-ind (not unique) to be added to block_bcgt_activity_refs
+        $table = new xmldb_table('block_bcgt_activity_refs');
+        $index = new xmldb_index('coursemoduleid-ind', XMLDB_INDEX_NOTUNIQUE, array('coursemoduleid'));
+
+        // Conditionally launch add index coursemoduleid-ind
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+        
+        // Define index coursemoduleid_bcgtprojectid-ind (not unique) to be added to block_bcgt_activity_refs
+        $table = new xmldb_table('block_bcgt_activity_refs');
+        $index = new xmldb_index('coursemoduleid_bcgtprojectid-ind', XMLDB_INDEX_NOTUNIQUE, array('coursemoduleid', 'bcgtprojectid'));
+
+        // Conditionally launch add index coursemoduleid_bcgtprojectid-ind
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+        
+        // Define index coursemoduleid_qualid-ind (not unique) to be added to block_bcgt_activity_refs
+        $table = new xmldb_table('block_bcgt_activity_refs');
+        $index = new xmldb_index('coursemoduleid_qualid-ind', XMLDB_INDEX_NOTUNIQUE, array('coursemoduleid', 'bcgtqualificationid'));
+
+        // Conditionally launch add index coursemoduleid_qualid-ind
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+        
+        // Define index coursemodule_qualid_projectid-ind (not unique) to be added to block_bcgt_activity_refs
+        $table = new xmldb_table('block_bcgt_activity_refs');
+        $index = new xmldb_index('coursemodule_qualid_projectid-ind', XMLDB_INDEX_NOTUNIQUE, array('coursemoduleid', 'bcgtqualificationid', 'bcgtprojectid'));
+
+        // Conditionally launch add index coursemodule_qualid_projectid-ind
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+        
+        // Define index coursemoduleid_qualid_unitid-ind (not unique) to be added to block_bcgt_activity_refs
+        $table = new xmldb_table('block_bcgt_activity_refs');
+        $index = new xmldb_index('coursemoduleid_qualid_unitid-ind', XMLDB_INDEX_NOTUNIQUE, array('coursemoduleid', 'bcgtqualificationid', 'bcgtunitid'));
+
+        // Conditionally launch add index coursemoduleid_qualid_unitid-ind
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+        
+        // Define index coursemoduleid_qualid_unitid_projectid-ind (not unique) to be added to block_bcgt_activity_refs
+        $table = new xmldb_table('block_bcgt_activity_refs');
+        $index = new xmldb_index('coursemoduleid_qualid_unitid_projectid-ind', XMLDB_INDEX_NOTUNIQUE, array('coursemoduleid', 'bcgtqualificationid', 'bcgtunitid', 'bcgtprojectid'));
+
+        // Conditionally launch add index coursemoduleid_qualid_unitid_projectid-ind
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+    }
+    
+    if ($oldversion < 2014040700)
+    {
+        
+        
+        $table = new xmldb_table('block_bcgt_bespoke_qual');
+        $field = new xmldb_field('gradingstructureid');
+        if(!$dbman->field_exists($table, $field)){
+            $field->set_attributes(XMLDB_TYPE_INTEGER, 10, XMLDB_UNSIGNED, XMLDB_NOTNULL);
+            $dbman->add_field($table, $field);
+        }
+        
+        $table = new xmldb_table('block_bcgt_bspk_q_grade_vals');
+        $field = new xmldb_field('shortgrade');
+        if(!$dbman->field_exists($table, $field)){
+            $field->set_attributes(XMLDB_TYPE_CHAR, 2, null, XMLDB_NOTNULL);
+            $dbman->add_field($table, $field);
+        }
+        
+        
+        // Define field ucaspoints to be added to block_bcgt_bspk_q_grade_vals
+        $table = new xmldb_table('block_bcgt_bspk_q_grade_vals');
+        $field = new xmldb_field('ucaspoints', XMLDB_TYPE_NUMBER, '3, 1', null, null, null, null, 'shortgrade');
+
+        // Conditionally launch add field ucaspoints
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        
+        
+        // Define field ucaspoints to be added to block_bcgt_custom_grades
+        $table = new xmldb_table('block_bcgt_custom_grades');
+        $field = new xmldb_field('ucaspoints', XMLDB_TYPE_NUMBER, '3, 1', null, null, null, null, 'ranking');
+
+        // Conditionally launch add field ucaspoints
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        
+
+        
+    }
+    
+    if ($oldversion < 2014051600)
+    {
+        
+        // Define field modtablestartdatefname to be added to block_bcgt_mod_linking.
+        $table = new xmldb_table('block_bcgt_mod_linking');
+        
+        $field = new xmldb_field('modtablestartdatefname', XMLDB_TYPE_TEXT, null, null, null, null, null, 'modtablecoursefname');
+
+        // Conditionally launch add field modtablestartdatefname.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        
+        $field = new xmldb_field('modtableduedatefname', XMLDB_TYPE_TEXT, null, null, null, null, null, 'modtablestartdatefname');
+
+        // Launch change of nullability for field modtableduedatefname.
+        $dbman->change_field_notnull($table, $field);
+        
+        
+        // Define field modtitlefname to be added to block_bcgt_mod_linking.
+        $table = new xmldb_table('block_bcgt_mod_linking');
+        $field = new xmldb_field('modtitlefname', XMLDB_TYPE_TEXT, null, null, null, null, null, 'modsubmissiontable');
+
+        // Conditionally launch add field modtitlefname.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        
+    }
+    
+    
+    if ($oldversion < 2014051601)
+    {
+        
+        // Assign mod linking
+        $assign = $DB->get_record("modules", array("name" => "assign"));
+        if ($assign)
+        {
+            $record = $DB->get_record("block_bcgt_mod_linking", array("moduleid" => $assign->id));
+            if ($record)
+            {
+                $record->modtablestartdatefname = 'allowsubmissionsfromdate';
+                $record->modtitlefname = 'name';
+                $DB->update_record("block_bcgt_mod_linking", $record);
+            }
+        }
+        
+        
+        // Assignment (2.2) mod linking
+        $module = $DB->get_record("modules", array("name" => "assignment"));
+        if ($module)
+        {
+            $record = $DB->get_record("block_bcgt_mod_linking", array("moduleid" => $module->id));
+            if ($record)
+            {
+                $record->modtablestartdatefname = 'timeavailable';
+                $record->modtitlefname = 'name';
+                $DB->update_record("block_bcgt_mod_linking", $record);
+            }
+        }
+        
+        
+        // Turnitin
+        $module = $DB->get_record("modules", array("name" => "turnitintool"));
+        if ($module)
+        {
+            $record = $DB->get_record("block_bcgt_mod_linking", array("moduleid" => $module->id));
+            if ($record)
+            {
+                $record->modtablestartdatefname = 'defaultdtstart';
+                $record->modtitlefname = 'name';
+                $DB->update_record("block_bcgt_mod_linking", $record);
+            }
+        }
+        
+        // Quiz
+        $module = $DB->get_record("modules", array("name" => "quiz"));
+        if ($module)
+        {
+            $record = $DB->get_record("block_bcgt_mod_linking", array("moduleid" => $module->id));
+            if ($record)
+            {
+                $record->modtablestartdatefname = 'timeopen';
+                $record->modtitlefname = 'name';
+                $DB->update_record("block_bcgt_mod_linking", $record);
+            }
+        }
+        
+        
+        
+    }
+    
+    if ($oldversion < 2014051905){
+        
+        // Define field gradetablename to be added to block_bcgt_mod_linking.
+        $table = new xmldb_table('block_bcgt_mod_linking');
+        $field = new xmldb_field('gradetablename', XMLDB_TYPE_TEXT, null, null, null, null, null, 'checkforautotracking');
+
+        // Conditionally launch add field gradetablename.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        
+        
+        $field = new xmldb_field('gradetimefname', XMLDB_TYPE_TEXT, null, null, null, null, null, 'gradetablename');
+
+        // Conditionally launch add field gradetimefname.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+         
+        
+        
+        // Define field gradegradefname to be added to block_bcgt_mod_linking.
+        $field = new xmldb_field('gradegradefname', XMLDB_TYPE_TEXT, null, null, null, null, null, 'gradetimefname');
+
+        // Conditionally launch add field gradegradefname.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        
+        
+        
+         // Define field grademodinstancefname to be added to block_bcgt_mod_linking.
+        $field = new xmldb_field('grademodinstancefname', XMLDB_TYPE_TEXT, null, null, null, null, null, 'gradegradefname');
+
+        // Conditionally launch add field grademodinstancefname.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        
+        
+    }
+    
+    
+    if ($oldversion < 2014051906){
+        
+        
+        // Assign mod linking
+        $assign = $DB->get_record("modules", array("name" => "assign"));
+        if ($assign)
+        {
+            $record = $DB->get_record("block_bcgt_mod_linking", array("moduleid" => $assign->id));
+            if ($record)
+            {
+                $record->gradetablename = 'assign_grades';
+                $record->gradetimefname = 'timemodified';
+                $record->gradegradefname = 'grade';
+                $record->grademodinstancefname = 'assignment';
+                $DB->update_record("block_bcgt_mod_linking", $record);
+            }
+        }
+        
+        
+        // todo: others
+        
+        
+    }
+    
+    if ($oldversion < 2014051907){
+        
+        // Define field modgradingscalefname to be added to block_bcgt_mod_linking.
+        $table = new xmldb_table('block_bcgt_mod_linking');
+        $field = new xmldb_field('modgradingscalefname', XMLDB_TYPE_TEXT, null, null, null, null, null, 'grademodinstancefname');
+
+        // Conditionally launch add field modgradingscalefname.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+                        
+    }
+    
+    
+    if ($oldversion < 2014052000){
+        
+        // Assign mod linking
+        $assign = $DB->get_record("modules", array("name" => "assign"));
+        if ($assign)
+        {
+            $record = $DB->get_record("block_bcgt_mod_linking", array("moduleid" => $assign->id));
+            if ($record)
+            {
+                $record->modgradingscalefname = 'grade';
+                $DB->update_record("block_bcgt_mod_linking", $record);
+            }
+        }
+        
+    }
+    
+    if ($oldversion < 2014052001){
+        
+        // Define field gradeuserfname to be added to block_bcgt_mod_linking.
+        $table = new xmldb_table('block_bcgt_mod_linking');
+        $field = new xmldb_field('gradeuserfname', XMLDB_TYPE_TEXT, null, null, null, null, null, 'modgradingscalefname');
+
+        // Conditionally launch add field gradeuserfname.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        
+        
+        // Assign mod linking
+        $assign = $DB->get_record("modules", array("name" => "assign"));
+        if ($assign)
+        {
+            $record = $DB->get_record("block_bcgt_mod_linking", array("moduleid" => $assign->id));
+            if ($record)
+            {
+                $record->gradeuserfname = 'userid';
+                $DB->update_record("block_bcgt_mod_linking", $record);
+            }
+        }
+        
+        
+    }
+    
+    
+    
+    if ($oldversion < 2014052203){
+        
+        
+        // Define field studentcomments to be added to block_bcgt_user_unit.
+        $table = new xmldb_table('block_bcgt_user_unit');
+        $field = new xmldb_field('studentcomments', XMLDB_TYPE_TEXT, null, null, null, null, null, 'dateset');
+
+        // Conditionally launch add field studentcomments.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        
+        
+         // Define field studentcomments to be added to block_bcgt_user_unit_his.
+        $table = new xmldb_table('block_bcgt_user_unit_his');
+        $field = new xmldb_field('studentcomments', XMLDB_TYPE_TEXT, null, null, null, null, null, 'dateset');
+
+        // Conditionally launch add field studentcomments.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+                        
+        
+    }
+    
+    if($oldversion < 2014061100)
+    {
+        global $DB;
+        $sql = "UPDATE {block_bcgt_value} SET enabled = ? WHERE context = ?";
+        $DB->execute($sql, array(1, 'assessment'));
+    }
+        
+    
+    if ($oldversion < 2014063000)
+    {
+        
+        // Define field teacherset_targetid to be dropped from block_bcgt_user_course_trgts.
+        $table = new xmldb_table('block_bcgt_user_course_trgts');
+        
+        $field = new xmldb_field('teacherset_targetid');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+        
+        $field = new xmldb_field('teacherset_breakdownid');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+        
+        $field = new xmldb_field('teacherset_teacherid');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+        
+        $field = new xmldb_field('teacherset_date');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+        
+        mtrace("Removed all teacherset_ columns from bcgt_user_course_trgts as we DO NOT USE THESE ANYMORE. All Aspirational grades are stored in the bcgt_stud_course_grade table!!!");
+        
+        
+    }
+    
+    if ($oldversion < 2014063008)
+    {
+        global $DB;
+        
+        $component = $DB->get_record("tool_customlang_components", array("name" => "block_bcgt"));
+        if ($component)
+        {
+            $DB->delete_records("tool_customlang", array("componentid" => $component->id));
+            mtrace("Wiped all customlang strings to start again");
+        }       
+        
+    }    
+    if ($oldversion < 2014072800)
+    {
+        
+        // Define field groupname to be added to block_bcgt_qual_units.
+        $table = new xmldb_table('block_bcgt_qual_units');
+        $field = new xmldb_field('groupname', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'bcgtunitid');
+
+        // Conditionally launch add field groupname.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        
+        
+        // Define field groupname to be added to block_bcgt_qual_units_his.
+        $table = new xmldb_table('block_bcgt_qual_units_his');
+        $field = new xmldb_field('groupname', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'bcgtunitsid');
+
+        // Conditionally launch add field groupname.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        
+        
+    }
+    
+    if ($oldversion < 2014073100)
+    {
+        
+         // Define table block_bcgt_register_groups to be created.
+        $table = new xmldb_table('block_bcgt_register_groups');
+
+        // Adding fields to table block_bcgt_register_groups.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('recordid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('name', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table block_bcgt_register_groups.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Conditionally launch create table for block_bcgt_register_groups.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+        
+        
+        
+        // Define table block_bcgt_user_reg_groups to be created.
+        $table = new xmldb_table('block_bcgt_user_reg_groups');
+
+        // Adding fields to table block_bcgt_user_reg_groups.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('registergroupid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('type', XMLDB_TYPE_CHAR, '1', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table block_bcgt_user_reg_groups.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Conditionally launch create table for block_bcgt_user_reg_groups.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+        
+        
+        
+    }
+    
+    
+    if ($oldversion < 2014073100)
+    {
+        
+        // Define field startdate to be added to block_bcgt_register_groups.
+        $table = new xmldb_table('block_bcgt_register_groups');
+        $field = new xmldb_field('startdate', XMLDB_TYPE_CHAR, '10', null, XMLDB_NOTNULL, null, null, 'name');
+
+        // Conditionally launch add field startdate.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        
+        
+        
+        $field = new xmldb_field('enddate', XMLDB_TYPE_CHAR, '10', null, XMLDB_NOTNULL, null, null, 'startdate');
+
+        // Conditionally launch add field enddate.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        
+        
+        $field = new xmldb_field('starttime', XMLDB_TYPE_CHAR, '5', null, XMLDB_NOTNULL, null, null, 'enddate');
+
+        // Conditionally launch add field starttime.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        
+        
+        $field = new xmldb_field('endtime', XMLDB_TYPE_CHAR, '5', null, XMLDB_NOTNULL, null, null, 'starttime');
+
+        // Conditionally launch add field endtime.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        
+        
+    }
+    
+    if($oldversion < 2014080100)
+    {
+        // Define table block_bcgt_alps_scores to be created.
+        $table = new xmldb_table('block_bcgt_alps_scores');
+
+        // Adding fields to table block_bcgt_alps_scores.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '18', null, null, null, null);
+        $table->add_field('bcgtqualificationid', XMLDB_TYPE_INTEGER, '18', null, null, null, null);
+        $table->add_field('bcgtprojectid', XMLDB_TYPE_INTEGER, '18', null, null, null, null);
+        $table->add_field('bcgttargetqualid', XMLDB_TYPE_INTEGER, '18', null, null, null, null);
+        $table->add_field('bcgtfamilyid', XMLDB_TYPE_INTEGER, '18', null, null, null, null);
+        $table->add_field('categoryid', XMLDB_TYPE_INTEGER, '18', null, null, null, null);
+        $table->add_field('gradescore', XMLDB_TYPE_NUMBER, '3, 1', null, null, null, null);
+        $table->add_field('gradecoef', XMLDB_TYPE_NUMBER, '5, 3', null, null, null, null);
+        $table->add_field('cetascore', XMLDB_TYPE_NUMBER, '3, 1', null, null, null, null);
+        $table->add_field('cetacoef', XMLDB_TYPE_NUMBER, '5, 3', null, null, null, null);
+
+        // Adding keys to table block_bcgt_alps_scores.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Adding indexes to table block_bcgt_alps_scores.
+        $table->add_index('userid-ind', XMLDB_INDEX_NOTUNIQUE, array('userid'));
+        $table->add_index('qualid-ind', XMLDB_INDEX_NOTUNIQUE, array('bcgtqualificationid'));
+        $table->add_index('projectid-ind', XMLDB_INDEX_NOTUNIQUE, array('bcgtprojectid'));
+        $table->add_index('targetqual-ind', XMLDB_INDEX_NOTUNIQUE, array('bcgttargetqualid'));
+        $table->add_index('familyid-ind', XMLDB_INDEX_NOTUNIQUE, array('bcgtfamilyid'));
+        $table->add_index('categoryid-ind', XMLDB_INDEX_NOTUNIQUE, array('categoryid'));
+        $table->add_index('userid-qualid-ind', XMLDB_INDEX_NOTUNIQUE, array('userid', 'bcgtqualificationid'));
+        $table->add_index('userid-projectid-ind', XMLDB_INDEX_NOTUNIQUE, array('userid', 'bcgtprojectid'));
+        $table->add_index('qualid-projectid-ind', XMLDB_INDEX_NOTUNIQUE, array('bcgtqualificationid', 'bcgtprojectid'));
+        $table->add_index('projectid-targetqual-ind', XMLDB_INDEX_NOTUNIQUE, array('bcgtprojectid', 'bcgttargetqualid'));
+        $table->add_index('projectid-familyid-ind', XMLDB_INDEX_NOTUNIQUE, array('bcgtprojectid', 'bcgtfamilyid'));
+        $table->add_index('projectid-categoryid-ind', XMLDB_INDEX_NOTUNIQUE, array('bcgtprojectid', 'categoryid'));
+
+        // Conditionally launch create table for block_bcgt_alps_scores.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+    }
+    
+    if($oldversion < 2014080100)
+    {
+        // Define field groupingid to be added to block_bcgt_alps_scores.
+        $table = new xmldb_table('block_bcgt_alps_scores');
+        $field = new xmldb_field('groupingid', XMLDB_TYPE_INTEGER, '18', null, null, null, null, 'bcgtfamilyid');
+
+        // Conditionally launch add field groupingid.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define index groupingid-ind (not unique) to be added to block_bcgt_alps_scores.
+        $table = new xmldb_table('block_bcgt_alps_scores');
+        $index = new xmldb_index('groupingid-ind', XMLDB_INDEX_NOTUNIQUE, array('groupingid'));
+
+        // Conditionally launch add index groupingid-ind.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+        
+        // Define index grouping_qual-ind (not unique) to be added to block_bcgt_alps_scores.
+        $table = new xmldb_table('block_bcgt_alps_scores');
+        $index = new xmldb_index('grouping_qual-ind', XMLDB_INDEX_NOTUNIQUE, array('groupingid', 'bcgtqualificationid'));
+
+        // Conditionally launch add index grouping_qual-ind.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+        
+        // Define index grouping_proj-ind (not unique) to be added to block_bcgt_alps_scores.
+        $table = new xmldb_table('block_bcgt_alps_scores');
+        $index = new xmldb_index('grouping_proj-ind', XMLDB_INDEX_NOTUNIQUE, array('groupingid', 'bcgtprojectid'));
+
+        // Conditionally launch add index grouping_proj-ind.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+        
+        // Define index grouping_proj_qual-ind (not unique) to be added to block_bcgt_alps_scores.
+        $table = new xmldb_table('block_bcgt_alps_scores');
+        $index = new xmldb_index('grouping_proj_qual-ind', XMLDB_INDEX_NOTUNIQUE, array('groupingid', 'bcgtqualificationid', 'bcgtprojectid'));
+
+        // Conditionally launch add index grouping_proj_qual-ind.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+        
+    }
+    
+    if ($oldversion < 2014080100) {
+
+        // Define field courseid to be added to block_bcgt_alps_scores.
+        $table = new xmldb_table('block_bcgt_alps_scores');
+        $field = new xmldb_field('courseid', XMLDB_TYPE_INTEGER, '18', null, null, null, null, 'groupingid');
+
+        // Conditionally launch add field courseid.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        
+        // Define index courseid-ind (not unique) to be added to block_bcgt_alps_scores.
+        $table = new xmldb_table('block_bcgt_alps_scores');
+        $index = new xmldb_index('courseid-ind', XMLDB_INDEX_NOTUNIQUE, array('courseid'));
+
+        // Conditionally launch add index courseid-ind.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+        
+        // Define index courseid-project-ind (not unique) to be added to block_bcgt_alps_scores.
+        $table = new xmldb_table('block_bcgt_alps_scores');
+        $index = new xmldb_index('courseid-project-ind', XMLDB_INDEX_NOTUNIQUE, array('courseid', 'bcgtprojectid'));
+
+        // Conditionally launch add index courseid-project-ind.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+    }
+    
+    if($oldversion < 2014080100)
+    {
+        // Define table block_bcgt_tqual_weight to be created.
+        $table = new xmldb_table('block_bcgt_tqual_weight');
+
+        // Adding fields to table block_bcgt_tqual_weight.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('bcgttargetqualid', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('coefficient', XMLDB_TYPE_NUMBER, '4, 2', null, null, null, null);
+        $table->add_field('percentage', XMLDB_TYPE_NUMBER, '5, 1', null, null, null, null);
+        $table->add_field('number', XMLDB_TYPE_INTEGER, '2', null, null, null, null);
+        $table->add_field('attribute', XMLDB_TYPE_CHAR, '200', null, null, null, null);
+
+        // Adding keys to table block_bcgt_tqual_weight.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Adding indexes to table block_bcgt_tqual_weight.
+        $table->add_index('targetqualid-ind', XMLDB_INDEX_NOTUNIQUE, array('bcgttargetqualid'));
+        $table->add_index('coefficient-ind', XMLDB_INDEX_NOTUNIQUE, array('coefficient'));
+        $table->add_index('targetqualid_coefficient-ind', XMLDB_INDEX_NOTUNIQUE, array('bcgttargetqualid', 'coefficient'));
+        $table->add_index('percentage', XMLDB_INDEX_NOTUNIQUE, array('percentage'));
+        $table->add_index('number-ind', XMLDB_INDEX_NOTUNIQUE, array('number'));
+        $table->add_index('targetqualid_percentage-ind', XMLDB_INDEX_NOTUNIQUE, array('bcgttargetqualid', 'percentage'));
+
+        // Conditionally launch create table for block_bcgt_tqual_weight.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+    }
+    
+    if($oldversion < 2014080100)
+    {
+        // Define table block_bcgt_user_archive to be created.
+        $table = new xmldb_table('block_bcgt_archive');
+
+        // Adding fields to table block_bcgt_user_archive.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('componentid', XMLDB_TYPE_INTEGER, '18', null, null, null, null);
+        $table->add_field('type', XMLDB_TYPE_INTEGER, '18', null, null, null, null);
+        $table->add_field('archive', XMLDB_TYPE_TEXT, null, null, null, null, null);
+
+        // Adding keys to table block_bcgt_user_archive.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Adding indexes to table block_bcgt_user_archive.
+        $table->add_index('componentid-ind', XMLDB_INDEX_NOTUNIQUE, array('componentid'));
+        $table->add_index('type-ind', XMLDB_INDEX_NOTUNIQUE, array('type'));
+        $table->add_index('type-componentid-ind', XMLDB_INDEX_NOTUNIQUE, array('componentid', 'type'));
+
+        // Conditionally launch create table for block_bcgt_user_archive.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+    }
+    
+    if ($oldversion < 2014101300) {
+
+        // Define field attemptno to be added to block_bcgt_activity_refs.
+        $table = new xmldb_table('block_bcgt_activity_refs');
+        $field = new xmldb_field('attemptno', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '1', 'bcgtprojectid');
+
+        // Conditionally launch add field attemptno.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+    }
+    
+    
+    if ($oldversion < 2014102300) {
+
+        // Define table block_bcgt_stud_unit_sets to be created.
+        $table = new xmldb_table('block_bcgt_stud_unit_sets');
+
+        // Adding fields to table block_bcgt_stud_unit_sets.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('name', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('bcgtqualificationid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('bcgtunitids', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table block_bcgt_stud_unit_sets.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('qid', XMLDB_KEY_FOREIGN, array('bcgtqualificationid'), 'block_bcgt_qualification', array('id'));
+
+        // Conditionally launch create table for block_bcgt_stud_unit_sets.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Bcgt savepoint reached.
+        upgrade_block_savepoint(true, 2014102300, 'bcgt');
+        
+    }
+
+    
+    if ($oldversion < 2014121000)
+    {
+        
+        // Changing type of field comments on table block_bcgt_user_activity_ref to text.
+        $table = new xmldb_table('block_bcgt_user_activity_ref');
+        $field = new xmldb_field('comments', XMLDB_TYPE_TEXT, null, null, null, null, null, 'bcgtvalueid');
+
+        // Launch change of type for field comments.
+        $dbman->change_field_type($table, $field);
+        
+    }
+    
+    
+    if ($oldversion < 2015010501) {
+
+        // Define table block_bcgt_files to be created.
+        $table = new xmldb_table('block_bcgt_files');
+
+        // Adding fields to table block_bcgt_files.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('path', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('code', XMLDB_TYPE_CHAR, '10', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table block_bcgt_files.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Conditionally launch create table for block_bcgt_files.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Bcgt savepoint reached.
+        upgrade_block_savepoint(true, 2015010501, 'bcgt');
+    }
+
+    if ($oldversion < 2015010800) {
+        
+        // Changing type of field recordid on table block_bcgt_register_groups to char.
+        $table = new xmldb_table('block_bcgt_register_groups');
+        $field = new xmldb_field('recordid', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'id');
+
+        // Launch change of type for field recordid.
+        $dbman->change_field_type($table, $field);
+
+        // Bcgt savepoint reached.
+        upgrade_block_savepoint(true, 2015010800, 'bcgt');
+        
+    }
+
+    
+    
+    
+    
+    
+    
+    global $CFG;
+    
+    // Try and make dataroot directory if doesn't exist
+    if (!is_dir($CFG->dataroot . '/bcgt/')){
+        mkdir($CFG->dataroot . '/bcgt/', 0775);
+    }
     
     //update required:
     //values

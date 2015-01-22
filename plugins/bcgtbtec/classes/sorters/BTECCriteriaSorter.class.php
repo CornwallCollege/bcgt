@@ -23,9 +23,29 @@ class BTECCriteriaSorter
 		//ifa or b are actually the object itself
 		return self::ComparisonDelegate($a, $b, "name", true);
 	}
+        
+        function ComparisonDelegateByNameArray($a, $b)
+        {
+            return self::ComparisonDelegate($a, $b, "name", false, true);
+        }
 	
-	function ComparisonDelegate($a, $b, $field, $object = false)
+        
+     /**
+     * @param type $obj1
+     * @param type $obj2
+     * @return type
+     */
+    function ComparisonSimpleArray($obj1, $obj2)
+    {
+        $A = ( preg_match("/^[a-z]0/i", $obj1['name']) && strlen($obj1['name']) <> strlen($obj2['name']) ) ? preg_replace("/0/", "", $obj1['name'], 1) : $obj1['name'];
+        $B = ( preg_match("/^[a-z]0/i", $obj2['name']) && strlen($obj2['name']) <> strlen($obj1['name']) ) ? preg_replace("/0/", "", $obj2['name'], 1) : $obj2['name'];
+        return ( strnatcasecmp($A, $B) == 0 ) ? 0 : (  strnatcasecmp($A, $B) > 0 ) ? 1 : -1;
+    }    
+        
+        
+	function ComparisonDelegate($a, $b, $field, $object = false, $array = false)
 	{
+                
 		if($field == 'name')
 		{
 			//The name is in the format of 'letternumber'
@@ -42,6 +62,13 @@ class BTECCriteriaSorter
 				$numberA = substr($a->get_name(), 1);
 				$numberB = substr($b->get_name(), 1);
 			}
+            elseif ($array)
+            {
+                $letterA = substr($a['name'], 0, 1);
+                $letterB = substr($b['name'], 0, 1);
+                $numberA = substr($a['name'], 1);
+                $numberB = substr($b['name'], 1);
+            }
 			else
 			{
 				//its just the string of the name

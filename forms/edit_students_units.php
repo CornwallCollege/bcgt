@@ -8,6 +8,7 @@
  * 
  * Author mchaney@bedford.ac.uk
  */
+set_time_limit(0);
 
 global $COURSE, $CFG, $DB, $PAGE, $OUTPUT;
 require_once('../../../config.php');
@@ -50,13 +51,16 @@ $url = '/blocks/bcgt/forms/edit_students_units.php';
 $PAGE->set_url($url, array());
 $PAGE->set_title(get_string($string, 'block_bcgt'));
 $PAGE->set_heading(get_string($string, 'block_bcgt'));
-$PAGE->set_pagelayout('login');
+$PAGE->set_pagelayout( bcgt_get_layout() );
 $PAGE->add_body_class(get_string($string, 'block_bcgt'));
-$PAGE->navbar->add(get_string('myDashboard', 'block_bcgt'),'my_dashboard.php?tab=dash','title');
+$PAGE->navbar->add(get_string('bcgtmydashboard', 'block_bcgt'),'my_dashboard.php?tab=dash','title');
 if($courseID != -1)
 {
     $course = $DB->get_record_sql("SELECT * FROM {course} WHERE id = ?", array($courseID));
-    $PAGE->navbar->add($course->shortname,$CFG->wwwroot.'/course/view.php?id='.$courseID,'title');
+    if($course)
+    {
+        $PAGE->navbar->add($course->shortname,$CFG->wwwroot.'/course/view.php?id='.$courseID,'title');
+    }
     $PAGE->navbar->add(get_string('editcoursequal','block_bcgt'), $CFG->wwwroot.
             '/blocks/bcgt/forms/edit_course_qual.php?oCID='.
             $originalCourseID.'&cID='.$courseID,'title');
@@ -65,7 +69,7 @@ if($courseID != -1)
 $PAGE->navbar->add(get_string($string, 'block_bcgt'));
 
 require_once($CFG->dirroot.'/blocks/bcgt/lib.php');
-load_javascript();
+load_javascript(true);
 $out = $OUTPUT->header();
 
     $out .= html_writer::tag('h2', get_string($string,'block_bcgt'), 
@@ -74,8 +78,143 @@ $out = $OUTPUT->header();
     'id'=>'editStudentsUnits'));
     if($action == 'q' && $qualID != -1)
     {   
+        
+        // Student Unit Sets
+        $out .= "<h3>".get_string('studentunitsets', 'block_bcgt')."</h3>";
+        
+        if (isset($_POST['save_set']) && trim($_POST['set_name']) != '')
+        {
+            
+            $record = new stdClass();
+            
+            if (isset($_POST['set_id']))
+            {
+                $record->id = $_POST['set_id'];
+            }
+            
+            $record->bcgtqualificationid = $qualification->get_id();
+            $record->name = trim($_POST['set_name']);
+            $record->bcgtunitids = implode(",", $_POST['set_units']);
+                        
+            if (isset($record->id))
+            {
+                $DB->update_record("block_bcgt_stud_unit_sets", $record);
+            } 
+            else
+            {
+                $DB->insert_record("block_bcgt_stud_unit_sets", $record);
+            }
+            
+        }
+        
+        // Delete the set
+        if (isset($_POST['delete_set']) && isset($_POST['set_id']) && $_POST['set_id'] > 0)
+        {
+            $DB->delete_records("block_bcgt_stud_unit_sets", array("id" => $_POST['set_id'], "bcgtqualificationid" => $qualification->get_id()));
+        }
+        
+        $sets = $DB->get_records("block_bcgt_stud_unit_sets", array("bcgtqualificationid" => $qualification->get_id()));
+        
+        $out .= "<script>";
+        
+            $out .= " var unitSets = {}; var selectedSetID = 0; ";
+            
+            if ($sets)
+            {
+                foreach($sets as $set)
+                {
+                    $out .= "unitSets[{$set->id}] = '{$set->bcgtunitids}';";
+                }
+            }
+        
+            $out .= "
+                    function selectSet(id){
+                        selectedSetID = id;
+                        $('#select_set_'+id).effect('highlight', {}, 500);
+                        $('.set_imgs').attr('src', M.cfg.wwwroot + '/blocks/bcgt/pix/bullet_red.png');
+                        $('#set_img_'+id).attr('src', M.cfg.wwwroot + '/blocks/bcgt/pix/bullet_green.png');
+                    }
+                    
+
+                    
+
+                    
+";
+        
+        $out .= "</script>";
+
+            
+            
+                
+        $out .= "<form action='' method='post'>";
+        
+            // Create new set
+            $out .= "<a href='#' onclick='$(\"#new_unit_set\").toggle();return false;'>".get_string('createnewset', 'block_bcgt')."</a>";
+            $out .= "<div id='new_unit_set' style='display:none;'>";
+            $out .= "<input type='text' name='set_name' value='' placeholder='Set name' />";
+            $out .= "<br><br>";
+            $out .= "<select name='set_units[]' multiple='multiple' style='width:300px;'>";
+                
+                $units = $qualification->get_units();
+                if ($units)
+                {
+                    foreach($units as $unit)
+                    {
+                        $out .= "<option value='{$unit->get_id()}'>{$unit->get_display_name()}</option>";
+                    }
+                }
+            
+            $out .= "</select><br><br>";
+            
+            $out .= "<input type='submit' name='save_set' value='Save' />";
+            $out .= "</div>";
+            
+        $out .= "</form>";
+        
+        $out .= "<br><br>";
+        
+        $out .= "<div id='unit_sets'>";
+        
+        if ($sets)
+        {
+            foreach($sets as $set)
+            {
+                
+                $setUnits = explode(",", $set->bcgtunitids);
+                $out .= "<form action='' method='post' id='select_set_{$set->id}'>";
+        
+                    // edit set
+                    $out .= "<input type='hidden' name='set_id' value='{$set->id}' />";
+                    $out .= "<input type='text' name='set_name' value='{$set->name}' placeholder='Set name' /> &nbsp; ";
+                    $out .= "<a href='#' onclick='selectSet({$set->id});return false;' title='Click to select set, then click the name of a user to apply it to them'><img class='set_imgs' id='set_img_{$set->id}' src='{$CFG->wwwroot}/blocks/bcgt/pix/bullet_red.png' alt='select' /></a>";
+                    $out .= "<br><br>";
+                    $out .= "<select name='set_units[]' multiple='multiple' style='width:300px;'>";
+
+                        if ($units)
+                        {
+                            foreach($units as $unit)
+                            {
+                                $sel = (in_array($unit->get_id(), $setUnits)) ? 'selected' : '';
+                                $out .= "<option value='{$unit->get_id()}' {$sel} >{$unit->get_display_name()}</option>";
+                            }
+                        }
+
+                    $out .= "</select><br><br>";
+
+                    $out .= "<input type='submit' name='save_set' value='Save' /> &nbsp;&nbsp; <input type='submit' name='delete_set' value='Delete' />";
+
+                $out .= "</form>";
+                
+            }
+        }
+        
+        $out .= "</div>";
+        
+        $out .= "<br style='clear:both;' />";        
+        $out .= "<br><hr>";
+        
         //one qualification and all of the students units
-        $out .= '<form method="POST" name="qualStudentForm" action="edit_students_units.php">';	       
+        $out .= '<form method="POST" name="qualStudentForm" action="">';	       
         $out .= '<input type="hidden" name="oCID" value="'.$originalCourseID.'"/>';
         $out .= $qualification->get_edit_students_units_page();
         $out .= '</form>';
@@ -85,6 +224,13 @@ $out = $OUTPUT->header();
         //one course and all of the quals and units
         //find all of the quals that are on the course. 
         $quals = bcgt_get_course_quals($courseID);
+        
+        if (count($quals) == 1)
+        {
+            $qual = reset($quals);
+            redirect($CFG->wwwroot . '/blocks/bcgt/forms/edit_students_units.php?a=q&oCID='.$originalCourseID.'&qID=' . $qual->id);
+        }
+        
         if($quals)
         {
             $out .= '<form method="POST" name="qualStudentForm" action="edit_students_units.php">';	  

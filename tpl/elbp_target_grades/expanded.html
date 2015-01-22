@@ -85,12 +85,22 @@
                 <div id="qual_<?= $qual->get_id() ?>_view_target">
                     
                     <div id="target_info_<?= $qual->get_id() ?>">
-                        <?php if (isset($qual->targetGrade) && isset($qual->targetGrade->grade)): ?>
+                        
+                        <?php if (isset($qual->targetGrade) && isset($qual->targetGrade->grade) && !empty($qual->targetGrade->grade)): ?>
+                                
                             <h3><?= $qual->targetGrade->grade ?></h3>
-                            <small><?= $string['setby'] ?> <?= (isset($qual->targetGrade->setby)) ? fullname($qual->targetGrade->setby) : get_string('na', 'block_bcgt') ?></small>
+
+                        <?php elseif (isset($qual->targetGrade) && isset($qual->targetGrade->breakdowngrade) && !empty($qual->targetGrade->breakdowngrade)): ?>
+
+                            <h3><?= $qual->targetGrade->breakdowngrade ?></h3>
+
                         <?php else: ?>
-                            -
+
+                            <?= '-'; ?>
+
                         <?php endif; ?>
+                        <small><?= $string['setby'] ?> <?= (isset($qual->targetGrade->setby)) ? fullname($qual->targetGrade->setby) : get_string('na', 'block_bcgt') ?></small>
+                        
                     </div>
 
                 </div>

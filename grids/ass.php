@@ -69,10 +69,19 @@ $projectName = $project->get_name();
 $projectDate = $project->get_date();
 $url = '/blocks/bcgt/grids/ass.php';
 $PAGE->set_url($url, array());
-$PAGE->set_title(get_string('bcgtassessment', 'block_bcgt'));
+$PAGE->set_title(get_string('assessmenttracker', 'block_bcgt'));
 $PAGE->set_heading(get_string('bcgtassessment', 'block_bcgt'));
-$PAGE->set_pagelayout('login');
+$PAGE->set_pagelayout( bcgt_get_layout() );
 $PAGE->add_body_class(get_string('bcgtassessment', 'block_bcgt'));
+if($courseID != 1)
+{
+    global $DB;
+    $course = $DB->get_record_sql("SELECT * FROM {course} WHERE id = ?", array($courseID));
+    if($course)
+    {
+        $PAGE->navbar->add($course->shortname,$CFG->wwwroot.'/course/view.php?id='.$courseID,'title');
+    }
+}
 $PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),$CFG->wwwroot.'/blocks/bcgt/forms/my_dashboard.php?&cID='.$courseID,'title');
 
 $link1 = null;
@@ -89,7 +98,7 @@ $jsModule = array(
     'fullpath' => '/blocks/bcgt/js/block_bcgt.js',
     'requires' => array('base', 'io', 'node', 'json', 'event', 'button')
 );
-$PAGE->requires->js_init_call('M.block_bcgt.initgridstu', null, true, $jsModule);
+$PAGE->requires->js_init_call('M.block_bcgt.initgridfaclass', null, true, $jsModule);
 require_once($CFG->dirroot.'/blocks/bcgt/lib.php');
 load_javascript();
 $out = $OUTPUT->header();

@@ -386,6 +386,11 @@ class Project {
         return ($this->date ? date('d-m-Y', $this->date):'');
     }
     
+    function get_Due_Date_TimeStamp()
+    {
+        return (isset($this->date) ? $this->date : '');
+    }
+    
     function get_id()
     {
         return $this->id;
@@ -408,14 +413,14 @@ class Project {
     
     function set_user_comments($comments)
     {
-        $this->userComments = addslashes($comments);
+        $this->userComments = $comments;
     }
     
     function set_user_values($valueID = -1, $targetGradeID = -1, $comments = '')
     {
         $this->userValue = new Value($valueID);
         $this->userTargetGrade = new TargetGrade($targetGradeID);
-        $this->userComments = addslashes($comments);
+        $this->userComments = $comments;
     }
     
     public function user_predicted_behind_ahead($qualID = -1, $userTargetGrades = null, $weighted = null)
@@ -509,8 +514,11 @@ class Project {
         {
             $weightedTargetGradeObj->type = 'Weighted';
         }
+        
+                
         $targetGradeValue = $this->compare_grades($targetGradeObj, $valueGrade);
         $weightedGradeValue = $this->compare_grades($weightedTargetGradeObj, $valueGrade);
+        
         
         //the cetas
         $targetGradeTarget = $this->compare_grades($targetGradeObj, $projectTargetGrade);
@@ -543,6 +551,10 @@ class Project {
         $gradeDiff = null;
         $ucasDiff = null;
         $target = null;
+        
+        $lenience = get_config('bcgt', 'alvlvalenience');
+        
+        
         if($grade1 && $grade2 && $grade1->get_ranking() && $grade2->get_ranking())
         {
             $ranking1 = $grade1->get_ranking();
@@ -575,6 +587,24 @@ class Project {
                 $target = 0;
             }
         }
+        
+        // We are using a lenience score
+        if ($lenience > 0)
+        {
+            
+            // The difference falls within this lenience score
+            if ($gradeDiff <= $lenience)
+            {
+                
+                $progress = Project::ON;
+                $gradeDiff = 0;
+                $target = 0;
+                $ucasDiff = 0;
+                
+            }
+            
+        }
+        
         $retval->progress = $progress;
         $retval->gradeDiff = $gradeDiff;
         $retval->ucasDiff = $ucasDiff;
@@ -594,7 +624,9 @@ class Project {
             $valueID = $this->userValue->get_id();
         }
         $record->bcgtvalueid = $valueID;
-        $record->comments = $this->userComments;
+        if ($this->userComments !== false){
+            $record->comments = $this->userComments;
+        }
         $record->userdefinedvalue = '';
         $targetGradeID = -1;
         if($this->userTargetGrade)
@@ -829,7 +861,8 @@ class Project {
     public static function get_current_project($returnProject = true)
     {
         global $DB;
-        $sql = "SELECT proj.* FROM {block_bcgt_project_att} att 
+        $sql = "SELECT DISTINCT proj.* 
+            FROM {block_bcgt_project_att} att 
             JOIN {block_bcgt_project} proj ON proj.id = att.bcgtprojectid 
             WHERE att.name = ?";
         $record = $DB->get_record_sql($sql, array(Project::CURRENT_PROJECT));
@@ -938,6 +971,7 @@ class Project {
         $stdClass = new stdClass();
         $stdClass->bcgtprojectid = $this->id;
         $stdClass->bcgtqualificationid = $qualID;
+        $stdClass->coursemoduleid = -1;
         $stdClass->bcgtunitid = -1;
         $stdClass->bcgtcriteriaid = -1;
         $stdClass->createdby = $USER->id;
@@ -954,7 +988,7 @@ class Project {
                 array('bcgtprojectid'=>$this->id,'bcgtqualificationid'=>$qualID));
     }
     
-    public static function get_all_projects($centrallyManaged = null)
+    public static function get_all_projects($centrallyManaged = null, $orderBY = NULL)
     {
         global $DB;
         $sql = 'SELECT * FROM {block_bcgt_project}';
@@ -971,6 +1005,10 @@ class Project {
                 $params[] = 0;
             }
         }
+        if($orderBY)
+        {
+            $sql .= $orderBY;
+        }
         $projects = $DB->get_records_sql($sql, $params);
         $retval = array();
         foreach($projects AS $project)
@@ -978,6 +1016,46 @@ class Project {
             $retval[$project->id] = new Project($project->id, $project);
         }
         return $retval;
+    }
+    
+    public static function get_user_qual_grade($userID, $assessmentID, $qualID)
+    {
+        global $DB;
+        $sql = "SELECT grade.* FROM {block_bcgt_target_grades} grade 
+            JOIN {block_bcgt_user_activity_ref} urefs ON urefs.bcgttargetgradesid = grade.id
+            JOIN {block_bcgt_activity_refs} refs ON refs.id = urefs.bcgtactivityrefid 
+            WHERE urefs.userid = ? AND refs.bcgtprojectid = ? AND refs.coursemoduleid IS NULL 
+            AND refs.bcgtqualificationid = ?";
+        $record = $DB->get_record_sql($sql, array($userID, $assessmentID, $qualID));
+        if($record)
+        {
+            $targetGrade = new TargetGrade($record->id, $record);
+            return $targetGrade;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
+    public static function get_user_qual_value($userID, $assessmentID, $qualID)
+    {
+        global $DB;
+        $sql = "SELECT value.* FROM {block_bcgt_value} value 
+            JOIN {block_bcgt_user_activity_ref} urefs ON urefs.bcgtvalueid = value.id
+            JOIN {block_bcgt_activity_refs} refs ON refs.id = urefs.bcgtactivityrefid 
+            WHERE urefs.userid = ? AND refs.bcgtprojectid = ? AND refs.coursemoduleid IS NULL 
+            AND refs.bcgtqualificationid = ?";
+        $record = $DB->get_record_sql($sql, array($userID, $assessmentID, $qualID));
+        if($record)
+        {
+            $targetGrade = new Value($record->id, $record);
+            return $targetGrade;
+        }
+        else
+        {
+            return false;
+        }
     }
     
     public static function project_exist_for_qual($qualID)
@@ -1100,7 +1178,7 @@ class Project {
     {
         $valueID = -1;
         $targetGradeID = -1;
-        //there is a value and a ceta (targetgrade)
+        //there is a value and a ceta (targetgrade)       
         if(isset($_POST['sID_'.$this->studentID.'_qID_'.$qualID.'_pID_'.$this->id.'_v']))
         {
             $saveValue = true;
@@ -1111,6 +1189,12 @@ class Project {
             $saveTarget = true;
             $targetGradeID = $_POST['sID_'.$this->studentID.'_qID_'.$qualID.'_pID_'.$this->id.'_c'];
         }
+        
+        if(!isset($_POST['sID_'.$this->studentID.'_qID_'.$qualID.'_pID_'.$this->id.'_com']))
+        {
+            $this->userComments = false;
+        }
+        
         if($saveValue)
         {
             $this->set_user_value($valueID);
@@ -1122,21 +1206,23 @@ class Project {
         //now need to update or insert. 
         if($saveValue || $saveTarget)
         {
-            $this->save_user_values($this->id, true);
+            $this->save_user_values($qualID, true);
         }
     }
 
     public function get_grid_heading($projects, 
-            $seeTargetGrade, $seeWeightedTargetGrade, $view, $projectID = -1, $link = '', $seeBoth = false)
+            $seeTargetGrade, $seeWeightedTargetGrade, $view, $projectID = -1, $link = '', $seeBoth = false, $seeAlps = false, $qualID = -1)
     {
         $retval = '';
         $retval .= '<thead>';
-        $retval .= '<tr>';
+        $row0 = '<tr>';
+        $overallAlpsColSpan = 0;
+        $row1 = '<tr>';
         //need to get the global config record
         switch($view)
         {
             case "qual" :
-                $retval .= '<th rowspan="2">'.
+                $row1 .= '<th rowspan="2">'.
                 get_string('qual', 'block_bcgt').
                 '</th>';
                 break;
@@ -1150,9 +1236,10 @@ class Project {
                 }
                 foreach($columns AS $column)
                 {
-                    $retval .= '<th rowspan="2">';
-                    $retval .= get_string(trim($column), 'block_bcgt');
-                    $retval .= '</th>';
+                    $row1 .= '<th rowspan="2">';
+                    $row1 .= get_string(trim($column), 'block_bcgt');
+                    $row1 .= '</th>';
+                    $overallAlpsColSpan++;
                 }
                 break;
         }
@@ -1160,7 +1247,8 @@ class Project {
         //now the two different target grades
         if(($seeBoth && $seeTargetGrade) || (!$seeBoth && !$seeWeightedTargetGrade && $seeTargetGrade))
         {
-            $retval .= '<th rowspan="2">'.get_string('targetgrade', 'block_bcgt').'</th>';
+            $row1 .= '<th rowspan="2">'.get_string('targetgrade', 'block_bcgt').'</th>';
+            $overallAlpsColSpan++;
         }
         if($seeWeightedTargetGrade)
         {
@@ -1172,12 +1260,24 @@ class Project {
             {
                 $string = 'targetgrade';
             }
-            $retval .= '<th rowspan="2">'.get_string($string, 'block_bcgt').'</th>';
+            $row1 .= '<th rowspan="2">'.get_string($string, 'block_bcgt').'</th>';
+            $overallAlpsColSpan++;
         }
         // | CETA |
+        $seeCeta = false;
         if(get_config('bcgt', 'aleveluseceta'))
         {
-            $retval .= '<th rowspan="2">'.get_string('ceta', 'block_bcgt').'</th>';
+            $seeCeta = true;
+            $row1 .= '<th rowspan="2">'.get_string('ceta', 'block_bcgt').'</th>';
+            $overallAlpsColSpan++;
+        }
+        
+        if($seeAlps)
+        {
+            $row1 .= '<th rowspan="2"></th>';
+            $row0 .= '<th colspan="'.$overallAlpsColSpan.'">';
+            $row0 .= '<span alpstemp id="alpsclass_'.$qualID.'" class="alpsclass" qual="'.$qualID.'"></span></th>';
+            $row0 .= '<th>'.get_string('alps','block_bcgt').'</th>';
         }
         if($projects)
         {
@@ -1187,9 +1287,10 @@ class Project {
                 {
                     //so we are either looking at once project and we have found that project
                     //or we are looking at them all
-                    $retvalObj = $project->get_project_heading($projectID, $link);
-                    $retval .= $retvalObj->retval;
+                    $retvalObj = $project->get_project_heading($projectID, $link, $qualID, null, $seeCeta);
+                    $row1 .= $retvalObj->retval;
                     $subHead .= $retvalObj->subHead;
+                    $row0 .= $retvalObj->alspHead;
                     if($projectID != -1)
                     {
                         //have we found that project?
@@ -1200,7 +1301,13 @@ class Project {
             }
         }
         
-        $retval .= '</tr>';
+        if($seeAlps)
+        {
+            $row0 .= '</tr>';
+            $retval .= $row0;;
+        }
+        $row1 .= '</tr>';
+        $retval .= $row1;
         $retval .= '<tr>';
         $retval .= $subHead;
         $retval .= '</tr>';
@@ -1214,31 +1321,113 @@ class Project {
      * @param type $link
      * @return \stdClass
      */
-    public function get_project_heading($projectID, $link)
+    public function get_project_heading($projectID, $link, $qualID = -1, $alps = null, $seeCeta = false)
     {
         //where are we coming back to though? The link needs to show where we are coming back to
+        
+        //TODO check if using CETA!!!!
+        
+        global $printGrid;
+                
+        $fromPortal = (isset($_SESSION['pp_user'])) ? true : false;
         
         $retval = '';
         $class = '';
         $subHead = '';
+        $alpsHead = '';
         if($this->is_project_current())
         {
             $class = 'current';
         }
+        $colspan = 1;
+        if($seeCeta)
+        {
+            $colspan++;
+        }
+        
+        if ($fromPortal || $printGrid)
+        {
+            $colspan++;
+        }
+        
+        if ($fromPortal || $printGrid){
+            $link = false;
+        }
+                
         if($projectID != -1)
         {
-            $retval .= '<th colspan="3" class="'.$class.'">'.
+            $colspan++;
+            //we are looking at one project therefeore we are showing comments.
+            $retval .= '<th colspan="'.$colspan.'" class="'.$class.'">'.
                     $this->get_name().' - <a href="'.
                     $link.'">'.get_string('viewallassessments', 'block_bcgt').'</a></th>';
+            $alpsHead .= '<th><span class="faGradeAlps alpstemp" project="'.$this->get_id().'" qual="'.$qualID.'" id="faGradeAlps_'.$this->get_id().'_'.$qualID.'">';
+            if($alps)
+            {
+                $alpsHead .= $alps->grade;
+            }
+            $alpsHead .= '</span></th>';
+            if($seeCeta)
+            {
+                $alpsHead .= '<th><span class="faCetaAlps alpstemp" project="'.$this->get_id().'" qual="'.$qualID.'" id="faCetaAlps_'.$this->get_id().'_'.$qualID.'">';
+                if($alps)
+                {
+                    $alpsHead .= $alps->ceta;
+                }
+                $alpsHead .= '</span></th>';
+            }
+            
+            if ($fromPortal || $printGrid)
+            {
+                $alpsHead .= '<th></th>';
+            }
+            
+//            //one for the comments
+//            $retval .= '<th></th>';
         }
         else
         {
-            $retval .= '<th colspan="2" class="'.$class.'"><a href="'.$link.'&pID='.$this->get_id().
-                    '">'.$this->get_name().'</a><br /><span class="projdate">'.$this->get_date().'</span></th>';
+            $retval .= '<th colspan="'.$colspan.'" class="'.$class.'">';
+            
+            if ($link){
+                $retval .= '<a href="'.$link.'&pID='.$this->get_id().
+                        '">'.$this->get_name().'</a>';
+            }
+            else {
+                $retval .= $this->get_name();
+            }
+            
+            $retval .= '<br /><span class="projdate">'.$this->get_date().'</span></th>';
+            $alpsHead .= '<th><span class="faGradeAlps alpstemp" project="'.$this->get_id().'" qual="'.$qualID.'" id="faGradeAlps_'.$this->get_id().'_'.$qualID.'">';
+            if($alps)
+            {
+                $alpsHead .= $alps->grade;
+            }
+            $alpsHead .= '</span></th>';
+            if($seeCeta)
+            {
+                $alpsHead .= '<th><span class="faCetaAlps alpstemp" project="'.$this->get_id().'" qual="'.$qualID.'" id="faCetaAlps_'.$this->get_id().'_'.$qualID.'">';
+                if($alps)
+                {
+                    $alpsHead .= $alps->ceta;
+                }
+                $retval .= '</span></th>';
+            }
+            
+            if ($fromPortal || $printGrid)
+            {
+                $alpsHead .= '<th></th>';
+            }
+            
         }
         $subHead .= '<th class="'.$class.'">'.get_string('grade')
-                .'</th><th class="'.$class.'">'.get_string('ceta', 'block_bcgt').'</th>';
-        if($projectID != -1)
+                .'</th>';
+        if($seeCeta)
+        {
+            $subHead .= '<th class="'.$class.'">'.get_string('ceta', 'block_bcgt').'</th>';
+        }
+
+        if($projectID != -1 || $fromPortal || $printGrid)
         {
             $subHead .= '<th class="'.$class.'">'.get_string('comments');
             $subHead .= '</th>';
@@ -1247,6 +1436,7 @@ class Project {
         $stdObj = new stdClass();
         $stdObj->retval = $retval;
         $stdObj->subHead = $subHead;
+        $stdObj->alspHead = $alpsHead;
         
         return $stdObj;
     }
@@ -1457,11 +1647,35 @@ class Project {
         return $retval;
     }
     
-    public function project_on_qual($qualID)
+    public static function get_user_assessment_quals($studentID, $assessmentID)
+    {
+        //get the students qualifications that are on this assessment:
+        global $DB;
+        $sql = "SELECT distinct(qual.id),";
+        $sql .= bcgt_get_qualification_details_fields_for_sql();
+        $sql .= ' FROM {block_bcgt_qualification} qual';
+        $sql .= bcgt_get_qualification_details_join_for_sql();
+        $sql .= ' JOIN {block_bcgt_user_qual} userqual ON userqual.bcgtqualificationid = qual.id 
+            JOIN {block_bcgt_activity_refs} refs ON refs.bcgtqualificationid = qual.id AND refs.coursemoduleid IS NULL';
+        $sql .= ' WHERE userqual.userid = ? AND refs.bcgtprojectid = ? ORDER BY family.family ASC, level.trackinglevel ASC, subtype.subtype ASC, qual.name ASC';
+        return $DB->get_records_sql($sql, array($studentID, $assessmentID));
+    }
+    
+    public function project_on_qual($qualID, $projectID = -1)
     {
         global $DB;   
         $sql = "SELECT * FROM {block_bcgt_activity_refs} WHERE bcgtprojectid = ? AND bcgtqualificationid = ?";
-        return $DB->get_record_sql($sql, array($this->id, $qualID));
+        $params = array();
+        if($projectID > 0)
+        {
+            $params[] = $projectID;
+        }
+        else
+        {
+            $params[] = $this->id;
+        }
+        $params[] = $qualID;
+        return $DB->get_record_sql($sql, $params);
     }
     
     public static function get_qual_assessments($qualID, $projectID = -1)
@@ -1582,6 +1796,88 @@ class Project {
         return $DB->get_records_sql($sql, $params);
     }
     
+    public function update_users_qual_cron_grading($userID, $cmID, $scale, $grade){
+        
+        global $DB;
+        
+        $quals = $this->get_users_quals_on_poject($userID, $cmID);
+        if(!$quals)
+        {
+            mtrace("NO USER QUALS");
+            return false;
+        }
+        
+        
+        foreach($quals AS $qual)
+        {
+            $qualID = $qual->id;
+            //now load up the users qualification
+            $loadParams = new stdClass();
+            $loadParams->loadLevel = Qualification::LOADLEVELALL;
+            $qualification = Qualification::get_qualification_class_id($qualID, $loadParams);
+            if(!$qualification)
+            {
+                mtrace("couldnt load qual");
+                return false;
+            }
+            
+            $qualification->load_student_information($userID, $loadParams);
+            
+            // Get the criteria linked to the project
+            $unitsCriteria = $this->get_course_mod_units_criteria($cmID, $qual->id);
+            if(!$unitsCriteria)
+            {
+                mtrace("no Units Criteria");
+                return false;
+            }
+            
+            
+            $criteriaArray = array();
+            
+            foreach($unitsCriteria as $unitCriterion){
+                
+                $unit = $qualification->get_single_unit($unitCriterion->bcgtunitid);
+                if (!$unit)
+                {
+                    mtrace("no unit $unitCriterion->bcgtunitid");
+                    continue;
+                }
+                
+                $criteria = $unit->get_single_criteria($unitCriterion->bcgtcriteriaid);
+                if (!$criteria)
+                {
+                    mtrace("no criteria $unitCriterion->bcgtcriteriaid");
+                    continue;
+                }
+                                
+                // Only use this criteria if it doesn't already have a met value
+                $currentUserValue = $criteria->get_student_value();
+                if($currentUserValue)
+                {
+                    $specialValue = $currentUserValue->get_special_val();
+                    if($specialValue == 'A')
+                    {
+                        //if its WNS or N/A then we can overwrite it. 
+                        //WNS can be overwritten with IN or LATE. 
+                        mtrace("value already found : ({$currentUserValue->get_short_value()}) for UNITID = $unitCriterion->bcgtunitid AND criteria {$criteria->get_name()}");
+                        continue;
+                    }
+                }
+                
+                $criteriaArray[] = $criteria;
+                
+            }
+            
+            mtrace("calling qualification method to update student's criteria");
+            $qualification->update_student_criteria_from_mod_grading($criteriaArray, $scale, $grade);
+            
+            
+            
+        }
+        
+        
+    }
+    
     public function update_users_qual_cron($userID, $courseModuleID, $action)
     {
         global $DB;
@@ -1608,7 +1904,7 @@ class Project {
             //lets get the value
             $value = new Value();
             mtrace($action);
-            $value->create_default_object($action, $qualification->get_class_ID());
+            $value->create_default_object($action, $qualification->get_family_ID());
             if(!$value->is_enabled())
             {
                 mtrace("couldnt find value");
@@ -1647,17 +1943,27 @@ class Project {
                 $criteria->load_student_information($userID, $qualID);
                 //does the user already have a value?
                 $currentUserValue = $criteria->get_student_value();
-                if($currentUserValue)
+                
+                // In the case where there are multiple assessments for the same criteria, we want the
+                // latest to be displayed, so assuming each time this runs and gets called that will be
+                // the latest at that time, we want to change to whatever is relevant then.
+                // Unless they have already met the criteria of course
+                if ($currentUserValue && Value::is_met($currentUserValue->get_id()))
                 {
-                    $shortValue = $currentUserValue->get_short_value();
-                    if($shortValue != 'N/A' && $shortValue != 'WNS')
-                    {
-                        //if its WNS or N/A then we can overwrite it. 
-                        //WNS can be overwritten with IN or LATE. 
-                        mtrace("shortvalue already found : ($shortValue) for UNITID = $unitCriteria->bcgtunitid AND criteria id $unitCriteria->bcgtcriteriaid");
-                        continue;
-                    }
+                    mtrace("criteria for unitID $unitCriteria->bcgtunitid AND criteriaID $unitCriteria->bcgtcriteriaid is already met. So skipping.");
+                    continue;
                 }
+//                if($currentUserValue)
+//                {
+//                    $shortValue = $currentUserValue->get_short_value();
+//                    if($shortValue != 'N/A' && $shortValue != 'WNS')
+//                    {
+//                        //if its WNS or N/A then we can overwrite it. 
+//                        //WNS can be overwritten with IN or LATE. 
+//                        mtrace("shortvalue already found : ($shortValue) for UNITID = $unitCriteria->bcgtunitid AND criteria id $unitCriteria->bcgtcriteriaid");
+//                        continue;
+//                    }
+//                }
                 mtrace($value->get_short_value());
                 mtrace($value->get_id());
                 $criteria->set_student_value($value);
@@ -1760,7 +2066,7 @@ class Project {
     {
         $retval = '';
         //has the course got quals that can be associated with assignments?
-        $families = get_course_qual_families($courseID, array('BTEC'));
+        $families = get_course_qual_families($courseID, array('BTEC', 'CG'));
         if($families)
         {
             foreach($families AS $family)
@@ -1769,10 +2075,18 @@ class Project {
                 if($qualificationClass)
                 {
                     $retval .= $qualificationClass::get_mod_tracker_options($couseModuleID, $courseID);
+                    $retval .= "<br><br>";
                 }
             }
         }
         //if yes
+        
+        if (strlen($retval))
+        {
+            
+            $retval = "<label>".get_string('isresit', 'block_bcgt')."</label> <input type='checkbox' name='bcgt_attempt_no' value='2' /><br><br>" . $retval;
+            
+        }
         
         //display the grid. 
         return $retval;
@@ -1789,7 +2103,7 @@ class Project {
     public static function process_bcgt_mod_tracker_options($couseModuleID, $courseID)
     {
         //this needs to get all of the ones saved. 
-        $families = get_course_qual_families($courseID, array('BTEC'));
+        $families = get_course_qual_families($courseID, array('BTEC', 'CG'));
         if($families)
         {
             foreach($families AS $family)
@@ -1825,6 +2139,40 @@ class Project {
             }
         }
     }
+    
+    public function is_visible_to_you(){
+        
+        global $DB, $USER;
+        
+        $check = $DB->get_record("block_bcgt_project_att", array("bcgtprojectid" => $this->id, "name" => "HIDDEN", "value" => 1));
+        
+        if (!$check)
+        {
+            // If not hidden, yes it is visible
+            return true;
+        }
+        
+        // Users
+        $check = $DB->get_record("block_bcgt_project_att", array("bcgtprojectid" => $this->id, "name" => "VISIBLE_TO"));
+        if (!$check)
+        {
+            // If no users defined yet, no
+            return false;
+        }
+        
+        // Get usernames
+        $usernames = explode(",", $check->value);
+        
+        // If in the array, yes we can
+        if (in_array($USER->username, $usernames)){
+            return true;
+        }
+        
+        return false;
+        
+    }
+    
+    
 }
 
 ?>

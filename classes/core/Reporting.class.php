@@ -503,12 +503,13 @@ class Reporting {
             LEFT OUTER JOIN {block_bcgt_target_grades} grades ON grades.id = bcgttargetgradesid 
             LEFT OUTER JOIN {block_bcgt_target_breakdown} weightedbreakdown ON weightedbreakdown.id = bcgtweightedbreakdownid 
             LEFT OUTER JOIN {block_bcgt_target_grades} weightedgrades ON weightedgrades.id = bcgtweightedgradeid
-            INNER JOIN {block_bcgt_qualification} q ON q.id = usertrgts.bcgtqualificationid";
+            INNER JOIN {block_bcgt_qualification} q ON q.id = usertrgts.bcgtqualificationid
+            INNER JOIN mdl_block_bcgt_user_qual uq ON (uq.bcgtqualificationid = q.id AND uq.userid = usertrgts.userid)";
             if($courseID != -1)
             {
                 $sql .= " JOIN {block_bcgt_course_qual} coursequal ON coursequal.bcgtqualificationid = usertrgts.bcgtqualificationid AND coursequal.courseid = usertrgts.courseid";
             }   
-            $sql .= " WHERE userid = ? AND (usertrgts.bcgttargetbreakdownid > 0 OR usertrgts.bcgttargetgradesid > 0) ";
+            $sql .= " WHERE usertrgts.userid = ? AND (usertrgts.bcgttargetbreakdownid > 0 OR usertrgts.bcgttargetgradesid > 0) ";
         $params = array($userID);
         if($qualID != -1)
         {
@@ -523,7 +524,7 @@ class Reporting {
         }
                         
         $records = $DB->get_records_sql($sql, $params);
-        
+                        
         $qualArray = array();
         
         if($records)
@@ -547,6 +548,7 @@ class Reporting {
                 $params->ranking = $record->branking;
                 $params->bcgttargetqualid = $record->bcgttargetqualid;
                 $stdObj->breakdown = new Breakdown($record->breakdownid, $params);
+                $stdObj->breakdowngrade = $stdObj->breakdown->get_target_grade();
                 
                 $params = new stdClass();
                 $params->targetgrade = $record->wtargetgrade;
@@ -589,7 +591,7 @@ class Reporting {
                 $qualArray[$record->bcgtqualificationid] = $stdObj;
             }
         }
-        
+                        
         // Check elsewhere for target grades for quals who don't support auto calculations
         $qualID = ($qualID > 0) ? $qualID : false;
         $courseID = ($courseID > 0) ? $courseID : false;
@@ -599,7 +601,7 @@ class Reporting {
         {
             foreach($grades as $grade)
             {
-                if ($qualID){
+                if ($qualID && !isset($qualArray[$qualID])){
                     $qualArray[$qualID] = $grade;
                 } else {
                     $qualArray[] = $grade;
@@ -607,6 +609,7 @@ class Reporting {
                 
             }
         }
+        
 
         
         return ($qualArray) ? $qualArray : false;

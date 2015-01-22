@@ -1,0 +1,241 @@
+family,trackinglevel,subtype,targetgrade,ucaspoints,entryscoreupper,entryscorelower,unitsscoreupper,unitsscorelower,ranking
+BTEC,"Level 5",HND,D/M,0.0,NULL,NULL,-1.00,NULL,2.6
+BTEC,"Level 5",HND,M/D,0.0,NULL,NULL,-1.00,NULL,2.3
+BTEC,"Level 5",HND,M,0.0,NULL,NULL,149.00,75.00,2.0
+BTEC,"Level 5",HND,M/P,0.0,NULL,NULL,-1.00,NULL,1.6
+BTEC,"Level 5",HND,P/M,0.0,NULL,NULL,-1.00,NULL,1.3
+BTEC,"Level 5",HND,P,0.0,NULL,NULL,74.00,0.00,1.0
+BTEC,"Level 5",HND,Distinction,NULL,NULL,NULL,500.00,150.00,NULL
+BTEC,"Level 4",HNC,D,0.0,NULL,NULL,500.00,150.00,3.0
+BTEC,"Level 4",HNC,D/M,0.0,NULL,NULL,-1.00,NULL,2.6
+BTEC,"Level 4",HNC,M/D,0.0,NULL,NULL,-1.00,NULL,2.3
+BTEC,"Level 4",HNC,M,0.0,NULL,NULL,149.00,75.00,2.0
+BTEC,"Level 4",HNC,M/P,0.0,NULL,NULL,-1.00,NULL,1.6
+BTEC,"Level 4",HNC,P/M,0.0,NULL,NULL,-1.00,NULL,1.3
+BTEC,"Level 4",HNC,P,0.0,NULL,NULL,74.00,0.00,1.0
+BTEC,"Level 3","90-Credit Diploma",D*D*,210.0,58.00,50.20,1500.00,790.00,7.0
+BTEC,"Level 3","90-Credit Diploma",D*D*/D*D,206.6,NULL,NULL,-1.00,NULL,6.6
+BTEC,"Level 3","90-Credit Diploma",D*D/D*D*,203.3,NULL,NULL,-1.00,NULL,6.3
+BTEC,"Level 3","90-Credit Diploma",D*D,200.0,50.20,46.60,789.00,770.00,6.0
+BTEC,"Level 3","90-Credit Diploma",D*D/DD,193.3,NULL,NULL,-1.00,NULL,5.6
+BTEC,"Level 3","90-Credit Diploma",DD/D*D,186.6,NULL,NULL,-1.00,NULL,5.3
+BTEC,"Level 3","90-Credit Diploma",DD,180.0,46.60,43.00,769.00,750.00,5.0
+BTEC,"Level 3","90-Credit Diploma",DD/DM,173.3,43.00,41.20,-1.00,NULL,4.6
+BTEC,"Level 3","90-Credit Diploma",DM/DD,166.6,NULL,NULL,-1.00,NULL,4.3
+BTEC,"Level 3","90-Credit Diploma",DM,160.0,41.20,35.80,749.00,720.00,4.0
+BTEC,"Level 3","90-Credit Diploma",DM/MM,146.6,35.80,34.00,-1.00,NULL,3.6
+BTEC,"Level 3","90-Credit Diploma",MM/DM,133.3,NULL,NULL,-1.00,NULL,3.3
+BTEC,"Level 3","90-Credit Diploma",MM,120.0,34.00,0.00,719.00,690.00,3.0
+BTEC,"Level 3","90-Credit Diploma",MM/MP,113.3,NULL,NULL,-1.00,NULL,2.6
+BTEC,"Level 3","90-Credit Diploma",MP/MM,106.6,NULL,NULL,-1.00,NULL,2.3
+BTEC,"Level 3","90-Credit Diploma",MP,100.0,NULL,NULL,689.00,660.00,2.0
+BTEC,"Level 3","90-Credit Diploma",MP/PP,86.6,NULL,NULL,-1.00,NULL,1.6
+BTEC,"Level 3","90-Credit Diploma",PP/MP,73.3,NULL,NULL,-1.00,NULL,1.3
+BTEC,"Level 3","90-Credit Diploma",PP,60.0,NULL,NULL,659.00,0.00,1.0
+BTEC,"Level 3",Certificate,D*,70.0,58.00,48.40,600.00,260.00,4.0
+BTEC,"Level 3",Certificate,D*/D,66.6,48.40,46.60,-1.00,NULL,3.6
+BTEC,"Level 3",Certificate,D/D*,63.3,NULL,NULL,-1.00,NULL,3.3
+BTEC,"Level 3",Certificate,D,60.0,46.60,41.20,259.00,250.00,3.0
+BTEC,"Level 3",Certificate,D/M,53.3,41.20,38.20,-1.00,NULL,2.6
+BTEC,"Level 3",Certificate,M/D,46.6,NULL,NULL,-1.00,NULL,2.3
+BTEC,"Level 3",Certificate,M,40.0,35.80,0.00,249.00,230.00,2.0
+BTEC,"Level 3",Certificate,M/P,33.3,NULL,NULL,-1.00,NULL,1.6
+BTEC,"Level 3",Certificate,P/M,26.6,NULL,NULL,-1.00,NULL,1.3
+BTEC,"Level 3",Certificate,P,20.0,NULL,NULL,229.00,0.00,1.0
+BTEC,"Level 3",Diploma,D*D*,280.0,58.00,50.20,2000.00,1060.00,7.0
+BTEC,"Level 3",Diploma,D*D*/D*D,273.3,NULL,NULL,-1.00,NULL,6.6
+BTEC,"Level 3",Diploma,D*D/D*D*,266.6,NULL,NULL,-1.00,NULL,6.3
+BTEC,"Level 3",Diploma,D*D,260.0,50.20,46.60,1059.00,1030.00,6.0
+BTEC,"Level 3",Diploma,D*D/DD,253.3,NULL,NULL,-1.00,NULL,5.6
+BTEC,"Level 3",Diploma,DD/D*D,246.6,NULL,NULL,-1.00,NULL,5.3
+BTEC,"Level 3",Diploma,DD,240.0,46.60,43.00,1029.00,1000.00,5.0
+BTEC,"Level 3",Diploma,DD/DM,226.6,43.00,41.20,-1.00,NULL,4.6
+BTEC,"Level 3",Diploma,DM/DD,213.3,NULL,NULL,-1.00,NULL,4.3
+BTEC,"Level 3",Diploma,DM,200.0,41.20,35.80,999.00,960.00,4.0
+BTEC,"Level 3",Diploma,DM/MM,186.6,35.80,34.00,-1.00,NULL,3.6
+BTEC,"Level 3",Diploma,MM/DM,173.3,NULL,NULL,-1.00,NULL,3.3
+BTEC,"Level 3",Diploma,MM,160.0,34.00,0.00,959.00,920.00,3.0
+BTEC,"Level 3",Diploma,MM/MP,146.6,NULL,NULL,-1.00,NULL,2.6
+BTEC,"Level 3",Diploma,MP/MM,133.3,NULL,NULL,-1.00,NULL,2.3
+BTEC,"Level 3",Diploma,MP,120.0,NULL,NULL,919.00,880.00,2.0
+BTEC,"Level 3",Diploma,MP/PP,106.6,NULL,NULL,-1.00,NULL,1.6
+BTEC,"Level 3",Diploma,PP/MP,93.3,NULL,NULL,-1.00,NULL,1.3
+BTEC,"Level 3",Diploma,PP,80.0,NULL,NULL,879.00,0.00,1.0
+BTEC,"Level 3","Extended Diploma",D*D*D*,420.0,58.00,50.20,2500.00,1590.00,10.0
+BTEC,"Level 3","Extended Diploma",D*D*D*/D*D*D,413.3,NULL,NULL,-1.00,NULL,9.6
+BTEC,"Level 3","Extended Diploma",D*D*D/D*D*D*,406.6,NULL,NULL,-1.00,NULL,9.3
+BTEC,"Level 3","Extended Diploma",D*D*D,400.0,NULL,NULL,1589.00,1560.00,9.0
+BTEC,"Level 3","Extended Diploma",D*D*D/D*DD,393.3,NULL,NULL,-1.00,NULL,8.6
+BTEC,"Level 3","Extended Diploma",D*DD/D*D*D,386.6,NULL,NULL,-1.00,NULL,8.3
+BTEC,"Level 3","Extended Diploma",D*DD,380.0,50.20,46.60,1559.00,1530.00,8.0
+BTEC,"Level 3","Extended Diploma",D*DD/DDD,373.3,NULL,NULL,-1.00,NULL,7.6
+BTEC,"Level 3","Extended Diploma",DDD/D*DD,366.6,NULL,NULL,-1.00,NULL,7.3
+BTEC,"Level 3","Extended Diploma",DDD,360.0,46.60,44.80,1529.00,1500.00,7.0
+BTEC,"Level 3","Extended Diploma",DDD/DDM,346.6,NULL,NULL,-1.00,NULL,6.6
+BTEC,"Level 3","Extended Diploma",DDM/DDD,333.3,NULL,NULL,-1.00,NULL,6.3
+BTEC,"Level 3","Extended Diploma",DDM,320.0,44.80,38.20,1499.00,1460.00,6.0
+BTEC,"Level 3","Extended Diploma",DDM/DMM,306.6,NULL,NULL,-1.00,NULL,5.6
+BTEC,"Level 3","Extended Diploma",DMM/DDM,293.3,NULL,NULL,-1.00,NULL,5.3
+BTEC,"Level 3","Extended Diploma",DMM,280.0,38.20,34.00,1459.00,1420.00,5.0
+BTEC,"Level 3","Extended Diploma",DMM/MMM,266.6,NULL,NULL,-1.00,NULL,4.6
+BTEC,"Level 3","Extended Diploma",MMM/DMM,253.3,NULL,NULL,-1.00,NULL,4.3
+BTEC,"Level 3","Extended Diploma",MMM,240.0,34.00,0.00,1419.00,1380.00,4.0
+BTEC,"Level 3","Extended Diploma",MMM/MMP,226.6,NULL,NULL,-1.00,NULL,3.6
+BTEC,"Level 3","Extended Diploma",MMP/MMM,213.3,NULL,NULL,-1.00,NULL,3.3
+BTEC,"Level 3","Extended Diploma",MMP,200.0,NULL,NULL,1379.00,1340.00,3.0
+BTEC,"Level 3","Extended Diploma",MMP/MPP,186.6,NULL,NULL,-1.00,NULL,2.6
+BTEC,"Level 3","Extended Diploma",MPP/MMP,173.3,NULL,NULL,-1.00,NULL,2.3
+BTEC,"Level 3","Extended Diploma",MPP,160.0,NULL,NULL,1339.00,1300.00,2.0
+BTEC,"Level 3","Extended Diploma",MPP/PPP,146.6,NULL,NULL,-1.00,NULL,1.6
+BTEC,"Level 3","Extended Diploma",PPP/MPP,133.3,NULL,NULL,-1.00,NULL,1.3
+BTEC,"Level 3","Extended Diploma",PPP,120.0,NULL,NULL,1299.00,0.00,1.0
+BTEC,"Level 3","Foundation Diploma",D,285.0,NULL,NULL,0.00,0.00,3.0
+BTEC,"Level 3","Foundation Diploma",D/M,265.0,NULL,NULL,-1.00,NULL,2.6
+BTEC,"Level 3","Foundation Diploma",M/D,245.0,NULL,NULL,-1.00,NULL,2.3
+BTEC,"Level 3","Foundation Diploma",M,225.0,NULL,NULL,0.00,0.00,2.0
+BTEC,"Level 3","Foundation Diploma",M/P,205.0,NULL,NULL,-1.00,NULL,1.6
+BTEC,"Level 3","Foundation Diploma",P/M,185.0,NULL,NULL,-1.00,NULL,1.3
+BTEC,"Level 3","Foundation Diploma",P,165.0,NULL,NULL,0.00,0.00,1.0
+BTEC,"Level 3","Subsidiary Diploma",D*,140.0,58.00,48.40,1000.00,520.00,4.0
+BTEC,"Level 3","Subsidiary Diploma",D*/D,133.3,48.40,46.60,-1.00,NULL,3.6
+BTEC,"Level 3","Subsidiary Diploma",D/D*,126.6,NULL,NULL,-1.00,NULL,3.3
+BTEC,"Level 3","Subsidiary Diploma",D,120.0,46.60,41.20,519.00,500.00,3.0
+BTEC,"Level 3","Subsidiary Diploma",D/M,106.6,41.20,35.80,-1.00,NULL,2.6
+BTEC,"Level 3","Subsidiary Diploma",M/D,93.3,NULL,NULL,-1.00,NULL,2.3
+BTEC,"Level 3","Subsidiary Diploma",M,80.0,35.80,0.00,499.00,460.00,2.0
+BTEC,"Level 3","Subsidiary Diploma",M/P,66.6,NULL,NULL,-1.00,NULL,1.6
+BTEC,"Level 3","Subsidiary Diploma",P/M,53.3,NULL,NULL,-1.00,NULL,1.3
+BTEC,"Level 3","Subsidiary Diploma",P,40.0,NULL,NULL,459.00,0.00,1.0
+BTEC,"Level 2",Award,D*/D,0.0,NULL,NULL,-1.00,NULL,3.6
+BTEC,"Level 2",Award,D/D*,0.0,NULL,NULL,-1.00,NULL,3.3
+BTEC,"Level 2",Award,D/M,0.0,NULL,NULL,-1.00,NULL,2.6
+BTEC,"Level 2",Award,M/D,0.0,NULL,NULL,-1.00,NULL,2.3
+BTEC,"Level 2",Award,M/P,0.0,NULL,NULL,-1.00,NULL,1.6
+BTEC,"Level 2",Award,P/M,0.0,NULL,NULL,-1.00,NULL,1.3
+BTEC,"Level 2",Certificate,D*,0.0,NULL,NULL,400.00,100.00,4.0
+BTEC,"Level 2",Certificate,D*/D,0.0,NULL,NULL,-1.00,NULL,3.6
+BTEC,"Level 2",Certificate,D/D*,0.0,NULL,NULL,-1.00,NULL,3.3
+BTEC,"Level 2",Certificate,D,0.0,NULL,NULL,99.00,95.00,3.0
+BTEC,"Level 2",Certificate,D/M,0.0,NULL,NULL,-1.00,NULL,2.6
+BTEC,"Level 2",Certificate,M/D,0.0,NULL,NULL,-1.00,NULL,2.3
+BTEC,"Level 2",Certificate,M,0.0,NULL,NULL,94.00,85.00,2.0
+BTEC,"Level 2",Certificate,M/P,0.0,NULL,NULL,-1.00,NULL,1.6
+BTEC,"Level 2",Certificate,P/M,0.0,NULL,NULL,-1.00,NULL,1.3
+BTEC,"Level 2",Certificate,P,0.0,NULL,NULL,84.00,0.00,1.0
+BTEC,"Level 2",Diploma,D*,0.0,NULL,NULL,999.00,400.00,4.0
+BTEC,"Level 2",Diploma,D*/D,0.0,NULL,NULL,-1.00,NULL,3.6
+BTEC,"Level 2",Diploma,D/D*,0.0,NULL,NULL,-1.00,NULL,3.3
+BTEC,"Level 2",Diploma,D,0.0,NULL,NULL,399.00,380.00,3.0
+BTEC,"Level 2",Diploma,D/M,0.0,NULL,NULL,-1.00,NULL,2.6
+BTEC,"Level 2",Diploma,M/D,0.0,NULL,NULL,-1.00,NULL,2.3
+BTEC,"Level 2",Diploma,M,0.0,NULL,NULL,379.00,340.00,2.0
+BTEC,"Level 2",Diploma,M/P,0.0,NULL,NULL,-1.00,NULL,1.6
+BTEC,"Level 2",Diploma,P/M,0.0,NULL,NULL,-1.00,NULL,1.3
+BTEC,"Level 2",Diploma,P,0.0,NULL,NULL,339.00,0.00,1.0
+BTEC,"Level 2","Extended Certificate",D*,0.0,NULL,NULL,600.00,200.00,4.0
+BTEC,"Level 2","Extended Certificate",D*/D,0.0,NULL,NULL,-1.00,NULL,3.6
+BTEC,"Level 2","Extended Certificate",D/D*,0.0,NULL,NULL,-1.00,NULL,3.3
+BTEC,"Level 2","Extended Certificate",D,0.0,NULL,NULL,199.00,190.00,3.0
+BTEC,"Level 2","Extended Certificate",D/M,0.0,NULL,NULL,-1.00,NULL,2.6
+BTEC,"Level 2","Extended Certificate",M/D,0.0,NULL,NULL,-1.00,NULL,2.3
+BTEC,"Level 2","Extended Certificate",M,0.0,NULL,NULL,189.00,170.00,2.0
+BTEC,"Level 2","Extended Certificate",M/P,0.0,NULL,NULL,-1.00,NULL,1.6
+BTEC,"Level 2","Extended Certificate",P/M,0.0,NULL,NULL,-1.00,NULL,1.3
+BTEC,"Level 2","Extended Certificate",P,0.0,NULL,NULL,169.00,0.00,1.0
+BTEC,"Level 1 & 2",Award,"Level 2 Distinction *",NULL,NULL,NULL,200.00,90.00,6.0
+BTEC,"Level 1 & 2",Award,"Level 2 Distinction */Level 2 Distinction",NULL,NULL,NULL,-1.00,-1.00,5.6
+BTEC,"Level 1 & 2",Award,"Level 2 Distinction/Level 2 Distinction *",NULL,NULL,NULL,-1.00,-1.00,5.3
+BTEC,"Level 1 & 2",Award,"Level 2 Distinction",NULL,NULL,NULL,90.00,84.00,5.0
+BTEC,"Level 1 & 2",Award,"Level 2 Distinction/Level 2 Merit",NULL,NULL,NULL,-1.00,-1.00,4.6
+BTEC,"Level 1 & 2",Award,"Level 2 Merit/Level 2 Distinction",NULL,NULL,NULL,-1.00,-1.00,4.3
+BTEC,"Level 1 & 2",Award,"Level 2 Merit",NULL,NULL,NULL,84.00,66.00,4.0
+BTEC,"Level 1 & 2",Award,"Level 2 Merit/Level 2 Pass",NULL,NULL,NULL,-1.00,-1.00,3.6
+BTEC,"Level 1 & 2",Award,"Level 2 Pass/Level 2 Merit",NULL,NULL,NULL,-1.00,-1.00,3.3
+BTEC,"Level 1 & 2",Award,"Level 2 Pass",NULL,NULL,NULL,66.00,48.00,3.0
+BTEC,"Level 1 & 2",Award,"Level 2 Pass/Level 1",NULL,NULL,NULL,-1.00,-1.00,2.6
+BTEC,"Level 1 & 2",Award,"Level 1/Level 2 Pass",NULL,NULL,NULL,-1.00,-1.00,2.3
+BTEC,"Level 1 & 2",Award,"Level 1",NULL,NULL,NULL,48.00,24.00,2.0
+BTEC,"Level 1 & 2",Award,"Level 1/U",NULL,NULL,NULL,-1.00,NULL,1.6
+BTEC,"Level 1 & 2",Award,"U/Level 1",NULL,NULL,NULL,-1.00,NULL,1.3
+BTEC,"Level 1 & 2",Award,U,NULL,NULL,NULL,24.00,0.00,1.0
+BTEC,"Level 1 & 2",Certificate,"Level 2 D*D*",NULL,NULL,NULL,300.00,180.00,9.0
+BTEC,"Level 1 & 2",Certificate,"Level 2 D*D*/Level 2 D*D",NULL,NULL,NULL,-1.00,-1.00,8.6
+BTEC,"Level 1 & 2",Certificate,"Level 2 D*D/Level 2 D*D*",NULL,NULL,NULL,-1.00,-1.00,8.3
+BTEC,"Level 1 & 2",Certificate,"Level 2 D*D",NULL,NULL,NULL,180.00,174.00,8.0
+BTEC,"Level 1 & 2",Certificate,"Level 2 D*D/Level 2 DD",NULL,NULL,NULL,-1.00,-1.00,7.6
+BTEC,"Level 1 & 2",Certificate,"Level 2 DD/Level 2 D*D",NULL,NULL,NULL,-1.00,-1.00,7.3
+BTEC,"Level 1 & 2",Certificate,"Level 2 DD",NULL,NULL,NULL,174.00,168.00,7.0
+BTEC,"Level 1 & 2",Certificate,"Level 2 DD/Level 2 DM",NULL,NULL,NULL,-1.00,-1.00,6.6
+BTEC,"Level 1 & 2",Certificate,"Level 2 DM/Level 2 DD",NULL,NULL,NULL,-1.00,-1.00,6.3
+BTEC,"Level 1 & 2",Certificate,"Level 2 DM",NULL,NULL,NULL,168.00,150.00,6.0
+BTEC,"Level 1 & 2",Certificate,"Level 2 DM/Level 2 MM",NULL,NULL,NULL,-1.00,-1.00,5.6
+BTEC,"Level 1 & 2",Certificate,"Level 2 MM/Level 2 DM",NULL,NULL,NULL,-1.00,-1.00,5.3
+BTEC,"Level 1 & 2",Certificate,"Level 2 MM",NULL,NULL,NULL,150.00,132.00,5.0
+BTEC,"Level 1 & 2",Certificate,"Level 2 MM/Level 2 MP",NULL,NULL,NULL,-1.00,-1.00,4.6
+BTEC,"Level 1 & 2",Certificate,"Level 2 MP/Level 2 MM",NULL,NULL,NULL,-1.00,-1.00,4.3
+BTEC,"Level 1 & 2",Certificate,"Level 2 MP",NULL,NULL,NULL,132.00,114.00,4.0
+BTEC,"Level 1 & 2",Certificate,"Level 2 MP/Level 2 PP",NULL,NULL,NULL,-1.00,-1.00,3.6
+BTEC,"Level 1 & 2",Certificate,"Level 2 PP/Level 2 MP",NULL,NULL,NULL,-1.00,-1.00,3.3
+BTEC,"Level 1 & 2",Certificate,"Level 2 PP",NULL,NULL,NULL,114.00,96.00,3.0
+BTEC,"Level 1 & 2",Certificate,"Level 2 PP/Level 1",NULL,NULL,NULL,-1.00,-1.00,2.6
+BTEC,"Level 1 & 2",Certificate,"Level 1/Level 2 PP",NULL,NULL,NULL,-1.00,-1.00,2.3
+BTEC,"Level 1 & 2",Certificate,"Level 1",NULL,NULL,NULL,96.00,48.00,2.0
+BTEC,"Level 1 & 2",Certificate,"Level 1/U",NULL,NULL,NULL,-1.00,NULL,1.6
+BTEC,"Level 1 & 2",Certificate,"U/Level 1",NULL,NULL,NULL,-1.00,NULL,1.3
+BTEC,"Level 1 & 2",Certificate,U,NULL,NULL,NULL,48.00,0.00,1.0
+BTEC,"Level 1 & 2",Diploma,"Level 2 D*D*",NULL,NULL,NULL,700.00,372.00,9.0
+BTEC,"Level 1 & 2",Diploma,"Level 2 D*D*/Level 2 D*D",NULL,NULL,NULL,-1.00,-1.00,8.6
+BTEC,"Level 1 & 2",Diploma,"Level 2 D*D/Level 2 D*D*",NULL,NULL,NULL,-1.00,-1.00,8.3
+BTEC,"Level 1 & 2",Diploma,"Level 2 D*D",NULL,NULL,NULL,372.00,366.00,8.0
+BTEC,"Level 1 & 2",Diploma,"Level 2 D*D/Level 2 DD",NULL,NULL,NULL,-1.00,-1.00,7.6
+BTEC,"Level 1 & 2",Diploma,"Level 2 DD/Level 2 D*D",NULL,NULL,NULL,-1.00,-1.00,7.3
+BTEC,"Level 1 & 2",Diploma,"Level 2 DD",NULL,NULL,NULL,366.00,360.00,7.0
+BTEC,"Level 1 & 2",Diploma,"Level 2 DD/Level 2 DM",NULL,NULL,NULL,-1.00,-1.00,6.6
+BTEC,"Level 1 & 2",Diploma,"Level 2 DM/Level 2 DD",NULL,NULL,NULL,-1.00,-1.00,6.3
+BTEC,"Level 1 & 2",Diploma,"Level 2 DM",NULL,NULL,NULL,360.00,318.00,6.0
+BTEC,"Level 1 & 2",Diploma,"Level 2 DM/Level 2 MM",NULL,NULL,NULL,-1.00,-1.00,5.6
+BTEC,"Level 1 & 2",Diploma,"Level 2 MM/Level 2 DM",NULL,NULL,NULL,-1.00,-1.00,5.3
+BTEC,"Level 1 & 2",Diploma,"Level 2 MM",NULL,NULL,NULL,318.00,276.00,5.0
+BTEC,"Level 1 & 2",Diploma,"Level 2 MM/Level 2 MP",NULL,NULL,NULL,-1.00,-1.00,4.6
+BTEC,"Level 1 & 2",Diploma,"Level 2 MP/Level 2 MM",NULL,NULL,NULL,-1.00,-1.00,4.3
+BTEC,"Level 1 & 2",Diploma,"Level 2 MP",NULL,NULL,NULL,276.00,234.00,4.0
+BTEC,"Level 1 & 2",Diploma,"Level 2 MP/Level 2 PP",NULL,NULL,NULL,-1.00,-1.00,3.6
+BTEC,"Level 1 & 2",Diploma,"Level 2 PP/Level 2 MP",NULL,NULL,NULL,-1.00,-1.00,3.3
+BTEC,"Level 1 & 2",Diploma,"Level 2 PP",NULL,NULL,NULL,234.00,192.00,3.0
+BTEC,"Level 1 & 2",Diploma,"Level 2 PP/Level 1",NULL,NULL,NULL,-1.00,-1.00,2.6
+BTEC,"Level 1 & 2",Diploma,"Level 1/Level 2 PP",NULL,NULL,NULL,-1.00,-1.00,2.3
+BTEC,"Level 1 & 2",Diploma,"Level 1",NULL,NULL,NULL,192.00,96.00,2.0
+BTEC,"Level 1 & 2",Diploma,"Level 1/U",NULL,NULL,NULL,-1.00,NULL,1.6
+BTEC,"Level 1 & 2",Diploma,"U/Level 1",NULL,NULL,NULL,-1.00,NULL,1.3
+BTEC,"Level 1 & 2",Diploma,U,NULL,NULL,NULL,96.00,0.00,1.0
+BTEC,"Level 1 & 2","Extended Certificate","Level 2 D*D*",NULL,NULL,NULL,500.00,276.00,9.0
+BTEC,"Level 1 & 2","Extended Certificate","Level 2 D*D*/Level 2 D*D",NULL,NULL,NULL,-1.00,-1.00,8.6
+BTEC,"Level 1 & 2","Extended Certificate","Level 2 D*D/Level 2 D*D*",NULL,NULL,NULL,-1.00,-1.00,8.3
+BTEC,"Level 1 & 2","Extended Certificate","Level 2 D*D",NULL,NULL,NULL,276.00,270.00,8.0
+BTEC,"Level 1 & 2","Extended Certificate","Level 2 D*D/Level 2 DD",NULL,NULL,NULL,-1.00,-1.00,7.6
+BTEC,"Level 1 & 2","Extended Certificate","Level 2 DD/Level 2 D*D",NULL,NULL,NULL,-1.00,-1.00,7.3
+BTEC,"Level 1 & 2","Extended Certificate","Level 2 DD",NULL,NULL,NULL,270.00,264.00,7.0
+BTEC,"Level 1 & 2","Extended Certificate","Level 2 DD/Level 2 DM",NULL,NULL,NULL,-1.00,-1.00,6.6
+BTEC,"Level 1 & 2","Extended Certificate","Level 2 DM/Level 2 DD",NULL,NULL,NULL,-1.00,-1.00,6.3
+BTEC,"Level 1 & 2","Extended Certificate","Level 2 DM",NULL,NULL,NULL,264.00,234.00,6.0
+BTEC,"Level 1 & 2","Extended Certificate","Level 2 DM/Level 2 MM",NULL,NULL,NULL,-1.00,-1.00,5.6
+BTEC,"Level 1 & 2","Extended Certificate","Level 2 MM/Level 2 DM",NULL,NULL,NULL,-1.00,-1.00,5.3
+BTEC,"Level 1 & 2","Extended Certificate","Level 2 MM",NULL,NULL,NULL,234.00,204.00,5.0
+BTEC,"Level 1 & 2","Extended Certificate","Level 2 MM/Level 2 MP",NULL,NULL,NULL,-1.00,-1.00,4.6
+BTEC,"Level 1 & 2","Extended Certificate","Level 2 MP/Level 2 MM",NULL,NULL,NULL,-1.00,-1.00,4.3
+BTEC,"Level 1 & 2","Extended Certificate","Level 2 MP",NULL,NULL,NULL,204.00,174.00,4.0
+BTEC,"Level 1 & 2","Extended Certificate","Level 2 MP/Level 2 PP",NULL,NULL,NULL,-1.00,-1.00,3.6
+BTEC,"Level 1 & 2","Extended Certificate","Level 2 PP/Level 2 MP",NULL,NULL,NULL,-1.00,-1.00,3.3
+BTEC,"Level 1 & 2","Extended Certificate","Level 2 PP",NULL,NULL,NULL,174.00,144.00,3.0
+BTEC,"Level 1 & 2","Extended Certificate","Level 2 PP/Level 1",NULL,NULL,NULL,-1.00,-1.00,2.6
+BTEC,"Level 1 & 2","Extended Certificate","Level 1/Level 2 PP",NULL,NULL,NULL,-1.00,-1.00,2.3
+BTEC,"Level 1 & 2","Extended Certificate","Level 1",NULL,NULL,NULL,144.00,72.00,2.0
+BTEC,"Level 1 & 2","Extended Certificate","Level 1/U",NULL,NULL,NULL,-1.00,NULL,1.6
+BTEC,"Level 1 & 2","Extended Certificate","U/Level 1",NULL,NULL,NULL,-1.00,NULL,1.3
+BTEC,"Level 1 & 2","Extended Certificate",U,NULL,NULL,NULL,72.00,0.00,1.0
+BTEC,"Level 1",Award,Pass,NULL,NULL,NULL,0.00,0.00,1.0
+BTEC,"Level 1",Award,"Not Achieved",NULL,NULL,NULL,0.00,0.00,0.0
+BTEC,"Level 1",Certificate,Pass,NULL,NULL,NULL,0.00,0.00,1.0
+BTEC,"Level 1",Certificate,"Not Achieved",NULL,NULL,NULL,0.00,0.00,0.0
+BTEC,"Level 1",Diploma,Pass,NULL,NULL,NULL,0.00,0.00,1.0
+BTEC,"Level 1",Diploma,"Not Achieved",NULL,NULL,NULL,0.00,0.00,0.0

@@ -16,6 +16,8 @@ global $COURSE, $PAGE, $OUTPUT, $CFG, $USER;
 //require_once('../lib.php');
 //require_once($CFG->dirroot.'/user/profile/lib.php');
 
+set_time_limit(0);
+
 require_once('../classes/core/DashTab.class.php');
 $courseID = optional_param('cID', -1, PARAM_INT);
 if($courseID != -1)
@@ -34,14 +36,17 @@ $url = '/blocks/bcgt/forms/my_dashboard.php';
 $PAGE->set_url($url, array('page' => $tab));
 $PAGE->set_title(get_string('bcgtmydashboard', 'block_bcgt'));
 $PAGE->set_heading(get_string('bcgtmydashboard', 'block_bcgt'));
-$PAGE->set_pagelayout('login');
+$PAGE->set_pagelayout( bcgt_get_layout() );
 $PAGE->add_body_class(get_string('bcgtmydashboard', 'block_bcgt'));
-$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'','title');
+$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php?tab=track','title');
 if($courseID != -1)
 {
     global $DB;
     $course = $DB->get_record_sql("SELECT * FROM {course} WHERE id = ?", array($courseID));
-    $PAGE->navbar->add($course->shortname,$CFG->wwwroot.'/course/view.php?id='.$courseID,'title');
+    if($course)
+    {
+        $PAGE->navbar->add($course->shortname,$CFG->wwwroot.'/course/view.php?id='.$courseID,'title');
+    }
     
 }
 $pageTitle = DashTab::bcgt_get_dashboard_tab_title($tab);
@@ -53,7 +58,7 @@ $jsModule = array(
 );
 $PAGE->requires->js_init_call('M.block_bcgt.init', null, true, $jsModule);
 require_once($CFG->dirroot.'/blocks/bcgt/lib.php');
-load_javascript();
+load_javascript(true);
 echo $OUTPUT->header();
 
 //form for the search
@@ -96,7 +101,7 @@ echo "<input type='submit' id='courseGo' name='go' value='".get_string('go', 'bl
 echo "</form>";
 echo '<div id="bcgtDashTabs">';
 echo '<form method="POST" name="changeView" action="#tab">';
-echo '<input type="hidden" name="cID" value="'.$courseID.'"/>';
+echo '<input type="hidden" id="cID" name="cID" value="'.$courseID.'"/>';
 
 echo '<div class="tabs"><div class="tabtree">';
 echo '<ul class="tabrow0">';

@@ -1,1 +1,3 @@
-<?= $qualification->call_display_student_grid_external(); ?>
+<p class='elbp_centre'><a href="<?= $CFG->wwwroot ?>/blocks/bcgt/grids/student_grid.php?sID=<?= $student->id ?>&qID=<?= $qualification->get_id() ?>" target="_blank"><?= get_string('openstudentgrid', 'block_bcgt') ?></a></p>
+
+<?= $qualification->call_display_student_grid_external('elbp'); ?>

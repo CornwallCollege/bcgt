@@ -80,12 +80,9 @@ if($qualification)
     $qualification->set_student_flag($flag);
     $data = $qualification->get_student_grid_data($advancedMode, 
             $editing, $studentView);
-    $output = array(
-		"iTotalRecords" => count($data),
-		"iTotalDisplayRecords" => count($data),
-		"aaData" => $data
-	);
-	echo json_encode( $output );
+    
+    echo $data;
+    
 }
 else {
     echo "No Qualification Found";

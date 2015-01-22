@@ -1,27 +1,4 @@
 <?php
-
-/**
- * <title>
- * 
- * @copyright 2013 Bedford College
- * @package Bedford College Electronic Learning Blue Print (ELBP)
- * @version 1.0
- * @author Conn Warwicker <cwarwicker@bedford.ac.uk> <conn@cmrwarwicker.com>
- * 
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- * 
- */
-
 require_once 'CGHBVRQQualification.class.php';
 require_once 'CGUnit.class.php';
 require_once 'CGHBVRQCriteria.class.php';
@@ -637,13 +614,13 @@ class CGHBVRQUnit extends CGUnit {
             {
                 
                 $d++;
-                
+                                
                 $retval .= '<tr class="taskRow_'.$d.'">';
                     $retval .= '<td>';
                     $retval .= '<script> arrayOfCRCriteria['.$d.'] = new Array();arrayOfCRObservation['.$d.'] = new Array(); numOfTasks++; dynamicNumOfTasks++; </script>';
                     $retval .= '<input type="hidden" name="taskIDs['.$d.']" value="'.$criterion->get_id().'" /><input type="text" placeholder="Name" name="taskNames['.$d.']" value="'.bcgt_html($criterion->get_name()).'" class="critNameInput" id="taskName_'.$d.'" />';
                     $retval .= '</td>';
-                    $retval .= '<td><select onchange="changeCriterionTypeVRQ(this.value, '.$d.');return false;" name="taskTypes['.$d.']"><option value="Summative" '.( ($criterion->get_type() == 'Summative') ? 'selected' : '' ).'>'.get_string('summative', 'block_bcgt').'</option><option value="Formative" '.( ($criterion->get_type() == 'Formative') ? 'selected' : '' ).'>'.get_string('formative', 'block_bcgt').'</option></select></td>';
+                    $retval .= '<td><select onchange="changeCriterionTypeVRQ(this.value, '.$d.');return false;" name="taskTypes['.$d.']"><option value="Summative" '.( ($criterion->get_type() == 'Summative') ? 'selected' : '' ).'>'.get_string('summative', 'block_bcgt').'</option><option value="Formative" '.( ($criterion->get_type() == 'Formative') ? 'selected' : '' ).'>'.get_string('formative', 'block_bcgt').'</option><option value="L1" '.( ($criterion->get_type() == 'L1') ? 'selected' : '' ).'>Level 1 - PMD</option></select></td>';
                     $retval .= '<td><textarea style="width:100%;" placeholder="Task Details" name="taskDetails['.$d.']" id="taskDetails'.$d.'" class="critDetailsTextArea">'.bcgt_html( $criterion->get_details() ).'</textarea></td>';
                     $retval .= '<td><input type="text" readonly="true" name="taskTargetDates['.$d.']" value="'.$criterion->get_target_date().'" class="bcgtDatePicker" /> </td>';
                     $retval .= '<td><input type="text" class="w40" name="taskOrders['.$d.']" value="'.$criterion->get_order().'" /></td>';
@@ -694,7 +671,7 @@ class CGHBVRQUnit extends CGUnit {
                         $retval .= '</table>';
 
                     }
-                    else
+                    elseif ($criterion->get_type() == 'Summative')
                     {
 
                             $retval .= '<table id="Task_'.$d.'_ObservationsTable" class="criteriaObservationTable">';
@@ -1137,70 +1114,135 @@ class CGHBVRQUnit extends CGUnit {
         
         $awardArray = array();
                 
-        // Loop criteria on unit
-        if($this->criterias)
+        // Entry levle is pass only
+        if ($this->grading == 'P')
         {
             
-            foreach($this->criterias as $criteria)
+            if ($this->criterias)
             {
-            
-                
-                $sID = $criteria->get_student_ID();
-                if (is_null($sID)){
-                    $criteria->load_student_information($this->studentID, $this->qualID, $this->id);
-                }
-                
-                // Do standard tasks first
-                if(!$criteria->get_sub_criteria())
+                foreach($this->criterias as $criteria)
                 {
                     
-                    $tasksRequired++;
+                    $sID = $criteria->get_student_ID();
+                    if (is_null($sID)){
+                        $criteria->load_student_information($this->studentID, $this->qualID, $this->id);
+                    }
                     
+                    $tasksRequired++;
+
                     // Get the student's award value for this criteria
                     $valueObj = $criteria->get_student_value();
-                    
+
                     if(!$valueObj) continue;
-                    
+
                     // If weighting is 0, don't bother adding
                     if($valueObj->is_criteria_met_bool()){
                         $tasksPassed++;
+                        $ranking = $DB->get_record("block_bcgt_value", array("id" => $valueObj->get_id()), "id, ranking");
+                        $awardArray[] = array("value" => $valueObj->get_short_value(), "weighting" => $criteria->get_weighting(), "ranking" => 1.0);
+                        
                     } else {
-                        $tasksRequired--;
-                    }
-                    
-                }
-                else
-                {
-                    
-                    // Tasks with ranges/criteria
-                    $ranges = $criteria->get_all_possible_ranges();
-                    if(!$ranges) continue;                    
-                    
-                    $practicalRequired += count($ranges);
-                    
-                    // Loop through ranges and see if they have an award
-                    foreach($ranges as $range)
-                    {
-                        $range->load_student_information($this->studentID, $qualID);
-                        if(!$range->gradeID) continue;
-                        
-                        $value = new Value($range->gradeID);
-                        if(!$value) continue;
-                        
-                        if($value->is_criteria_met_bool()){
-                            $practicalPassed++;
-                            $ranking = $DB->get_record("block_bcgt_value", array("id" => $value->get_id()), "id, ranking");
-                            $awardArray[] = array("value" => $value->get_short_value(), "weighting" => 1.0, "ranking" => $ranking->ranking);
+                        if ($criteria->get_weighting() == 0){
+                            $tasksRequired--;
                         }
                     }
                     
                 }
-                
-                
             }
             
         }
+        else
+        {
+            
+            // Loop criteria on unit
+            if($this->criterias)
+            {
+
+                foreach($this->criterias as $criteria)
+                {
+
+
+                    $sID = $criteria->get_student_ID();
+                    if (is_null($sID)){
+                        $criteria->load_student_information($this->studentID, $this->qualID, $this->id);
+                    }
+
+                    // Level 1 (PMD) first
+                    if ($criteria->get_type() == 'L1')
+                    {
+                        
+                        $tasksRequired++;
+                        
+                        // Get the student's award value for this criteria
+                        $valueObj = $criteria->get_student_value();
+                        
+                        if ($valueObj)
+                        {
+                            
+                            if($valueObj->is_criteria_met_bool()){
+                                
+                                $tasksPassed++;
+                                $ranking = $DB->get_record("block_bcgt_value", array("id" => $valueObj->get_id()), "id, ranking");
+                                $awardArray[] = array("value" => $valueObj->get_short_value(), "weighting" => 1.0, "ranking" => $ranking->ranking);
+
+                            }
+                            
+                        }
+                        
+                        
+                    }
                     
+                    // Standard tasks
+                    elseif(!$criteria->get_sub_criteria())
+                    {
+
+                        $tasksRequired++;
+
+                        // Get the student's award value for this criteria
+                        $valueObj = $criteria->get_student_value();
+
+                        if(!$valueObj) continue;
+
+                        // If weighting is 0, don't bother adding
+                        if($valueObj->is_criteria_met_bool()){
+                            $tasksPassed++;
+                        } else {
+                            if ($criteria->get_weighting() == 0){
+                                $tasksRequired--;
+                            }
+                        }
+
+                    }
+                    else
+                    {
+
+                        // Tasks with ranges/criteria
+                        $ranges = $criteria->get_all_possible_ranges();
+                        if(!$ranges) continue;                    
+
+                        $practicalRequired += count($ranges);
+
+                        // Loop through ranges and see if they have an award
+                        foreach($ranges as $range)
+                        {
+                            $range->load_student_information($this->studentID, $qualID);
+                            if(!$range->gradeID) continue;
+
+                            $value = new Value($range->gradeID);
+                            if(!$value) continue;
+
+                            if($value->is_criteria_met_bool()){
+                                $practicalPassed++;
+                                $ranking = $DB->get_record("block_bcgt_value", array("id" => $value->get_id()), "id, ranking");
+                                $awardArray[] = array("value" => $value->get_short_value(), "weighting" => 1.0, "ranking" => $ranking->ranking);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+                
+                                    
         // If have passed everything
         if($tasksRequired == $tasksPassed && $practicalRequired == $practicalPassed)
         {
@@ -1240,7 +1282,7 @@ class CGHBVRQUnit extends CGUnit {
                     
         
     }
-    
+        
     public function get_percent_completed()
     {
             
@@ -1719,16 +1761,8 @@ class CGHBVRQUnit extends CGUnit {
                 
                 
                 // Next columns are the default ones like picture, name, etc...
-                $cols = $this->build_unit_grid_students_details($student, $qualID, array(), $context);
-                if ($cols)
-                {
-                    foreach($cols as $col)
-                    {
-                        $retval .= "<td>{$col}</td>";
-                    }
-                }
-                
-                                
+                $retval .= $this->build_unit_grid_students_details($student, $qualID, array(), $context);
+                                                
                 // Unit award
                 $award = 'N/S';
 				$rank = 'nr';
@@ -1790,6 +1824,21 @@ class CGHBVRQUnit extends CGUnit {
 		return $retval;	
     }
     
+    
+    public function export_unit_grid($qualID)
+    {
+        header_remove('Content-Disposition');
+        header('Content-type: text/html');
+        echo 'Not supported for this qualification type';
+        exit;
+    }
+    
+    public function import_unit_grid($qualID, $file, $confirm = false){
+        header_remove('Content-Disposition');
+        header('Content-type: text/html');
+        echo 'Not supported for this qualification type';
+        exit;
+    }
     
     
 }

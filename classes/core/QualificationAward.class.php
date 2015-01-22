@@ -32,6 +32,8 @@ class QualificationAward{
 	private $warning;
         
     private $dateUpdated;
+    
+    private $ranking;
 	    
 	function QualificationAward($id = -1, $params = null)
 	{
@@ -66,6 +68,9 @@ class QualificationAward{
             {
                 $this->unitsScoreLower = $params->unitsScoreUpper;
             }
+            if (isset($params->ranking)){
+                $this->ranking = $params->ranking;
+            }
         }
 	}
 	
@@ -87,6 +92,14 @@ class QualificationAward{
 		return $this->id;
 	}
 	
+    public function get_ranking(){
+        return $this->ranking;
+    }
+    
+    public function set_ranking($ranking){
+        $this->ranking = $ranking;
+    }
+    
 	public function set_award($award)
 	{
 		$this->award = $award;	

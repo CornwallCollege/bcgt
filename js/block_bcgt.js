@@ -48,6 +48,747 @@ M.block_bcgt.init = function(Y) {
     }
 };
 
+M.block_bcgt.initgridfaclass = function(Y) {
+   $(document).ready(function() {
+       apply_alps_class_grid_calls(Y);
+   });
+}
+
+
+
+
+function apply_alps_class_grid_calls(Y)
+{
+    process_alps_ceta();
+       
+    var alpsfagrade = Y.all('.faGradeAlps');
+     if(alpsfagrade)
+     {
+         //get the project id
+         //get the qualid
+         //get the userid
+         alpsfagrade.each(function(cell){
+             var qualID = cell.getAttribute('qual');
+             var projectid = cell.getAttribute('project');
+             var groupID = -1;
+             if($('#grID') && $('#grID').val() && typeof($('#grID').val()) !== "undefined")
+            {
+                groupID = $('#grID').val();
+            }
+             
+             var div = Y.one('#faGradeAlps_'+projectid+'_'+qualID);
+             var type = 'class';
+             var subtype = 'projectg';
+             if(div)
+             {
+                 div.set('innerHTML', '<img src="'+M.cfg.wwwroot+'/blocks/bcgt/pix/ajax-loader.gif" alt="" />');
+             }
+             var data = {
+                 method: 'POST',
+                 data: {
+                     'qID' : qualID,
+                     'sID' : -1,
+                     'assID' : projectid,
+                     'type' : type,
+                     'subtype' : subtype,
+                     'grID' : groupID,
+                     'score': true
+                 },
+                 dataType: 'json',
+                 on: {
+                     success: display_alps_report
+                 }
+             }
+             var url = M.cfg.wwwroot+"/blocks/bcgt/ajax/get_alps_report.php";
+             var request = Y.io(url, data);
+         });
+     }
+
+     var alpsfaceta = Y.all('.faCetaAlps');
+     if(alpsfaceta)
+     {
+         //get the project id
+         //get the qualid
+         //get the userid
+         alpsfagrade.each(function(cell){
+             var qualID = cell.getAttribute('qual');
+             var projectid = cell.getAttribute('project');
+             var groupID = -1;
+             if($('#grID') && $('#grID').val() && typeof($('#grID').val()) !== "undefined")
+            {
+                groupID = $('#grID').val();
+            }
+             var div = Y.one('#faCetaAlps_'+projectid+'_'+qualID);
+             var type = 'class';
+             var subtype = 'projectc';
+             if(div)
+             {
+                 div.set('innerHTML', '<img src="'+M.cfg.wwwroot+'/blocks/bcgt/pix/ajax-loader.gif" alt="" />');
+             }
+             var data = {
+                 method: 'POST',
+                 data: {
+                     'qID' : qualID,
+                     'sID' : -1,
+                     'assID' : projectid,
+                     'type' : type,
+                     'subtype' : subtype,
+                     'grID' : groupID,
+                     'score': true
+                 },
+                 dataType: 'json',
+                 on: {
+                     success: display_alps_report
+                 }
+             }
+             var url = M.cfg.wwwroot+"/blocks/bcgt/ajax/get_alps_report.php";
+             var request = Y.io(url, data);
+         });
+     }
+
+     var alpsclass = Y.all('.alpsclass');
+     if(alpsclass)
+     {
+         //get the project id
+         //get the qualid
+         //get the userid
+         alpsclass.each(function(cell){
+             var qualID = cell.getAttribute('qual');
+             var groupID = -1;
+             if($('#grID') && $('#grID').val() && typeof($('#grID').val()) !== "undefined")
+            {
+                groupID = $('#grID').val();
+            }
+             var div = Y.one('#alpsclass_'+qualID);
+             var type = 'class';
+             var subtype = 'all';
+             if(div)
+             {
+                 div.set('innerHTML', '<img src="'+M.cfg.wwwroot+'/blocks/bcgt/pix/ajax-loader.gif" alt="" />');
+             }
+             var data = {
+                 method: 'POST',
+                 data: {
+                     'qID' : qualID,
+                     'sID' : -1,
+                     'assID' : -1,
+                     'type' : type,
+                     'subtype' : subtype,
+                     'grID' : groupID,
+                     'score': true
+                 },
+                 dataType: 'json',
+                 on: {
+                     success: display_alps_report
+                 }
+             }
+             var url = M.cfg.wwwroot+"/blocks/bcgt/ajax/get_alps_report.php";
+             var request = Y.io(url, data);
+         });
+     }
+
+     var alpsGradeBook= Y.all('.gradeBookAlps');
+     if(alpsGradeBook)
+     {
+         //get the project id
+         //get the qualid
+         //get the userid
+         var userID = $('#studentid').val();
+         alpsGradeBook.each(function(cell){
+             var qualID = cell.getAttribute('qual');
+             var courseID = cell.getAttribute('courseid');
+             var gradebookid = cell.getAttribute('gid');
+             var div = Y.one('#gbalps_'+gradebookid+'_'+courseID);
+             var type = 'class';
+             var subtype = 'gbook';
+             if(div)
+             {
+                 div.set('innerHTML', '<img src="'+M.cfg.wwwroot+'/blocks/bcgt/pix/ajax-loader.gif" alt="" />');
+             }
+             var data = {
+                 method: 'POST',
+                 data: {
+                     'qID' : qualID,
+                     'sID' : userID,
+                     'assID' : gradebookid,
+                     'type' : type,
+                     'subtype' : subtype,
+                     'courseid' : courseID,
+                     'score': true
+                 },
+                 dataType: 'json',
+                 on: {
+                     success: display_alps_report
+                 }
+             }
+             var url = M.cfg.wwwroot+"/blocks/bcgt/ajax/get_alps_report.php";
+             var request = Y.io(url, data);
+         });
+     }
+}
+
+function apply_alps_stu_grid_calls(Y)
+{
+    process_alps_ceta();
+        
+    var alpsfa = Y.all('.alpsfa');
+    if(alpsfa)
+    {
+        alpsfa.each(function(cell){
+            var qualID = cell.getAttribute('qual');
+            var studentID = cell.getAttribute('user');
+            var type = 'student';
+            var subtype = 'fa';
+
+            var div = Y.one('#alpsfa_'+qualID+'_'+studentID);
+            if(div)
+            {
+                div.set('innerHTML', '<img src="'+M.cfg.wwwroot+'/blocks/bcgt/pix/ajax-loader.gif" alt="" />');
+            }
+            var data = {
+                method: 'POST',
+                data: {
+                    'qID' : qualID,
+                    'sID' : studentID,
+                    'type' : type,
+                    'subtype' : subtype,
+                    'score': true
+                },
+                dataType: 'json',
+                on: {
+                    success: display_alps_report
+                }
+            }
+            var url = M.cfg.wwwroot+"/blocks/bcgt/ajax/get_alps_report.php";
+            var request = Y.io(url, data);
+        });
+    }
+
+    var alpsall = Y.all('.alpsall');
+    if(alpsall)
+    {
+        alpsall.each(function(cell){
+            var qualID = cell.getAttribute('qual');
+            var studentID = cell.getAttribute('user');
+            var type = 'student';
+            var subtype = 'all';
+
+            var div = Y.one('#alpsall_'+qualID+'_'+studentID);
+            if(div)
+            {
+                div.set('innerHTML', '<img src="'+M.cfg.wwwroot+'/blocks/bcgt/pix/ajax-loader.gif" alt="" />');
+            }
+            var data = {
+                method: 'POST',
+                data: {
+                    'qID' : qualID,
+                    'sID' : studentID,
+                    'type' : type,
+                    'subtype' : subtype,
+                    'score': true
+                },
+                dataType: 'json',
+                on: {
+                    success: display_alps_report
+                }
+            }
+            var url = M.cfg.wwwroot+"/blocks/bcgt/ajax/get_alps_report.php";
+            var request = Y.io(url, data);
+        });
+    } 
+
+    var alpsfagrade = Y.all('.faGradeAlps');
+    if(alpsfagrade)
+    {
+        //get the project id
+        //get the qualid
+        //get the userid
+        var userID = $('#studentid').val();
+        alpsfagrade.each(function(cell){
+            var qualID = cell.getAttribute('qual');
+            var projectid = cell.getAttribute('project');
+            var div = Y.one('#faGradeAlps_'+projectid+'_'+qualID);
+            var type = 'student';
+            var subtype = 'projectg';
+            if(div)
+            {
+                div.set('innerHTML', '<img src="'+M.cfg.wwwroot+'/blocks/bcgt/pix/ajax-loader.gif" alt="" />');
+            }
+            var data = {
+                method: 'POST',
+                data: {
+                    'qID' : qualID,
+                    'sID' : userID,
+                    'assID' : projectid,
+                    'type' : type,
+                    'subtype' : subtype,
+                    'score': true
+                },
+                dataType: 'json',
+                on: {
+                    success: display_alps_report
+                }
+            }
+            var url = M.cfg.wwwroot+"/blocks/bcgt/ajax/get_alps_report.php";
+            var request = Y.io(url, data);
+        });
+    }
+
+    var alpsfaceta = Y.all('.faCetaAlps');
+    if(alpsfaceta)
+    {
+        //get the project id
+        //get the qualid
+        //get the userid
+        var userID = $('#studentid').val();
+        alpsfagrade.each(function(cell){
+            var qualID = cell.getAttribute('qual');
+            var projectid = cell.getAttribute('project');
+            var div = Y.one('#faCetaAlps_'+projectid+'_'+qualID);
+            var type = 'student';
+            var subtype = 'projectc';
+            if(div)
+            {
+                div.set('innerHTML', '<img src="'+M.cfg.wwwroot+'/blocks/bcgt/pix/ajax-loader.gif" alt="" />');
+            }
+            var data = {
+                method: 'POST',
+                data: {
+                    'qID' : qualID,
+                    'sID' : userID,
+                    'assID' : projectid,
+                    'type' : type,
+                    'subtype' : subtype,
+                    'score': true
+                },
+                dataType: 'json',
+                on: {
+                    success: display_alps_report
+                }
+            }
+            var url = M.cfg.wwwroot+"/blocks/bcgt/ajax/get_alps_report.php";
+            var request = Y.io(url, data);
+        });
+    }
+
+    var alpsGradeBook= Y.all('.gradeBookAlps');
+    if(alpsGradeBook)
+    {
+        //get the project id
+        //get the qualid
+        //get the userid
+        var userID = $('#studentid').val();
+        alpsGradeBook.each(function(cell){
+            var qualID = cell.getAttribute('qual');
+            var courseID = cell.getAttribute('courseid');
+            var gradebookid = cell.getAttribute('gid');
+            var div = Y.one('#gbalps_'+gradebookid+'_'+courseID);
+            var type = 'student';
+            var subtype = 'gbook';
+            if(div)
+            {
+                div.set('innerHTML', '<img src="'+M.cfg.wwwroot+'/blocks/bcgt/pix/ajax-loader.gif" alt="" />');
+            }
+            var data = {
+                method: 'POST',
+                data: {
+                    'qID' : qualID,
+                    'sID' : userID,
+                    'assID' : gradebookid,
+                    'type' : type,
+                    'subtype' : subtype,
+                    'courseid' : courseID,
+                    'score': true
+                },
+                dataType: 'json',
+                on: {
+                    success: display_alps_report
+                }
+            }
+            var url = M.cfg.wwwroot+"/blocks/bcgt/ajax/get_alps_report.php";
+            var request = Y.io(url, data);
+        });
+    }
+}
+
+function process_alps_ceta()
+{
+    //get the alps
+    var alpsceta = Y.all('.alpsceta');
+    if(alpsceta)
+    {
+        alpsceta.each(function(cell){
+            var qualID = cell.getAttribute('qual');
+            var studentID = cell.getAttribute('user');
+            var type = 'student';
+            var subtype = 'ceta';
+            var div = Y.one('#alpsceta_'+qualID+'_'+studentID);
+            if(div)
+            {
+                div.set('innerHTML', '<img src="'+M.cfg.wwwroot+'/blocks/bcgt/pix/ajax-loader.gif" alt="" />');
+            }
+            var div2 = Y.one('#alpsceta_'+qualID+'_'+studentID+'_2');
+            if(div2)
+            {
+                div2.set('innerHTML', '<img src="'+M.cfg.wwwroot+'/blocks/bcgt/pix/ajax-loader.gif" alt="" />');
+            }
+            var data = {
+                method: 'POST',
+                data: {
+                    'qID' : qualID,
+                    'sID' : studentID,
+                    'type' : type,
+                    'subtype' : subtype,
+                    'score': true
+                },
+                dataType: 'json',
+                on: {
+                    success: display_alps_report
+                }
+            }
+            var url = M.cfg.wwwroot+"/blocks/bcgt/ajax/get_alps_report.php";
+            var request = Y.io(url, data);
+        });
+    }
+}
+
+function display_alps_report(id, o)
+{
+    var data = o.responseText; // Response data.
+    var json = Y.JSON.parse(o.responseText);
+    if(json.display != null)
+    {
+        var qualID = json.qualid;
+        var userID = json.userid;
+        var assID = json.assid;
+        var display = json.display;
+        var type = json.type;
+        var subtype = json.subtype;
+        var courseID = json.courseid;
+        switch(type)
+        {
+            case "student":
+                switch(subtype)
+                {
+                    case"ceta":
+                        set_div_content('#alpsceta_'+qualID+'_'+userID,display);
+                        set_div_content('#alpsceta_'+qualID+'_'+userID+'_2',display);
+                        break;
+                    case"fa":
+                        set_div_content('#alpsfa_'+qualID+'_'+userID,display);
+                        break;
+                    case"all":
+                        set_div_content('#alpsall_'+qualID+'_'+userID,display);
+                        break;
+                    case"projectg":
+                        set_div_content('#faGradeAlps_'+assID+'_'+qualID,display);
+                        break;
+                    case"projectc":
+                        set_div_content('#faCetaAlps_'+assID+'_'+qualID,display);
+                        break;
+                    case"gbook":
+                        set_div_content('#gbalps_'+assID+'_'+courseID,display);
+                        break;
+                }
+                break;
+            case "class":
+                switch(subtype)
+                {
+                    case"projectg":
+                        set_div_content('#faGradeAlps_'+assID+'_'+qualID,display);
+                        break;
+                    case"projectc":
+                        set_div_content('#faCetaAlps_'+assID+'_'+qualID,display);
+                        break;
+                    case"all":
+                        set_div_content('#alpsclass_'+qualID,display);
+                        break;
+                    case"gbook":
+                        set_div_content('#gbalps_'+assID+'_'+courseID,display);
+                        break;
+                }
+        }
+    }
+    
+    //now we are going to reapply the colour coding:
+    $("span.alpstemp1").closest("td").css("background-color", "#9E1616");
+    $("span.alpstemp2").closest("td").css("background-color", "#B14545");
+    $("span.alpstemp3").closest("td").css("background-color", "#C87D7D");
+    $("span.alpstemp4").closest("td").css("background-color", "#999999");
+    $("span.alpstemp5").closest("td").css("background-color", "#000000");
+    $("span.alpstemp6").closest("td").css("background-color", "#999999");
+    $("span.alpstemp7").closest("td").css("background-color", "#8080E6");
+    $("span.alpstemp8").closest("td").css("background-color", "#0000CC");
+    $("span.alpstemp9").closest("td").css("background-color", "#00008F");
+    
+    $("span.alpstemp1").closest("th").css("background-color", "#9E1616");
+    $("span.alpstemp2").closest("th").css("background-color", "#B14545");
+    $("span.alpstemp3").closest("th").css("background-color", "#C87D7D");
+    $("span.alpstemp4").closest("th").css("background-color", "#999999");
+    $("span.alpstemp5").closest("th").css("background-color", "#000000");
+    $("span.alpstemp6").closest("th").css("background-color", "#999999");
+    $("span.alpstemp7").closest("th").css("background-color", "#8080E6");
+    $("span.alpstemp8").closest("th").css("background-color", "#0000CC");
+    $("span.alpstemp9").closest("th").css("background-color", "#00008F");
+}
+
+function set_div_content(divID, content)
+{
+    var div = Y.one(divID);
+    if(div)
+    {
+        //clear the loading gif first
+        div.set('innerHTML', '');
+        div.set('innerHTML', content);
+    }
+}
+
+M.block_bcgt.initalpstab = function(Y) {
+   
+   apply_alps_reporting_tt();
+}
+
+function apply_alps_reporting_tt()
+{
+    //for each expand class
+    //get the type
+    //get the val
+    var expands = $('.expand');
+    if(expands)
+    {
+        expands.each(function(expand){
+            $(this).unbind('click');
+            $(this).on('click', function(e){
+                //need to get the value
+                //need to get the type
+                var type = $(this).attr('type');
+                var value = $(this).attr('val');
+                var courseID = $('#cid').val();
+                
+                //are we showing or removing?
+                var add = true;
+                var loadString = '';
+                var alpsrowsloaded = $('#alpsrows').val();
+                if(alpsrowsloaded)
+                {
+                    var rowsLoaded = alpsrowsloaded.split('|');
+                    if(rowsLoaded.length > 0)
+                    {
+                        for(var i=0;i<rowsLoaded.length;i++)
+                        {
+                            if(rowsLoaded[i] == type+'_'+value)
+                            {
+                                //then its loaded before, so we are just removing them
+                                //All child elements will have an attribute of type and the value
+                                remove_alps_rows(type, value);
+                                //need to take this out of the string
+                                add = false;
+                                break;
+                            }
+                            else
+                            {
+                                //build the string up
+                                loadString = loadString + rowsLoaded[i]+'|';
+                            }
+                                
+                        }
+                    }
+                }
+                //add the string back
+                $('#alpsrows').val(loadString);
+                if(add)
+                {
+                    var div = Y.one('#expand');
+                    if(div)
+                    {
+                        div.set('innerHTML', '<img src="'+M.cfg.wwwroot+'/blocks/bcgt/pix/ajax-loader.gif" alt="" />');
+                    }
+
+                    var data = {
+                        method: 'POST',
+                        data: {
+                            'type' : type,
+                            'val' : value,
+                            'cid' : courseID
+                        },
+                        dataType: 'json',
+                        on: {
+                            success: expand_report
+                        }
+                    }
+                    var url = M.cfg.wwwroot+"/blocks/bcgt/ajax/expand_report.php";
+                    var request = Y.io(url, data); 
+                }
+            }); 
+        });
+    }
+}
+
+function remove_alps_rows(type, value)
+{
+    var rows = $("tr["+type+"='"+value+"']");
+    if(rows)
+    {
+        rows.each(function(row){
+
+            var rem = $(this).attr('rem');
+            if(rem)
+            {
+                //split rem on the _
+                var subtype = rem.split("_")[0];
+                var subvalue = rem.split("_")[1];
+                //then you would look for their sub and so on
+                remove_alps_rows(subtype, subvalue);
+            }
+            $(this).remove();
+           
+        });
+        //these rows will be deleted
+        //also need to get the rem attribute of the 
+    }
+}
+
+function expand_report(id, o)
+{
+    var data = o.responseText; // Response data.
+    var json = Y.JSON.parse(o.responseText);
+    var display = json.display;
+    var type = json.type;
+    var value = json.val;
+    $('#e_'+type+'_'+value).after(display);
+    $('#expand').html('');
+    var alpsrowsloaded = $('#alpsrows').val();
+    alpsrowsloaded = alpsrowsloaded + '|'+type+'_'+value;
+    $('#alpsrows').val(alpsrowsloaded);
+    apply_alps_reporting_tt();
+}
+
+//function display_alps_report(id, o)
+//{
+//    var data = o.responseText; // Response data.
+//    var json = Y.JSON.parse(o.responseText);
+//    if(json.display != null)
+//    {
+//        var qualID = json.qualid;
+//        var userID = json.userid;
+//        var assID = json.assid;
+//        var display = json.display;
+//        var type = json.type;
+//        var subtype = json.subtype;
+//        var courseID = json.courseid;
+//        var fam = json.fam;
+//        var typeID = json.typeid;
+//        switch(type)
+//        {
+//            case "student":
+//                switch(subtype)
+//                {
+//                    case"ceta":
+//                        set_div_content('#alpsceta_'+qualID+'_'+userID,display);
+//                        set_div_content('#alpsceta_'+qualID+'_'+userID+'_2',display);
+//                        break;
+//                    case"fa":
+//                        set_div_content('#alpsfa_'+qualID+'_'+userID,display);
+//                        break;
+//                    case"all":
+//                        set_div_content('#alpsall_'+qualID+'_'+userID,display);
+//                        break;
+//                    case"projectg":
+//                        set_div_content('#faGradeAlps_'+assID+'_'+qualID,display);
+//                        break;
+//                    case"projectc":
+//                        set_div_content('#faCetaAlps_'+assID+'_'+qualID,display);
+//                        break;
+//                    case"gbook":
+//                        set_div_content('#gbalps_'+assID+'_'+courseID,display);
+//                        break;
+//                }
+//                break;
+//            case "class":
+//                switch(subtype)
+//                {
+//                    case"projectg":
+//                        set_div_content('#faGradeAlps_'+assID+'_'+qualID,display);
+//                        break;
+//                    case"projectc":
+//                        set_div_content('#faCetaAlps_'+assID+'_'+qualID,display);
+//                        break;
+//                    case"all":
+//                        set_div_content('#alpsclass_'+qualID,display);
+//                        break;
+//                    case"gbook":
+//                        set_div_content('#gbalps_'+assID+'_'+courseID,display);
+//                        break;
+//                }
+//            case "family":
+//                switch(subtype)
+//                {
+//                    case"all":
+//                        set_div_content('#famOverall_'+fam, display);
+//                        break;
+//                    case"fag":
+//                        set_div_content('#famFAG_'+fam+'_'+assID, display);
+//                        break;
+//                    case"fac":
+//                        set_div_content('#famFAC_'+fam+'_'+assID, display);
+//                        break;
+//                }
+//            case "famType":
+//                switch(subtype)
+//                {
+//                    case"all":
+//                        set_div_content('#famType_'+typeID, display);
+//                        break;
+//                    case"fag":
+//                        set_div_content('#famTFAG_'+typeID+'_'+assID, display);
+//                        break;
+//                    case"fac":
+//                        set_div_content('#famTFAC_'+typeID+'_'+assID, display);
+//                        break;
+//                }
+//        }
+//    }
+//    
+//    //now we are going to reapply the colour coding:
+//
+//    
+//    apply_alps_colour_coding();
+//}
+
+function apply_alps_colour_coding()
+{
+    $("span.alpstemp1").closest("td").css("background-color", "#9E1616");
+    $("span.alpstemp2").closest("td").css("background-color", "#B14545");
+    $("span.alpstemp3").closest("td").css("background-color", "#C87D7D");
+    $("span.alpstemp4").closest("td").css("background-color", "#999999");
+    $("span.alpstemp5").closest("td").css("background-color", "#000000");
+    $("span.alpstemp6").closest("td").css("background-color", "#999999");
+    $("span.alpstemp7").closest("td").css("background-color", "#8080E6");
+    $("span.alpstemp8").closest("td").css("background-color", "#0000CC");
+    $("span.alpstemp9").closest("td").css("background-color", "#00008F");
+    
+    $("span.alpstemp1").closest("th").css("background-color", "#9E1616");
+    $("span.alpstemp2").closest("th").css("background-color", "#B14545");
+    $("span.alpstemp3").closest("th").css("background-color", "#C87D7D");
+    $("span.alpstemp4").closest("th").css("background-color", "#999999");
+    $("span.alpstemp5").closest("th").css("background-color", "#000000");
+    $("span.alpstemp6").closest("th").css("background-color", "#999999");
+    $("span.alpstemp7").closest("th").css("background-color", "#8080E6");
+    $("span.alpstemp8").closest("th").css("background-color", "#0000CC");
+    $("span.alpstemp9").closest("th").css("background-color", "#00008F");
+}
+
+function set_div_content(divID, content)
+{
+    var div = Y.one(divID);
+    if(div)
+    {
+        //clear the loading gif first
+        div.set('innerHTML', '');
+        div.set('innerHTML', content);
+    }
+}
+
 M.block_bcgt.inittrackerstab = function(Y) {
     
     var buttons = Y.all('.simplequalreportheading');
@@ -60,6 +801,7 @@ M.block_bcgt.inittrackerstab = function(Y) {
                 var qualID = quals[1];
                 var type = quals[2];
                 var div = Y.one('#sqrc_'+qualID+'_'+type);
+                var cID = $('#cID').val();
                 if(div)
                 {
                     div.set('innerHTML', '<img src="'+M.cfg.wwwroot+'/blocks/bcgt/pix/ajax-loader.gif" alt="" />');
@@ -70,7 +812,8 @@ M.block_bcgt.inittrackerstab = function(Y) {
                     data: {
                         'qID' : qualID,
                         'grID' : -1,
-                        'type' : type
+                        'type' : type,
+                        'cID' : cID
                     },
                     dataType: 'json',
                     on: {
@@ -105,6 +848,7 @@ M.block_bcgt.initgroupstab = function(Y)
                 var groupings = grouping.split("_");
                 var groupingID = groupings[1];
                 var type = groupings[2];
+                var courseID = $('#cID').val();
                 var div = Y.one('#sqrc_'+groupingID+'_'+type);
                 if(div)
                 {
@@ -116,7 +860,8 @@ M.block_bcgt.initgroupstab = function(Y)
                     data: {
                         'grID' : groupingID,
                         'qID' : -1,
-                        'type' : type
+                        'type' : type,
+                        'cID' : courseID
                     },
                     dataType: 'json',
                     on: {
@@ -195,6 +940,7 @@ function applyReportingTT()
     if(tabs)
     {
         tabs.each( function(tab){
+            tab.detach('click');
             tab.on('click', function(event){
                 var id = tab.getAttribute('id');
                 //loading symbol!
@@ -205,15 +951,17 @@ function applyReportingTT()
                 }
                 var qualID = tab.getAttribute('qual');
                 var groupID = tab.getAttribute('group');
-                var tabType = tab.getAttribute('tab');
-                var type = tab.getAttribute('type');
+                var actualTab = tab.getAttribute('tab');
+                var tabType = tab.getAttribute('tabtype');
+                var courseID = tab.getAttribute('course');
                 var data = {
                     method: 'POST',
                     data: {
                         'qID' : qualID,
-                        'tab' : tabType,
+                        'tab' : actualTab,
                         'grID' : groupID,
-                        'type' : type
+                        'type' : tabType,
+                        'cID' : courseID
                     },
                     dataType: 'json',
                     on: {
@@ -231,9 +979,10 @@ function applyReportingTT()
     if(close)
     {
         close.each( function(close){
+            close.detach('click');
             close.on('click', function(event){
                 var id = close.getAttribute('id');
-                var type = close.getAttribute('type');
+                var type = close.getAttribute('tabtype');
                 var div = Y.one('#sqrc_'+id+'_'+type);
                 if(div)
                 {
@@ -247,20 +996,23 @@ function applyReportingTT()
     if(edits)
     {
         edits.each(function(edit){
+            edit.detach('click');
             edit.on('click', function(event){
                 event.preventDefault();
                 var qualID = edit.getAttribute('qual');
                 var groupID = edit.getAttribute('group');
-                var tabType = edit.getAttribute('tab');
+                var actualTab = edit.getAttribute('tab');
                 var type = edit.getAttribute('tabtype');
+                var courseID = edit.getAttribute('course');
                 var data = {
                     method: 'POST',
                     data: {
                         'qID' : qualID,
-                        'tab' : tabType,
+                        'tab' : actualTab,
                         'grID' : groupID,
                         'edit' : true,
-                        'type' : type
+                        'type' : type,
+                        'cID' : courseID
                     },
                     dataType: 'json',
                     on: {
@@ -277,20 +1029,23 @@ function applyReportingTT()
     if(views)
     {
         views.each(function(view){
+            view.detach('click');
             view.on('click', function(event){
                 event.preventDefault();
                 var qualID = view.getAttribute('qual');
                 var groupID = view.getAttribute('group');
-                var tabType = view.getAttribute('tab');
+                var actualTab = view.getAttribute('tab');
                 var type = view.getAttribute('tabtype');
+                var courseID = view.getAttribute('course');
                 var data = {
                     method: 'POST',
                     data: {
                         'qID' : qualID,
-                        'tab' : tabType,
+                        'tab' : actualTab,
                         'grID' : groupID,
                         'edit' : false,
-                        'type' : type
+                        'type' : type,
+                        'cID' : courseID
                     },
                     dataType: 'json',
                     on: {
@@ -308,6 +1063,7 @@ function applyReportingTT()
     if(edittargets)
     {
         edittargets.each( function(edittarget){
+            edittarget.detach('click');
             edittarget.on('change', function(event){
                 var qualID = edittarget.getAttribute('qual');
                 var groupID = edittarget.getAttribute('group');
@@ -321,10 +1077,18 @@ function applyReportingTT()
                 var value = Y.one("#t_"+qualID+"_s_"+sID).get("options").item(index).getAttribute('value');
                 var cID = edittarget.getAttribute('cid');
                 var type = edittarget.getAttribute('type');
-                var index = Y.one("#uf_"+idUse).get('selectedIndex');
-                var ufilter = Y.one("#uf_"+idUse).get("options").item(index).getAttribute('value');
-                var index = Y.one("#tf_"+idUse).get('selectedIndex');
-                var tfilter = Y.one("#tf_"+idUse).get("options").item(index).getAttribute('value');
+                if (Y.one("#uf_"+idUse) !== null){
+                    var index = Y.one("#uf_"+idUse).get('selectedIndex');
+                    var ufilter = Y.one("#uf_"+idUse).get("options").item(index).getAttribute('value');
+                } else {
+                    var ufilter = '';
+                }
+                if (Y.one("#tf_"+idUse) !== null){
+                    var index = Y.one("#tf_"+idUse).get('selectedIndex');
+                    var tfilter = Y.one("#tf_"+idUse).get("options").item(index).getAttribute('value');
+                } else {
+                    var tfilter = '';
+                }
                 var data = {
                     method: 'POST',
                     data: {
@@ -349,10 +1113,42 @@ function applyReportingTT()
         });
     }
     
+    
+    
+    
+    // This only works if we have the elbp block
+    // Need to change it at some point so it can work without it
+    // Will wait until someone notices and complains as I have a sore throat and coming down with a cold and can't be bothered.
+    $('.update_asp_grade').on('change', function(){
+        
+        var studentID = $(this).attr('studentid');
+        var qualID = $(this).attr('qualid');
+        var value = $(this).val();
+        
+        var params = { 
+            studentID: studentID,
+            qualID: qualID,
+            aspirationalgrade: value,
+            ignoreTarget: true
+        };
+        
+        var data = { action: 'save', params: params };
+        
+        $.post(M.cfg.wwwroot + '/blocks/bcgt/ajax/elbp_target_grades/ajax.php', data, function(d){
+            $('#edit_asp_select_'+studentID+'_'+qualID).parent().effect( "highlight", {color: '#ccff66'}, 3000 );
+        });
+        
+    });
+    
+    
+    
+    
+    
     var editasps = Y.all('.editasp');
     if(editasps)
     {
         editasps.each( function(editasp){
+            editasp.detach('click');
             editasp.on('change', function(event){
                 var qualID = editasp.getAttribute('qual');
                 var groupID = editasp.getAttribute('group');
@@ -399,6 +1195,7 @@ function applyReportingTT()
     if(unitFilters)
     {
         unitFilters.each( function(unitFilter){
+            unitFilter.detach('click');
             unitFilter.on('change', function(event){
                 var qualID = unitFilter.getAttribute('qual');
                 var groupID = unitFilter.getAttribute('group');
@@ -413,8 +1210,9 @@ function applyReportingTT()
                 var ufilter = Y.one("#uf_"+idUse).get("options").item(index).getAttribute('value');
                 var index = Y.one("#tf_"+idUse).get('selectedIndex');
                 var tfilter = Y.one("#tf_"+idUse).get("options").item(index).getAttribute('value');
-                var tabType = unitFilter.getAttribute('tab');
+                var actualTab = unitFilter.getAttribute('tab');
                 var type = unitFilter.getAttribute('tabtype');
+                var courseID = unitFilter.getAttribute('course');
                 var data = {
                     method: 'POST',
                     data: {
@@ -422,9 +1220,10 @@ function applyReportingTT()
                         'grID' : groupID,
                         'ufilter' : ufilter,
                         'tfilter' : tfilter,
-                        'tab' : tabType,
+                        'tab' : actualTab,
                         'edit' : editing,
-                        'type' : type
+                        'type' : type,
+                        'cID' : courseID
                     },
                     dataType: 'json',
                     on: {
@@ -458,6 +1257,7 @@ function applyReportingTT()
                 var tfilter = Y.one("#tf_"+idUse).get("options").item(index).getAttribute('value');
                 var tabType = targetFilter.getAttribute('tab');
                 var type = targetFilter.getAttribute('tabtype');
+                var courseID = targetFilter.getAttribute('course');
                 var data = {
                     method: 'POST',
                     data: {
@@ -467,7 +1267,8 @@ function applyReportingTT()
                         'tfilter' : tfilter,
                         'tab' : tabType,
                         'edit' : editing,
-                        'type' : type
+                        'type' : type,
+                        'cID' : courseID
                     },
                     dataType: 'json',
                     on: {
@@ -485,6 +1286,7 @@ function applyReportingTT()
     if(sortheads)
     {
         sortheads.each( function(sorthead){
+            sorthead.detach('click');
             sorthead.on('click', function(event){
                 event.preventDefault();
                 var qualID = sorthead.getAttribute('qual');
@@ -505,6 +1307,7 @@ function applyReportingTT()
                 var thisSort = sorthead.getAttribute('sortname');
                 var currentSort = currentSort + ',' + thisSort;
                 var type = sorthead.getAttribute('tabtype');
+                var courseID = sorthead.getAttribute('course');
                 var data = {
                     method: 'POST',
                     data: {
@@ -515,7 +1318,8 @@ function applyReportingTT()
                         'tab' : tabType,
                         'edit' : editing,
                         'sort' : currentSort,
-                        'type' : type
+                        'type' : type,
+                        'cID' : courseID
                     },
                     dataType: 'json',
                     on: {
@@ -533,6 +1337,7 @@ function applyReportingTT()
     if(usortheads)
     {
         usortheads.each( function(sorthead){
+            sorthead.detach('click');
             sorthead.on('click', function(event){
                 event.preventDefault();
                 var qualID = sorthead.getAttribute('qual');
@@ -542,6 +1347,7 @@ function applyReportingTT()
                 var thisSort = sorthead.getAttribute('sortname');
                 var currentSort = currentSort + ',' + thisSort;
                 var type = sorthead.getAttribute('tabtype');
+                var courseID = sorthead.getAttribute('course');
                 var data = {
                     method: 'POST',
                     data: {
@@ -549,7 +1355,8 @@ function applyReportingTT()
                         'grID' : groupID,
                         'tab' : tabType,
                         'sort' : currentSort,
-                        'type' : type
+                        'type' : type,
+                        'cID' : courseID
                     },
                     dataType: 'json',
                     on: {
@@ -565,7 +1372,8 @@ function applyReportingTT()
 }
 
 M.block_bcgt.initeditqual = function(Y) {
-    Y.one('#save').set('disabled', 'disabled');
+//    Y.one('#save').set('disabled', 'disabled');
+    
     var qualFamily = Y.one('#qualFamilySelect');
     qualFamily.on('change', reloadEditQualForm);    
     
@@ -585,12 +1393,12 @@ M.block_bcgt.initeditqual = function(Y) {
         q.on('change', reloadEditQualForm);
     }
     
-    var name = Y.one('#qualName');
-    $('#qualName').unbind('keypress');
-    name.on('keypress', function(e){
-        check_edit_qual_valid();
-    })
-    check_edit_qual_valid();
+//    var name = Y.one('#qualName');
+//    $('#qualName').unbind('keypress');
+//    name.on('keypress', function(e){
+//        check_edit_qual_valid();
+//    })
+//    check_edit_qual_valid();
 };
 
 function check_edit_qual_valid()
@@ -627,26 +1435,26 @@ M.block_bcgt.initselunit = function(Y) {
 }
 
 M.block_bcgt.initeditunit = function(Y) {
-    Y.one('#save').set('disabled', 'disabled');
+//    Y.one('#save').set('disabled', 'disabled');
     var qualFamily = Y.one('#unitTypeFamily');
     qualFamily.on('change', function(e) {
         Y.one('#editUnitForm').submit();
     });
-    var unique = Y.one('#unique');
-    $('#unique').unbind('keypress');
-    if(unique)
-    {
-        unique.on('keypress', function(e){
-                check_edit_unit_valid();
-        })
-    }
-    
-    var name = Y.one('#name');
-    $('#name').unbind('keypress');
-    name.on('keypress', function(e){
-        check_edit_unit_valid();
-    })
-    check_edit_unit_valid();
+//    var unique = Y.one('#unique');
+//    $('#unique').unbind('keypress');
+//    if(unique)
+//    {
+//        unique.on('keypress', function(e){
+//                check_edit_unit_valid();
+//        })
+//    }
+//    
+//    var name = Y.one('#name');
+//    $('#name').unbind('keypress');
+//    name.on('keypress', function(e){
+//        check_edit_unit_valid();
+//    })
+//    check_edit_unit_valid();
 }
 
 function check_edit_unit_valid()
@@ -1434,6 +2242,9 @@ M.block_bcgt.initgridselect = function(Y) {
             });
         });
     }
+        
+    
+    
 }
 
 function update_grid_select(id, o)
@@ -1574,7 +2385,14 @@ M.block_bcgt.initgridgroupunit = function(Y) {
     var unit = Y.one('#unitChange');
     if (unit != null){
         unit.on('change', function(e) {
-            Y.one('#unitGridForm').submit();
+            Y.one('#unitGroupGridForm').submit();
+        });
+    }
+    
+    var qual = Y.one('#qualChange');
+    if (qual != null){
+        qual.on('change', function(e) {
+            Y.one('#unitGroupGridForm').submit();
         });
     }
 }
@@ -1585,6 +2403,7 @@ M.block_bcgt.initmygrid = function(Y) {
 
 M.block_bcgt.initgridclass = function(Y) {
     var qual = Y.one('#qualChange');
+    var g = $('#grid').val();
     if (qual != null){
         qual.on('change', function(e) {
             Y.one('#classGridForm').submit();
@@ -1615,74 +2434,449 @@ M.block_bcgt.inittargetqualsettings = function(Y){
 
 M.block_bcgt.inittransferunits = function(Y){
     
-    var hover = Y.all('.TRANSFERHOVER');
-    if (hover != null){
+    var hover = $('.CRITHOVER');
+    $(hover).each( function(){
         
-        hover.each( function(e){
+        $(this).hover( function(){
             
-            e.on('mouseover', function(j){
-
-                // FInd out what unit it is
-                var unitID = e.getAttribute('unitid');
-                if (unitID != null)
-                {
-                    if (Y.one('.UNIT'+unitID).hasClass('marked') == false){
-                        Y.one('.UNIT'+unitID).setStyle('backgroundColor', 'orange');
-                    }
-                }
-
-            });
+            var cc = $(this).attr('cc');
+            var hcc = 'TO_'+cc;
             
-            e.on('mouseout', function(j){
-
-                // FInd out what unit it is
-                var unitID = e.getAttribute('unitid');
-                if (unitID != null)
-                {
-                    if (Y.one('.UNIT'+unitID).hasClass('marked') == false){
-                        Y.one('.UNIT'+unitID).setStyle('backgroundColor', 'inherit');
-                    }
-                }
-
-            });
+            $(this).css('background-color', 'lime');
+            $('.'+hcc).css('background-color', 'red');
             
-            
-        } );
-        
-        
-    }
-    
-    var checkbox = Y.all('.transferUnit');
-    checkbox.each( function(e){
-        
-        e.on('click', function(j){
-        
-            var checked = e.get('checked');
-        
-            // FInd out what unit it is
-            var unitID = e.getAttribute('unitid');
-            if (unitID != null)
-            {
-                if (checked)
-                {
-                    Y.all('.FROMUNIT'+unitID).setStyle('backgroundColor', 'lime');
-                    Y.all('.UNIT'+unitID).setStyle('backgroundColor', 'red');
-                    Y.all('.UNIT'+unitID).addClass('marked');
-                }
-                else
-                {
-                    Y.all('.FROMUNIT'+unitID).setStyle('backgroundColor', 'inherit');
-                    Y.all('.UNIT'+unitID).setStyle('backgroundColor', 'inherit');
-                    Y.all('.UNIT'+unitID).removeClass('marked');
-                }
-            }
-        
         });
-        
-        
         
     } );
     
     
+    var hover = $('.CRITHOVER');
+    $(hover).each( function(){
+        
+        $(this).on('mouseout', function(){
+            
+            var cc = $(this).attr('cc');
+            var hcc = 'TO_'+cc;
+            
+            $(this).css('background-color', '#fff');
+            $('.'+hcc).css('background-color', '#fff');
+            
+        });
+        
+    } );
+    
+    
+    
+    
+    
+    
+    var hover = $('.CRITHOVERTO');
+    $(hover).each( function(){
+        
+        $(this).hover( function(){
+            
+            var cc = $(this).attr('cc');
+            var hcc = 'FROM_'+cc;
+            
+            $(this).css('background-color', 'red');
+            $('.'+hcc).css('background-color', 'lime');
+            
+        });
+        
+    } );
+    
+    var hover = $('.CRITHOVERTO');
+    $(hover).each( function(){
+        
+        $(this).on('mouseout', function(){
+            
+            var cc = $(this).attr('cc');
+            var hcc = 'FROM_'+cc;
+            
+            $(this).css('background-color', '#fff');
+            $('.'+hcc).css('background-color', '#fff');
+            
+        });
+        
+    } );
+    
+    
+//    var hover = Y.all('.TRANSFERHOVER');
+//    if (hover != null){
+//        
+//        hover.each( function(e){
+//            
+//            e.on('mouseover', function(j){
+//
+//                // FInd out what unit it is
+//                var unitID = e.getAttribute('unitid');
+//                var studentID = e.getAttribute('studentid');
+//                if (unitID != null && studentID != null)
+//                {
+//                    if (Y.one('.UNIT'+unitID+'STUD'+studentID).hasClass('marked') == false){
+//                        Y.one('.UNIT'+unitID+'STUD'+studentID).setStyle('backgroundColor', 'orange');
+//                    }
+//                }
+//
+//            });
+//            
+//            e.on('mouseout', function(j){
+//
+//                // FInd out what unit it is
+//                var unitID = e.getAttribute('unitid');
+//                var studentID = e.getAttribute('studentid');
+//                if (unitID != null && studentID != null)
+//                {
+//                    if (Y.one('.UNIT'+unitID+'STUD'+studentID).hasClass('marked') == false){
+//                        Y.one('.UNIT'+unitID+'STUD'+studentID).setStyle('backgroundColor', 'inherit');
+//                    }
+//                }
+//
+//            });
+//            
+//            
+//        } );
+//        
+//        
+//    }
+//    
+//    var checkbox = Y.all('.transferUnit');
+//    checkbox.each( function(e){
+//        
+//        e.on('click', function(j){
+//        
+//            var checked = e.get('checked');
+//        
+//            // FInd out what unit it is
+//            var unitID = e.getAttribute('unitid');
+//            if (unitID != null)
+//            {
+//                if (checked)
+//                {
+//                    Y.all('.FROMUNIT'+unitID).setStyle('backgroundColor', 'lime');
+//                    Y.all('.UNIT'+unitID).setStyle('backgroundColor', 'red');
+//                    Y.all('.UNIT'+unitID).addClass('marked');
+//                }
+//                else
+//                {
+//                    Y.all('.FROMUNIT'+unitID).setStyle('backgroundColor', 'inherit');
+//                    Y.all('.UNIT'+unitID).setStyle('backgroundColor', 'inherit');
+//                    Y.all('.UNIT'+unitID).removeClass('marked');
+//                }
+//            }
+//        
+//        });
+//        
+//        
+//        
+//    } );
+    
+    
+}
+
+M.block_bcgt.initassessmenttracker = function(Y, studentID, courseID, qualID){
+                    
+    $(document).ready( function(){
+                
+        // Filter the results and draw the calendar again
+        $('#filter_calendar').unbind('click');
+        $('#filter_calendar').bind('click', function(){
+                        
+            // Filters
+            var viewType = $('input[name="viewtype"]:checked').val();
+            var year = $('#yearfield').val();
+            // Only get the courseID from the form if it's there, otherwise use the one in the url
+            if ($('#coursefield').length > 0){
+                courseID = $('#coursefield').val();
+            }
+            var modLinks = $('input[name="critact"]:checked').val();
+            var modTypes = $('#modulesfield').val();
+            
+            $('#assessment_tracker_content').html( '<img src="'+M.cfg.wwwroot+'/blocks/bcgt/pix/ajax-loader.gif" />' );
+            
+            var params = {
+                studentID: studentID,
+                courseID: courseID,
+                qualID: qualID,
+                year: year,
+                modLinks: modLinks,
+                modTypes: modTypes,
+                viewType: viewType
+            };
+            
+             $.post(M.cfg.wwwroot + '/blocks/bcgt/ajax/load_assessment_tracker.php', params, function(data){
+                
+                $('#assessment_tracker_content').html(data);
+                draw_assessment_tracker(studentID);
+                
+            });
+            
+            
+        });
+        
+        
+        
+        
+        
+        
+        
+        
+        // Redraw on window resize
+        var doResize;
+        $(window).resize( function(){
+            clearTimeout(doResize);
+            $('#loading2').show();
+            doResize = setTimeout( function(){
+                draw_assessment_tracker(studentID);
+            }, 100 );
+        } );
+        
+        
+        // draw the calendar
+        draw_assessment_tracker(studentID);
+        
+        
+    } );
+    
+}
+
+function bind_mod_items(studentID){
+    
+    // Click on a mod_item
+    $('.mod_item').unbind('click');
+    $('.mod_item').bind('click', function(){
+
+        var mod = $(this).attr('moduleType');
+        var id = $(this).attr('moduleID');
+        var partID = $(this).attr('partID');
+
+        $('#assessment_tracker_info').hide();
+        $('#loading').show();
+
+        var showVals = $('input[name="showvalues"]:checked').val();
+
+        var params = { id: id, mod: mod, studentID: studentID, showVals: showVals };
+        if (partID !== undefined)
+        {
+            params.partID = partID;
+        }
+
+        $.post(M.cfg.wwwroot + '/blocks/bcgt/ajax/load_mod_info.php', params, function(data){
+
+            var json = Y.JSON.parse(data);
+
+            $('#assessment_tracker_info_title').text( json.title );
+            $('#assessment_tracker_info_content').html( json.content );
+            $('#loading').hide();
+            $('#assessment_tracker_info').show();
+
+        });
+
+    });
+    
+    $('.mod_item').addClass('hand');
+    
+    
+    
+    // Click on a mod_item
+    $('.mod_head').unbind('click');
+    $('.mod_head').bind('click', function(){
+
+        var mod = $(this).attr('moduleType');
+        var id = $(this).attr('moduleID');
+
+        $('#assessment_tracker_info').hide();
+        $('#loading').show();
+
+        var params = { id: id, mod: mod, studentID: studentID };
+
+        $.post(M.cfg.wwwroot + '/blocks/bcgt/ajax/load_mod_info.php', params, function(data){
+
+            var json = Y.JSON.parse(data);
+
+            $('#assessment_tracker_info_title').text( json.title );
+            $('#assessment_tracker_info_content').html( json.content );
+            $('#loading').hide();
+            $('#assessment_tracker_info').show();
+
+        });
+
+    });
+    
+  
+}
+
+function draw_assessment_tracker(studentID){
+        
+    if( $('#tinytbl-1').length > 0 ){
+        $('#assessment_tracker_table').tinytbl('destroy');
+    }
+    
+    $('#assessment_tracker_info').hide();
+        
+    var height = '800px';
+    if ($('#elbp_assessment_calendar_content').length > 0){
+        height = '600px';
+    }
+    
+    // Apply tinytbl
+    $('#assessment_tracker_table').tinytbl({
+        'body': {
+            'useclass': null,
+            'autofocus': false
+        },
+        'head': {
+            'useclass': null
+        },
+        'cols': {
+            'frozen': 1
+        },
+        'rows': {
+            'frozen': 1
+        },
+        'rtl':0,
+        'width': 'auto',
+        'height': ''+height+''
+    });
+
+    // Apply width fix
+    $('#tinytbl-1').width( $('#tinytbl-1').width() + 2 );
+    
+    // Apply pointer css to mod items
+    bind_mod_items(studentID);
+
+    // Hide the loading gif
+    $('#loading2').hide();
+    
+}
+
+M.block_bcgt.initcorereports = function(Y, url1, url2, frozenColumns, frozenColumnsWidth, applyDataTables){
+    $('document').ready(function () {
+        $('#exportsub').unbind('click');
+        $('#exportsub').bind('click', function(){
+            $('#corereportrun').attr('action', url1);
+            $('#corereportrun').attr('target', '_blank');
+        });
+        
+        $('#runsub').unbind('click');
+        $('#runsub').bind('click', function(){
+            $('#corereportrun').attr('action', url2);
+            $('#corereportrun').attr('target', '');
+        });
+        
+//        $('#optionsContent').css('display','none');
+//        $('#optionsHeader').unbind('click');
+//        $('#optionsHeader').bind('click', function(){
+//            $( "#optionsContent" ).slideToggle( "slow", function() {
+//            // Animation complete.
+//          });
+//        });  
+        
+        if($('#results') && applyDataTables)
+        {
+            var oTable;            
+            oTable = $('#resultsTable').dataTable( {
+                "sScrollX": "100%",
+                "sScrollY": "700px",
+                "bScrollCollapse": true,
+                "bPaginate": false,
+                "bSort":false,
+                "bInfo":false,
+                "bFilter":false,
+                "bAutoWidth": false
+            } );
+
+            var fCol = new FixedColumns( oTable, {
+                            "iLeftColumns": frozenColumns,
+                            "iLeftWidth": frozenColumnsWidth 
+                        } );  
+        }
+        
+    });
+}
+
+function saveUnitGroupsForm(frm){
+    
+    $('.unitGroup select option').each( function(){
+        $(this).attr('selected', 'selected');
+    } );
+    
+    $('#'+frm).submit();
+    
+}
+
+function addUnitGroup(){
+    
+    var unitGroups = $('.unitGroup').length;
+    unitGroups++;
+        
+    var newGroup = "";
+    newGroup += "<div class='unitGroup' id='unitGroup_"+unitGroups+"'>";
+
+        newGroup += "<p><input type='text' name='unitGroupNames["+unitGroups+"]' placeholder='Group name' /></p>";
+        newGroup += "<div>";
+            newGroup += "<select id='unitGroupUnits_"+unitGroups+"' name='unitGroupUnits["+unitGroups+"][]' multiple='multiple'>";
+
+            newGroup += "</select>";
+            newGroup += "<br>";
+            newGroup += "<p><input type='button' onclick='addUnitsToGroup("+unitGroups+");return false;' value='Add Selected Units' />&nbsp;&nbsp;&nbsp;&nbsp;<input type='button' onclick='removeUnitsFromGroup("+unitGroups+");return false;' value='Remove Selected Units' /></p>";
+            newGroup += "<p><input type='button' onclick='removeUnitGroup("+unitGroups+");return false;' value='Remove Group' /></p>";
+        newGroup += "</div>";
+
+    newGroup += "</div>";
+
+    $('#unitGroups').append(newGroup);
+    
+}
+
+function removeUnitGroup(id){
+    
+    // Remove all units from this group
+    var options = $('#unitGroupUnits_'+id+' option');
+    
+    $(options).each( function(){
+        
+        $('#unitlist').append( $(this) );
+        
+    } );
+    
+    $('#unitGroup_'+id).remove();
+    
+}
+
+function addUnitsToGroup(id){
+    
+    var selected = $('#unitlist option:selected');
+    
+    $(selected).each( function(){
+        
+        $('#unitGroupUnits_'+id).append( $(this) );
+        
+    } );
+    
+}
+
+function removeUnitsFromGroup(id){
+    
+    var selected = $('#unitGroupUnits_'+id+' option:selected');
+    
+    $(selected).each( function(){
+        
+        $('#unitlist').append( $(this) );
+        
+    } );
+    
+    
+}
+
+M.block_bcgt.initarchive = function(Y)
+{
+    var type = $('#archivetype');
+    if(type)
+    {
+        $('#archivetype').bind('change', function(){
+            $('#archive_data_form').submit();
+        })
+    }
 }
 

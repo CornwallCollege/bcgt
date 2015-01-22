@@ -36,10 +36,10 @@ $string = 'selectcourse';
 $PAGE->set_url($url);
 $PAGE->set_title(get_string('selectqual', 'block_bcgt'));
 $PAGE->set_heading(get_string('selectqual', 'block_bcgt'));
-$PAGE->set_pagelayout('login');
-$PAGE->add_body_class(get_string('myDashboard', 'block_bcgt'));
-$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php','title');
-$PAGE->navbar->add(get_string('myDashboard', 'block_bcgt'),'my_dashboard.php?tab=dash','title');
+$PAGE->set_pagelayout( bcgt_get_layout() );
+$PAGE->add_body_class(get_string('bcgtmydashboard', 'block_bcgt'));
+$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php?tab=track','title');
+//$PAGE->navbar->add(get_string('bcgtmydashboard', 'block_bcgt'),'my_dashboard.php?tab=dash','title');
 $PAGE->navbar->add(get_string('dashtabadm', 'block_bcgt'),'my_dashboard.php?tab=adm','title');
 $PAGE->navbar->add(get_string($string, 'block_bcgt'));
 

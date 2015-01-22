@@ -24,12 +24,17 @@ class UserCourseTarget {
     //iimport options
     protected $insertmissingbreakdown;
     protected $insertmissingtargetgrade;
+    protected $calculateAspGrade;
     
     protected $bcgtqualificationid;
     protected $userid;
     protected $bcgttargetbreakdownid;
-    protected $bcgttargetgradeid;
+    protected $bcgttargetgradesid;
+    protected $bcgtweightedbreakdownid;
+    protected $bcgtweightedgradeid;
 
+    protected $calculateAspGrades;
+    
     protected $success;
     protected $summary;
     
@@ -55,7 +60,10 @@ class UserCourseTarget {
         }
     }
     
-    
+    public function calculate_aspirational_grades_check($calculateAspGrades)
+    {
+        $this->calculateAspGrades = $calculateAspGrades;
+    }
     
     public function get_test_page()
     {
@@ -223,6 +231,11 @@ class UserCourseTarget {
         $retval .= '<tr><td><label for="option2">'.get_string('tgcreatemissingtargetgrade', 'block_bcgt').' : </label></td>';
         $retval .= '<td><input type="checkbox" checked="checked" name="option2"/></td>';
         $retval .= '<td><span class="description">('.get_string('tgcreatemissingtargetgradedesc', 'block_bcgt').')</span></td></tr>';
+        
+        $retval .= '<tr><td><label for="option3">'.get_string('plcalculateaspgrades', 'block_bcgt').' : </label></td>';
+        $retval .= '<td><input type="checkbox" name="option3"/></td>';
+        $retval .= '<td><span class="description">('.get_string('plcalculateaspgradesdesc', 'block_bcgt').')</span></td></tr>';
+        
         $retval .= '</table>';
 //        $retval .= '<label for="">'.get_string('plcreatemissinguser', 'block_bcgt').' : </label>';
 //        $retval .= '<input type="checkbox" name="option1"/>';
@@ -239,6 +252,14 @@ class UserCourseTarget {
         if(isset($_POST['option2']))
         {
             $this->insertmissingtargetgrade = true;
+        }
+        if(isset($_POST['option3']))
+        {
+            $this->calculateAspGrade = true;
+        }
+        else
+        {
+            $this->calculateAspGrade = false;
         }
     }
     
@@ -447,9 +468,15 @@ class UserCourseTarget {
                             $averageGCSEScore, $justCalculateWeightedTargets);
             }
             
+            $recalculateAspGrades = false;
+            if(isset($this->calculateAspGrades))
+            {
+                $recalculateAspGrades = $this->calculateAspGrades;
+            }
+            
             if($userID != -1)
             {
-                $this->save_user_target_grades();
+                $this->save_user_target_grades($recalculateAspGrades);
             }
             else
             {
@@ -464,6 +491,73 @@ class UserCourseTarget {
             //e.g. we were enrolled on a course, and now we arent, or a qual
             $this->reset_users_old_targets();
         }
+    }
+    
+    public function calculate_weighted_target_grade($qual, $userID, $courseID, $record)
+    {
+       
+        global $DB;
+                
+        $qualFamily = $qualFamily = bcgt_get_family_for_qual($qual->get_id());
+        $weighting = new QualWeighting(-1, null);
+        $calculatingWeightings = $weighting->can_family_have_weighted_target_grades( $qualFamily );
+                
+        $coefficient = $weighting->get_coefficient_for_qual($qual->get_id());
+        $useConstant = get_config('bcgt','weightedtargetgradesuseconstant');
+        $weightedMethod = get_config('bcgt','weightedtargetgradesclosestgrade');//will be UP or DOWN
+        
+        $qualWeighting = new QualWeighting();
+        $constant = $qualWeighting->get_constant($qual->get_target_qual_ID());
+        
+        $params = new stdClass();
+        $params->userid = $userID;
+        $params->bcgtqualificationid = $qual->get_id();
+        $params->courseid = $courseID;
+        
+        if($calculatingWeightings)
+        {
+
+            // Weighted single grade, e.g. B
+            if ($record->bcgttargetgradesid)
+            {
+                
+                $targetGrade = $DB->get_record("block_bcgt_target_grades", array("id" => $record->bcgttargetgradesid));
+                $targetGradeObj = new TargetGrade($targetGrade->id, $targetGrade);
+
+                $weightedTargetGrade = false;
+                if($targetGradeObj)
+                {
+                    $targetGradeUcasPoints = $targetGradeObj->get_ucas_points();
+                    $newUcasPointsTarget = $targetGradeUcasPoints * $coefficient;
+                    if($useConstant)
+                    {
+                        $newUcasPointsTarget = $newUcasPointsTarget + $constant;
+                    } 
+                    $weightedTargetGrade = new TargetGrade(-1, null);
+                    $weightedTargetGrade->get_target_grade_ucas_points($qual->get_target_qual_ID(), $newUcasPointsTarget, $weightedMethod);
+                }
+
+                if ($weightedTargetGrade && $weightedTargetGrade->get_id() > 0)
+                {
+                    $params->bcgtweightedgradeid = $weightedTargetGrade->get_id();
+                }
+                else 
+                {
+                    $params->bcgtweightedgradeid = $record->bcgttargetgradesid;
+                }
+                
+                $params->bcgttargetgradesid = $record->bcgttargetgradesid;
+            
+            }
+            
+            $userCourseTarget = new UserCourseTarget(-1, $params); 
+            $userCourseTarget->save(true, $qual->get_id());
+
+        }               
+        
+        // Remove duplicates
+        $this->remove_redundant_grade_records();
+        
     }
     
     protected function process_target_grade_calc($qual, $userID, $useAsp, $averageGCSEScore, $justCalculateWeightedTargets)
@@ -487,6 +581,7 @@ class UserCourseTarget {
             $breakdown->get_breakdown_average_score($qual->bcgttargetqualid, $averageGCSEScore);
             $targetGrade = new TargetGrade(-1, null);
             $targetGrade->get_target_grade_average_score($qual->bcgttargetqualid, $averageGCSEScore);
+            
             if($useAsp)
             {
                 //so we are auto calculating an aspirational grade and we want to set it to the autocalcaspvalue
@@ -499,56 +594,96 @@ class UserCourseTarget {
         $newAverageGcseScore = 'N/A';
         $weightedBreakdown = null;
         $weightedTargetGrade = null;
-        $weighting = new QualWeighting(-1, null);
-        $coefficient = $weighting->get_coefficient_for_qual($qual->id);
-        if($coefficient)
+        
+        //are we allows to calculate a weighted target grade for this qual?
+        //what is the family:
+        if(isset($qual->family))
         {
-            //get_config: 
-            $weightedTargetGradeMethod = get_config('bcgt','weightedtargetmethod');
-            switch($weightedTargetGradeMethod)
+            $qualFamily = $qual->family;
+        }
+        else
+        {
+            $qualFamily = bcgt_get_family_for_qual($qual->id);
+        }
+        $coefficient = null;
+        $weighting = new QualWeighting(-1, null);
+        $calculatingWeightings = $weighting->can_family_have_weighted_target_grades($qualFamily);
+        if($calculatingWeightings)
+        {
+            $coefficient = $weighting->get_coefficient_for_qual($qual->id);
+            if($coefficient)
             {
-                case 1:
-                    //multiply the average gcse score by the coeeficient
-                    $newAverageGcseScore = $averageGCSEScore*$coefficient;
-                    $weightedBreakdown = new Breakdown(-1, null);
-                    $weightedBreakdown->get_breakdown_average_score($qual->bcgttargetqualid, $newAverageGcseScore);   
+                //get_config: 
+                $weightedTargetGradeMethod = get_config('bcgt','weightedtargetmethod');
+                switch($weightedTargetGradeMethod)
+                {
+                    //after speaking with PAUL:
+                    
+                    //we shall:Do weighting multiplication
+                    //get new ucaspoints
+                    //Add contstant : get from the global settings
+                    //Get NEXT grade UP
 
-                    $weightedTargetGrade = new TargetGrade(-1, null);
-                    $weightedTargetGrade->get_target_grade_average_score($qual->bcgttargetqualid, $newAverageGcseScore);
-                    break;
-                case 2:
-                    //multiply the target grade ucas points by the coefficient
-                    //are we just calculating the weighted target grade? if so we need to go and get the
-                    //students target grade from the database
-                    if($justCalculateWeightedTargets && $userID != -1)
-                    {
-                        $usersTargetGrades = $this->retrieve_users_target_grades($userID, $qual->id);
-                        if($usersTargetGrades)
-                        {
-                            $targetGrade = $usersTargetGrades[$qual->id]->targetgrade;
-                            $breakdown = $usersTargetGrades[$qual->id]->breakdown;
-                        }
-                    }
-                    if($targetGrade)
-                    {
-                        $targetGradeUcasPoints = $targetGrade->get_ucas_points();
-                        $newUcasPointsTarget = $targetGradeUcasPoints * $coefficient;
-                        $weightedTargetGrade = new TargetGrade(-1, null);
-                        $weightedTargetGrade->get_target_grade_ucas_points($qual->bcgttargetqualid, $newUcasPointsTarget);
-                    }
-                    if($breakdown)
-                    {
-                        $breakdownUcasPoints = $breakdown->get_ucas_points();
-                        $newUcasPointsBreakdown = $breakdownUcasPoints * $coefficient;
+                    case 1:
+                        //multiply the average gcse score by the coeeficient
+                        $newAverageGcseScore = $averageGCSEScore*$coefficient;
                         $weightedBreakdown = new Breakdown(-1, null);
-                        $weightedBreakdown->get_breakdown_ucas_points($qual->bcgttargetqualid, $newUcasPointsBreakdown); 
-                    }
-                    break;
-                default:
-                    //do nothing
-                    break;
-            }
+                        $weightedBreakdown->get_breakdown_average_score($qual->bcgttargetqualid, $newAverageGcseScore);   
 
+                        $weightedTargetGrade = new TargetGrade(-1, null);
+                        $weightedTargetGrade->get_target_grade_average_score($qual->bcgttargetqualid, $newAverageGcseScore);
+                        break;
+                    case 2:
+                        //multiply the target grade ucas points by the coefficient
+                        //are we just calculating the weighted target grade? if so we need to go and get the
+                        //students target grade from the database
+                        if($justCalculateWeightedTargets && $userID != -1)
+                        {
+                            $usersTargetGrades = $this->retrieve_users_target_grades($userID, $qual->id);
+                            if($usersTargetGrades)
+                            {
+                                $targetGrade = $usersTargetGrades[$qual->id]->targetgrade;
+                                $breakdown = $usersTargetGrades[$qual->id]->breakdown;
+                            }
+                        }
+                        //are we artificially inflating by adding a constant?
+                        $useConstant = get_config('bcgt','weightedtargetgradesuseconstant');
+                        $weightedMethod = get_config('bcgt','weightedtargetgradesclosestgrade');//will be UP or DOWN
+                        $qualWeighting = new QualWeighting();
+                        $constant = $qualWeighting->get_constant($qual->bcgttargetqualid);
+                        if(isset($targetGrade) && $targetGrade->get_id() > 0)
+                        {
+                            $targetGradeUcasPoints = $targetGrade->get_ucas_points();
+                            $newUcasPointsTarget = $targetGradeUcasPoints * $coefficient;
+                            if($useConstant)
+                            {
+                                //$constant = get_config('bcgt','weightedtargetgradeconstant');
+                                //hard code to 1.65 for now
+                                
+                                //this wants to be half the ucas points difference in grades, for this qual.
+                                $newUcasPointsTarget = $newUcasPointsTarget + $constant;
+                            } 
+                            $weightedTargetGrade = new TargetGrade(-1, null);
+                            $weightedTargetGrade->get_target_grade_ucas_points($qual->bcgttargetqualid, $newUcasPointsTarget, $weightedMethod);
+                        }
+                        if(isset($breakdown) && $breakdown->get_id() > 0)
+                        {
+                            $breakdownUcasPoints = $breakdown->get_ucas_points();
+                            $newUcasPointsBreakdown = $breakdownUcasPoints * $coefficient;
+                            if($useConstant)
+                            {                                
+                                $newUcasPointsBreakdown = $newUcasPointsBreakdown + $constant;
+                            }
+                            $weightedBreakdown = new Breakdown(-1, null);
+                            $weightedBreakdown->get_breakdown_ucas_points($qual->bcgttargetqualid, $newUcasPointsBreakdown, $weightedMethod); 
+                        }
+                        break;
+                    default:
+                        //do nothing
+                        break;
+                }
+
+            }
         }
         //find the targetpercentage
         //find the coefficient
@@ -559,8 +694,8 @@ class UserCourseTarget {
         {
             $stdObj->breakdown = $breakdown;
             $stdObj->targetgrade = $targetGrade;
-            $stdObj->teachersetbreakdown = $aspBreakdown;
-            $stdObj->teachersettargetgrade = $aspTargetGrade;
+//            $stdObj->teachersetbreakdown = $aspBreakdown;
+//            $stdObj->teachersettargetgrade = $aspTargetGrade;
         }
         if($weightedBreakdown)
         {
@@ -586,7 +721,12 @@ class UserCourseTarget {
         $this->usersTargetGrades = $qualsArray;
     }
     
-    public function save_user_target_grades()    
+    protected function get_ucas_grade_difference()
+    {
+        
+    }
+    
+    public function save_user_target_grades($recalculateAspGrades)    
     {
         $usersCourses = array();
         global $DB;
@@ -606,12 +746,12 @@ class UserCourseTarget {
                     {
                         $courseID = $course->courseid;
                         $usersCourses[$courseID] = $courseID;
-                        $this->save_user_target_grades_db($qual, $courseID);
+                        $this->save_user_target_grades_db($qual, $courseID, $recalculateAspGrades);
                     }
                 }
                 else
                 {
-                    $this->save_user_target_grades_db($qual, $courseID);
+                    $this->save_user_target_grades_db($qual, $courseID, $recalculateAspGrades);
                 }
             }
             //so we need to now get rid of all of the target grades for old course
@@ -717,7 +857,7 @@ class UserCourseTarget {
         $DB->execute($sql, $params); 
     }
     
-    private function save_user_target_grades_db($qual, $courseID)
+    private function save_user_target_grades_db($qual, $courseID, $recalculateAspGrades = false)
     {
         global $DB;
         $stdObj = new stdClass();
@@ -734,7 +874,6 @@ class UserCourseTarget {
         if(isset($qual->teachersetbreakdown))
         {
             $stdObj->teacherset_breakdownid = $qual->teachersetbreakdown->get_id();
-            
         }
         if(isset($qual->teachersettargetgrade))
         {
@@ -778,11 +917,52 @@ class UserCourseTarget {
             //we are inserting brand new
             $DB->insert_record('block_bcgt_user_course_trgts',$stdObj);
         }
+        //also need to save the aspirational target grade in the stud_course_grade table
+        if(isset($qual->teachersetbreakdown) && $recalculateAspGrades)
+        {
+            $this->set_student_course_grade($this->userID, 'aspirational', $courseID, $qual->id, 'block_bcgt_target_breakdown', $qual->teachersetbreakdown->get_id());
+        }
+        if(isset($qual->teachersettargetgrade) && $recalculateAspGrades)
+        {
+            $this->set_student_course_grade($this->userID, 'aspirational', $courseID, $qual->id, 'block_bcgt_target_grades', $qual->teachersettargetgrade->get_id());
+        }
     }
+    
+    protected function set_student_course_grade($userID, $type, $courseID, $qualID, $location, $recordID)
+    {
+        global $DB, $USER;
+        $update = true;
+        $stdObj = $DB->get_record("block_bcgt_stud_course_grade", array("userid" => $userID, "qualid" => $qualID, "type" => $type));
+        if(!$stdObj)
+        {
+            $update = false;
+            $stdObj = new stdClass();
+        }
+        $stdObj->userid = $userID;
+        $stdObj->qualid = $qualID;
+        $stdObj->courseid = $courseID;
+        $stdObj->type = $type;
+        $stdObj->recordid = $recordID;
+        $stdObj->setbyuserid = $USER->id;
+        $stdObj->settime = time();
+        $stdObj->location = $location;
+        
+        if($update)
+        {
+            $DB->update_record('block_bcgt_stud_course_grade', $stdObj);
+        }
+        else
+        {
+            $DB->insert_record('block_bcgt_stud_course_grade', $stdObj);
+        }
+    }
+    
+    
+    
     
     public function calculate_users_average_gcse_score(array $users = null, $calculateTargetGrade = false)
     {
-        $userCourseTarget = new UserCourseTarget();
+//        $userCourseTarget = new UserCourseTarget();
         global $DB;
         //if the users is null then we are calculating all
         if(!$users)
@@ -799,13 +979,17 @@ class UserCourseTarget {
             {
                 $userID = $user;
             }
-            $userCourseTarget->calculate_user_average_score($userID, $calculateTargetGrade);
+            $this->calculate_user_average_score($userID, $calculateTargetGrade);
         }
+        
+        //now remove all extra target grades
+        $this->remove_redundant_grade_records();
+        
     }
     
     public function calculate_users_target_grades(array $users = null, $recaclculateAverageScore = false)
     {
-        $userCourseTarget = new UserCourseTarget();
+        //        $userCourseTarget = new UserCourseTarget();
         global $DB;
         //if the users is null then we are calculating all
         if(!$users)
@@ -814,7 +998,7 @@ class UserCourseTarget {
         }
         foreach($users AS $user)
         {
-            $userCourseTarget->calculate_user_target_grade($user->id, null, $recaclculateAverageScore);
+            $this->calculate_user_target_grade($user->id, null, $recaclculateAverageScore);
         }
         //now remove all extra target grades
         $this->remove_redundant_grade_records();
@@ -823,19 +1007,16 @@ class UserCourseTarget {
     private function remove_redundant_grade_records()
     {
         global $DB;
-        $sql = "DELETE FROM {block_bcgt_user_course_trgts} WHERE 
-            (bcgttargetbreakdownid = ? OR bcgttargetbreakdownid IS NULL OR bcgttargetbreakdownid = ?) 
+        $sql = "DELETE FROM {block_bcgt_user_course_trgts} 
+            WHERE (bcgttargetbreakdownid = ? OR bcgttargetbreakdownid IS NULL OR bcgttargetbreakdownid = ?) 
             AND (bcgttargetgradesid = ? OR bcgttargetgradesid IS NULL OR bcgttargetgradesid = ?) 
             AND (bcgtweightedgradeid = ? OR bcgtweightedgradeid IS NULL OR bcgtweightedgradeid = ?)
             AND (bcgtweightedbreakdownid = ? OR bcgtweightedbreakdownid IS NULL OR bcgtweightedbreakdownid = ?) 
-            AND (teacherset_targetid = ? OR teacherset_targetid IS NULL OR teacherset_targetid = ?)
-            AND (teacherset_breakdownid = ? OR teacherset_breakdownid IS NULL OR teacherset_breakdownid = ?)";
+            ";
         $DB->execute($sql, array(-1, 0,
                 -1, 0,
                 -1, 0,
-                -1, 0, 
-                -1, 0, 
-                -1, 0));
+                -1, 0));        
     }
     
     private function save_user_averagescore($userID)
@@ -874,6 +1055,36 @@ class UserCourseTarget {
         return $DB->get_record_sql($sql, array($userID));
     }
     
+    public static function get_users_target_grade($userID, $qualID)
+    {
+        global $DB;
+        $sql = "SELECT distinct(target.id), target.* FROM {block_bcgt_user_course_trgts} utargets 
+            JOIN {block_bcgt_target_grades} target ON target.id = utargets.bcgttargetgradesid 
+            WHERE userid = ? AND bcgtqualificationid = ? ";
+        $records = $DB->get_records_sql($sql, array($userID, $qualID));
+        if($records)
+        {
+            $record = end($records);
+            return new TargetGrade($record->id, $record);
+        }
+        return false;
+    }
+    
+    public static function get_users_weighted_target_grade($userID, $qualID)
+    {
+        global $DB;
+        $sql = "SELECT distinct(target.id), target.* FROM {block_bcgt_user_course_trgts} utargets 
+            JOIN {block_bcgt_target_grades} target ON target.id = utargets.bcgtweightedgradeid 
+            WHERE userid = ? AND bcgtqualificationid = ? ";
+        $records = $DB->get_records_sql($sql, array($userID, $qualID));
+        if($records)
+        {
+            $record = end($records);
+            return new TargetGrade($record->id, $record);
+        }
+        return false;
+    }
+    
     /**
      * Gets the params from the object and returns an object of them. 
      * @return \stdClass
@@ -886,6 +1097,8 @@ class UserCourseTarget {
         $params->courseid = $this->courseid;
         $params->bcgttargetbreakdownid = $this->bcgttargetbreakdownid;
         $params->bcgttargetgradesid = $this->bcgttargetgradesid;
+        $params->bcgtweightedbreakdownid = $this->bcgtweightedbreakdownid;
+        $params->bcgtweightedgradeid = $this->bcgtweightedgradeid;
         return $params;
     }
     
@@ -921,12 +1134,15 @@ class UserCourseTarget {
             if($count != 1)
             {
                 //first find the user
+                if (empty($targetGrade[5])) continue;
+                
                 $user = $DB->get_record_sql('SELECT * FROM {user} WHERE username = ?', array($targetGrade[5]));
                 if(!$user)
                 {
                     $usersNotFound[$targetGrade[5]] = $targetGrade[5];
                     continue;
                 }
+                                
                 $userID = $user->id;
                 $usersArray[$userID] = $user; 
                 //first find the qual
@@ -936,10 +1152,22 @@ class UserCourseTarget {
                 {
                     foreach($quals AS $qual)
                     {
+                        
+                        if(isset($qual->family))
+                        {
+                            $qualFamily = $qual->family;
+                        }
+                        else
+                        {
+                            $qualFamily = bcgt_get_family_for_qual($qual->id);
+                        }
+                        
+                        
                         //might find more than one. but the user will only be on one
                         if(Qualification::check_user_on_qual($userID, $studentRoleID, $qual->id))
                         {
                             $breakdownID = -1;
+                            $breakdown = null;
                             if(isset($targetGrade[6]))
                             {
                                 if($targetGrade[6] != '' && $qual->bcgttargetqualid)
@@ -964,6 +1192,7 @@ class UserCourseTarget {
                                 
                             }
                             $targetGradeID = -1;
+                            $targetGradeObj = null;
                             if(isset($targetGrade[7]))
                             {
                                 if($targetGrade[7] != '' && $qual->bcgttargetqualid)
@@ -1004,12 +1233,107 @@ class UserCourseTarget {
                                     $params->courseid = $courseID;
                                     $params->bcgttargetbreakdownid = $breakdownID;
                                     $params->bcgttargetgradesid = $targetGradeID;
-                                    $userCourseTarget = new UserCourseTarget(-1, $params);
-                                    $userCourseTarget->save(true, $qual->id);
+                                    
+                                    // Calculate weighted
+                                    if ($breakdown)
+                                    {
+                                        
+                                        $weighting = new QualWeighting(-1, null);
+                                        $calculatingWeightings = $weighting->can_family_have_weighted_target_grades($qualFamily);
+                                        if($calculatingWeightings)
+                                        {
+
+                                            // Weighted overall grade, e.g. CCDD
+                                            $coefficient = $weighting->get_coefficient_for_qual($qual->id);
+                                            $useConstant = get_config('bcgt','weightedtargetgradesuseconstant');
+                                            $weightedMethod = get_config('bcgt','weightedtargetgradesclosestgrade');//will be UP or DOWN
+                                            $qualWeighting = new QualWeighting();
+                                            $constant = $qualWeighting->get_constant($qual->bcgttargetqualid);
+
+                                            $breakdownUcasPoints = $breakdown->get_ucas_points();
+                                            $newUcasPointsBreakdown = $breakdownUcasPoints * $coefficient;
+                                            if($useConstant)
+                                            {                                
+                                                $newUcasPointsBreakdown = $newUcasPointsBreakdown + $constant;
+                                            }
+
+                                            $weightedBreakdown = new Breakdown(-1, null);
+                                            $weightedBreakdown->get_breakdown_ucas_points($qual->bcgttargetqualid, $newUcasPointsBreakdown, $weightedMethod); 
+
+                                            if($weightedBreakdown && $weightedBreakdown->get_id() > 0)
+                                            {
+                                                $params->bcgtweightedbreakdownid = $weightedBreakdown->get_id();
+                                            }
+                                            else
+                                            {
+                                                $params->bcgtweightedbreakdownid = $breakdownID;
+                                            }
+                                            
+                                            
+                                            // Weighted single grade, e.g. B
+                                            $weightedTargetGrade = false;
+                                            if($targetGradeObj)
+                                            {
+                                                $targetGradeUcasPoints = $targetGradeObj->get_ucas_points();
+                                                $newUcasPointsTarget = $targetGradeUcasPoints * $coefficient;
+                                                if($useConstant)
+                                                {
+                                                    $newUcasPointsTarget = $newUcasPointsTarget + $constant;
+                                                } 
+                                                $weightedTargetGrade = new TargetGrade(-1, null);
+                                                $weightedTargetGrade->get_target_grade_ucas_points($qual->bcgttargetqualid, $newUcasPointsTarget, $weightedMethod);
+                                            }
+                                            
+                                            if ($weightedTargetGrade && $weightedTargetGrade->get_id() > 0)
+                                            {
+                                                $params->bcgtweightedgradeid = $weightedTargetGrade->get_id();
+                                            }
+                                            else 
+                                            {
+                                                $params->bcgtweightedgradeid = $targetGradeID;
+                                            }
+
+                                        }                            
+                                    
+                                    }
+                                                                                 
+                                    $userCourseTarget = new UserCourseTarget(-1, $params); 
+                                    $userCourseTarget->save(true, $qual->id);                                    
                                     $successCount++;
+                                                                        
+                                    // Save to student_course_grades table as well, since we should be using this one
+                                    if ($params->bcgttargetgradesid > 0){
+                                        $this->set_student_course_grade($userID, 'target', $courseID, $qual->id, 'block_bcgt_target_grades', $params->bcgttargetgradesid);
+                                    } 
+                                    
+                                    if ($params->bcgttargetbreakdownid > 0){
+                                        $this->set_student_course_grade($userID, 'target', $courseID, $qual->id, 'block_bcgt_target_breakdown', $params->bcgttargetbreakdownid);
+                                    }
+                                                                    
+                                    if($this->calculateAspGrade)
+                                    {
+                                        //then we also need to calculate the aspirational grade
+                                        if($breakdown)
+                                        {
+                                            $aspBreakdown = $breakdown->get_breakdown_asp(get_config('bcgt','autocalcaspvalue'));
+                                            if($aspBreakdown)
+                                            {
+                                                $this->set_student_course_grade($userID, 'aspirational', $courseID, $qual->id, 'block_bcgt_target_breakdown', $aspBreakdown->get_id());
+                                            }
+                                                                                        
+                                        }
+
+                                        if($targetGradeObj)
+                                        {
+                                            $aspTargetGrade = $targetGradeObj->get_target_asp(get_config('bcgt','autocalcaspvalue'));
+                                            if($aspTargetGrade)
+                                            {
+                                                $this->set_student_course_grade($userID, 'aspirational', $courseID, $qual->id, 'block_bcgt_target_grades', $aspTargetGrade->get_id());
+                                            }
+                                        }
+                                    }
                                 }
                             }
-                            
                         }
                         else
                         {
@@ -1046,11 +1370,11 @@ class UserCourseTarget {
             }
             $count++;
         }
-        
         if($process && isset($targetGrade[8]) && $targetGrade[8] != '' && (!isset($targetGrade[7]) && (!isset($targetGrade[6]))))
         {
             //then calculate target grades
             $userCourseTarget = UserCourseTarget();
+            $userCourseTarget->calculate_aspirational_grades_check($this->calculateAspGrade);
             $userCourseTarget->calculate_users_target_grades($usersArray);
         }
         $success = true;
@@ -1120,8 +1444,10 @@ class UserCourseTarget {
         $this->bcgtqualificationid = $params->bcgtqualificationid;
         $this->userid = $params->userid;
         $this->courseid = $params->courseid;
-        $this->bcgttargetbreakdownid = $params->bcgttargetbreakdownid;
-        $this->bcgttargetgradesid = $params->bcgttargetgradesid;
+        if(isset($params->bcgttargetbreakdownid)) $this->bcgttargetbreakdownid = $params->bcgttargetbreakdownid;
+        if(isset($params->bcgttargetgradesid)) $this->bcgttargetgradesid = $params->bcgttargetgradesid;
+        if(isset($params->bcgtweightedbreakdownid)) $this->bcgtweightedbreakdownid = $params->bcgtweightedbreakdownid;
+        if(isset($params->bcgtweightedgradeid)) $this->bcgtweightedgradeid = $params->bcgtweightedgradeid;
     }
     
     /**
@@ -1144,7 +1470,7 @@ class UserCourseTarget {
     {
         global $DB;
         $sql = "SELECT * FROM {block_bcgt_user_course_trgts} WHERE bcgtqualificationid = ? AND userid = ? AND courseid = ?";
-        return $DB->get_record_sql($sql, array($this->bcgtqualificationid, $this->userid, $this->courseid));
+        return $DB->get_record_sql($sql, array($this->bcgtqualificationid, $this->userid, $this->courseid), IGNORE_MULTIPLE);
     }
     
     //Reporting:
@@ -1169,6 +1495,7 @@ class UserCourseTarget {
         $reporting = new Reporting();
         return $reporting->get_users_target_grades($userID, $qualID, $courseID);
     }
+    
+    
+    
 }
-
-?>

@@ -36,9 +36,9 @@ $type = required_param('type', PARAM_TEXT);
 $PAGE->set_url('/blocks/bcgt/forms/grading_structure.php?type='.$type, array());
 $PAGE->set_title(get_string('gradingstructure', 'block_bcgt'));
 $PAGE->set_heading(get_string('gradingstructure', 'block_bcgt'));
-$PAGE->set_pagelayout('login');
-$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php','title');
-$PAGE->navbar->add(get_string('myDashboard', 'block_bcgt'),'my_dashboard.php?tab=dash','title');
+$PAGE->set_pagelayout( bcgt_get_layout() );
+$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php?tab=track','title');
+//$PAGE->navbar->add(get_string('bcgtmydashboard', 'block_bcgt'),'my_dashboard.php?tab=dash','title');
 $PAGE->navbar->add(get_string('dashtabadm', 'block_bcgt'),'my_dashboard.php?tab=adm','title');
 $PAGE->navbar->add(get_string('gradingstructure', 'block_bcgt'));
 
@@ -208,7 +208,7 @@ echo'<h2 class="bcgt_form_heading">'.get_string('gradingstructure', 'block_bcgt'
 
                     for($i = 0; $i < $cnt; $i++){
 
-                        if (isset($gradeids[$i]))
+                        if (isset($gradeids[$i]) && !empty($gradeids[$i]))
                         {
 
                             if (empty($grades[$i]))
@@ -239,6 +239,11 @@ echo'<h2 class="bcgt_form_heading">'.get_string('gradingstructure', 'block_bcgt'
                                     if (isset($img) && preg_match('/^image\//', $img->type))
                                     {
 
+                                        // create directory if it doesn't exist
+                                        if (!is_dir($CFG->dirroot . '/blocks/bcgt/plugins/bcgtbespoke/pix/grid_symbols/bespoke/')){
+                                            mkdir($CFG->dirroot . '/blocks/bcgt/plugins/bcgtbespoke/pix/grid_symbols/bespoke/', 0775);
+                                        }
+                                        
                                         $filename = $obj->id . '_' . $obj->shortgrade . '.jpg';
                                         move_uploaded_file( $img->tmp_name, $CFG->dirroot . '/blocks/bcgt/plugins/bcgtbespoke/pix/grid_symbols/bespoke/'.$filename);
                                         $obj->img = $filename;
@@ -246,7 +251,6 @@ echo'<h2 class="bcgt_form_heading">'.get_string('gradingstructure', 'block_bcgt'
                                     }
 
                                     $DB->update_record('block_bcgt_bspk_c_grade_vals', $obj);
-
 
                                 }
                             }
@@ -280,6 +284,11 @@ echo'<h2 class="bcgt_form_heading">'.get_string('gradingstructure', 'block_bcgt'
                             if (isset($img) && preg_match('/^image\//', $img->type))
                             {
 
+                                // create directory if it doesn't exist
+                                if (!is_dir($CFG->dirroot . '/blocks/bcgt/plugins/bcgtbespoke/pix/grid_symbols/bespoke/')){
+                                    mkdir($CFG->dirroot . '/blocks/bcgt/plugins/bcgtbespoke/pix/grid_symbols/bespoke/', 0775);
+                                }
+                                        
                                 $filename = $obj->id . '_' . $obj->shortgrade . '.jpg';
                                 move_uploaded_file( $img->tmp_name, $CFG->dirroot . '/blocks/bcgt/plugins/bcgtbespoke/pix/grid_symbols/bespoke/'.$filename);
                                 $obj->img = $filename;
@@ -344,6 +353,7 @@ echo'<h2 class="bcgt_form_heading">'.get_string('gradingstructure', 'block_bcgt'
                 $id = optional_param('id', false, PARAM_INT);
                 $editingGrades = array();
                 $editing = false;
+                $cntGrades = 2;
                 
                 if ($id)
                 {
@@ -351,11 +361,12 @@ echo'<h2 class="bcgt_form_heading">'.get_string('gradingstructure', 'block_bcgt'
                     if ($editing)
                     {
                         $editingGrades = $DB->get_records("block_bcgt_bspk_c_grade_vals", array("critgradingid" => $id), "points ASC");
+                        $cntGrades = count($editingGrades) - 1;
                     }
                 }
                 
                 
-                echo "<script>var num = ".(count($editingGrades) - 1)."; function addNewGSRow(){ num++; $('#gsTable').append('<tr><td><input type=\"text\" name=\"grades['+num+']\" /></td><td><input type=\"text\" style=\"width:40px;\" name=\"shortgrades['+num+']\" /></td><td><input type=\"text\" style=\"width:40px;\" name=\"points['+num+']\" /></td><td><input type=\"text\" style=\"width:40px;\" name=\"lowers['+num+']\" /></td><td><input type=\"text\" style=\"width:40px;\" name=\"uppers['+num+']\" /></td><td><input type=\"file\" name=\"img['+num+']\" accept=\"image/*\" /></td></tr>'); }</script>";
+                echo "<script>var num = ".$cntGrades."; function addNewGSRow(){ num++; $('#gsTable').append('<tr><td><input type=\"text\" name=\"grades['+num+']\" /></td><td><input type=\"text\" style=\"width:40px;\" name=\"shortgrades['+num+']\" /></td><td><input type=\"text\" style=\"width:40px;\" name=\"points['+num+']\" /></td><td><input type=\"text\" style=\"width:40px;\" name=\"lowers['+num+']\" /></td><td><input type=\"text\" style=\"width:40px;\" name=\"uppers['+num+']\" /></td><td><input type=\"file\" name=\"img['+num+']\" accept=\"image/*\" /></td></tr>'); }</script>";
                 
                 echo '<h3>'.get_string('gradingstructure', 'block_bcgt').': '.get_string('criteria', 'block_bcgt').'</h3>';
                 
@@ -741,7 +752,7 @@ echo'<h2 class="bcgt_form_heading">'.get_string('gradingstructure', 'block_bcgt'
                     else
                     {
                         $DB->delete_records('block_bcgt_bspk_crit_grading', array('id' => $id));
-                        $DB->delete_records('block_bcgt_bspk_c_grade_vals', array('unitgradingid' => $id));
+                        $DB->delete_records('block_bcgt_bspk_c_grade_vals', array('critgradingid' => $id));
                         echo '<span style="color:blue;">Deleted</span><br>';
                     }
                     

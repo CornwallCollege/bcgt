@@ -79,6 +79,11 @@ class CGHBVRQQualification extends CGQualification {
         return true;
     }
     
+    public function get_default_award_type()
+    {
+        return "Final";
+    }
+    
     public function insert_qualification()
 	{
         
@@ -104,11 +109,11 @@ class CGHBVRQQualification extends CGQualification {
     /**
      * Displays the student Grid
      */
-    public function display_student_grid($fullGridView = true, $studentView = true, $strippedView = false)
+    public function display_student_grid($fullGridView = true, $studentView = true, $strippedView = false, $from = false)
     {
         
         global $COURSE, $PAGE, $CFG, $OUTPUT;
-        
+                
         $this->update_any_beyond_target();
         
         $grid = optional_param('g', 's', PARAM_TEXT);
@@ -120,8 +125,8 @@ class CGHBVRQQualification extends CGQualification {
         if (!$strippedView)
         {
         
-            $retval .= "<input type='submit' id='viewsimple' class='gridbuttonswitch viewsimple' name='viewsimple' value='View Simple'/>";
-            $retval .= "<input type='submit' id='viewadvanced' class='gridbuttonswitch viewadvanced' name='viewadvanced' value='View Advanced'/>";
+            $retval .= "<a href='{$CFG->wwwroot}/blocks/bcgt/grids/student_grid.php?sID={$this->studentID}&qID={$this->id}&g=s'><input type='button' id='viewsimple' class='gridbuttonswitch viewsimple' name='viewsimple' value='View Simple'/></a>";
+            $retval .= "<a href='{$CFG->wwwroot}/blocks/bcgt/grids/student_grid.php?sID={$this->studentID}&qID={$this->id}&g=a'><input type='button' id='viewadvanced' class='gridbuttonswitch viewadvanced' name='viewadvanced' value='View Advanced'/></a>";
             $retval .= "<br>";  
             $courseID = optional_param('cID', -1, PARAM_INT);
             $context = context_course::instance($COURSE->id);
@@ -131,8 +136,8 @@ class CGHBVRQQualification extends CGQualification {
             }
             if(has_capability('block/bcgt:editstudentgrid', $context))
             {	
-                $retval .= "<input type='submit' id='editsimple' class='gridbuttonswitch editsimple' name='editsimple' value='Edit Simple'/>";
-                $retval .= "<input type='submit' id='editadvanced' class='gridbuttonswitch editadvanced' name='editadvanced' value='Edit Advanced'/>"; 
+                $retval .= "<a href='{$CFG->wwwroot}/blocks/bcgt/grids/student_grid.php?sID={$this->studentID}&qID={$this->id}&g=se'><input type='button' id='editsimple' class='gridbuttonswitch editsimple' name='editsimple' value='Edit Simple'/></a>";
+                $retval .= "<a href='{$CFG->wwwroot}/blocks/bcgt/grids/student_grid.php?sID={$this->studentID}&qID={$this->id}&g=ae'><input type='button' id='editadvanced' class='gridbuttonswitch editadvanced' name='editadvanced' value='Edit Advanced'/></a>"; 
             }
         
         }
@@ -185,19 +190,21 @@ JS;
         
         $retval .= "<br style='clear:both;' />";
         
+        // I seem to have commented out all the places where it calculates qual award for some reason
+        // So no point having this
+//        if($this->has_final_grade() && $studentView && $from != 'portal')
+//		{
+//            //>>BEDCOLL TODO this need to be taken from the qual object
+//            //as foundatonQual is different
+//            $retval .= '<table id="summaryAwardGrades">';
+//			$retval .= $this->show_predicted_qual_award($this->predictedAward, $context);
+//            $retval .= '</table>';
+//            
+//        }
+        
         //the grid -> ajax
         $retval .= '<div id="cgStudentGrid">';
-        
-        if($this->has_final_grade() && $studentView)
-		{
-            //>>BEDCOLL TODO this need to be taken from the qual object
-            //as foundatonQual is different
-            $retval .= '<table id="summaryAwardGrades">';
-			$retval .= $this->show_predicted_qual_award($this->predictedAward, $context);
-            $retval .= '</table>';
-            
-        }
-        
+                
         $retval .= "<div id='studentGridDiv' class='studentGridDiv ".
         $grid."StudentGrid tableDiv'><br><br><br><table align='center' class='student_grid".
                 $grid."FixedTables CGHB' id='CGStudentGrid'>";
@@ -228,24 +235,29 @@ JS;
         $retval .= "</tbody>";
         $retval .= "</table>";
         
-        // Qual Comment
-        if ($this->comments == '') $this->comments = 'N/A';
-        $retval .= "<div id='qualComment'><br><fieldset><legend><h2>Qualification Comments</h2></legend><br>".nl2br( htmlentities($this->comments, ENT_QUOTES) )."</fieldset></div>";
+        $retval .= "</div>";
+        $retval .= '</div>';
         
-        if($this->has_final_grade() && $studentView && !$editing)
-		{
-            //>>BEDCOLL TODO this need to be taken from the qual object
-            //as foundatonQual is different
-            $retval .= '<table id="summaryAwardGrades">';
-			$retval .= $this->show_predicted_qual_award($this->predictedAward, $context);
-            $retval .= '</table>';
-            
+        // I seem to have commented out all the places where it calculates qual award for some reason
+        // So no point having this
+//        if($this->has_final_grade() && $studentView && $from != 'portal')
+//		{
+//            //>>BEDCOLL TODO this need to be taken from the qual object
+//            //as foundatonQual is different
+//            $retval .= '<table id="summaryAwardGrades">';
+//			$retval .= $this->show_predicted_qual_award($this->predictedAward, $context);
+//            $retval .= '</table>';
+//            
+//        }
+        
+        // Qual Comment
+        if ($this->comments != ''){
+            if ($this->comments == '') $this->comments = 'N/A';
+            $retval .= "<div id='qualComment'><br><fieldset><legend><h2>Qualification Comments</h2></legend><br>".nl2br( htmlentities($this->comments, ENT_QUOTES) )."</fieldset></div>";
         }
         
         $retval .= $this->get_required_settings();
         
-        $retval .= "</div>";
-        $retval .= '</div>';
         $retval .= '</div>';
         
         if ($strippedView){
@@ -313,7 +325,7 @@ JS;
             $tName = str_replace(" ", "_", htmlentities($criteriaName, ENT_QUOTES));
             
             if ($max > 1){
-                $output .= "<th class='toggleTD_{$tName}' colspan='{$max}' defaultcolspan='{$max}'><a class='taskName' href='#' onclick='toggleOverallTasks(\"{$tName}\");return false;'>{$criteriaName}</a></th>";
+                $output .= "<th class='toggleTD_{$tName}' colspan='{$max}' defaultcolspan='{$max}'>{$criteriaName}</th>";
             } else {
                 $output .= "<th colspan='{$max}' defaultcolspan='{$max}'>{$criteriaName}</th>";
             }
@@ -534,7 +546,7 @@ JS;
                 
                 $retval .= "<td>";
                                 
-				$retval .= "<span id='uID_".$unit->get_id()."' title='title' class='uNToolTip unitName".$unit->get_id()."' studentID='{$this->studentID}' unitID='{$unit->get_id()}'>".$link."</span>";
+				$retval .= "<span id='uID_".$unit->get_id()."' class='uNToolTip unitName".$unit->get_id()."' studentID='{$this->studentID}' unitID='{$unit->get_id()}'>".$link."</span>";
                 $retval .= "<span style='color:grey;font-size:85%;'><br />(".$unit->get_credits()." Credits)</span>";	
 				
                 //if has capibility
@@ -543,6 +555,9 @@ JS;
                     $retval .= "<a class='editing_update editUnit' href='{$CFG->wwwroot}/blocks/bcgt/forms/edit_unit.php?unitID=".$unit->get_id()."' title = 'Update Unit'>
 					<img class='iconsmall editUnit' alt='Update Unit' src='".$OUTPUT->pix_url("t/edit", "core")."'/></a>";
 				}
+                
+                $retval .= " <img src='".$CFG->wwwroot."/blocks/bcgt/pix/info.png' height='12' width='12' class='uNToolTipInfo hand' unitID='{$unit->get_id()}' /><div class='unitInfoContent' title='{$unit->get_display_name()}'>{$unit->build_unit_details_table()}</div>";
+
                 
                 $retval .= "<div id='unitTooltipContent_{$unit->get_id()}_{$this->studentID}' style='display:none;'>".$unit->build_unit_details_table()."</div>";
                 
@@ -587,9 +602,10 @@ JS;
 							//if its the student view then lets print
 							//out the students unformation
                             $studentCriteria = $unit->get_single_criteria(-1, $criteriaName);
-                                                        
+                            
 							if($studentCriteria)
 							{	
+                                
 								$retval .= $studentCriteria->get_grid_td_($editing, $advancedMode, $unit, $user, $this, 'student', $colspan);
 
 //								
@@ -597,12 +613,13 @@ JS;
 							else //not student criteria (i.e. the criteria doesnt exist on that unit)
 							{         
                                 //retval needs to be an array of the columns
+                                $tName = str_replace(" ", "_", htmlentities($criteriaName, ENT_QUOTES));
 								$retval .= "<td class='blank'></td>";
                                 if ($colspan > 1)
                                 {
                                     for ($i = 1; $i < $colspan; $i++)
                                     {
-                                        $retval .= "<td class='blank'></td>";
+                                        $retval .= "<td class='blank taskClass_{$tName}'></td>";
                                     }
                                 }
                                 
@@ -820,6 +837,17 @@ JS;
         echo "Not yet available";
     }
     
+    public function export_specification(){
+        return false;
+    }
     
+    public function export_studentt_grid($qualID)
+    {
+        header_remove('Content-Disposition');
+        header('Content-type: text/html');
+        echo 'Not supported for this qualification type';
+        exit;
+    }
+  
     
 }

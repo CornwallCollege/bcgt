@@ -1,0 +1,21 @@
+family,trackinglevel,subtype,targetgrade,ucaspoints,entryscoreupper,entryscorelower,unitsscoreupper,unitsscorelower,ranking
+ALevel,"Level 3","A2 Level",A*AAA,500.0,58.00,55.00,NULL,NULL,10.0
+ALevel,"Level 3","A2 Level",AAA,360.0,55.00,52.00,NULL,NULL,9.0
+ALevel,"Level 3","A2 Level",ABB,320.0,52.00,50.20,NULL,NULL,8.0
+ALevel,"Level 3","A2 Level",BBB,300.0,50.20,48.40,NULL,NULL,7.0
+ALevel,"Level 3","A2 Level",BBC,280.0,48.40,46.60,NULL,NULL,6.0
+ALevel,"Level 3","A2 Level",BCC,260.0,46.60,44.80,NULL,NULL,5.0
+ALevel,"Level 3","A2 Level",CCC,240.0,44.80,43.00,NULL,NULL,4.0
+ALevel,"Level 3","A2 Level",CCD,220.0,43.00,41.20,NULL,NULL,3.0
+ALevel,"Level 3","A2 Level",CDD,200.0,41.20,38.20,NULL,NULL,2.0
+ALevel,"Level 3","A2 Level",DDD,180.0,38.20,10.00,NULL,NULL,1.0
+ALevel,"Level 3","AS Level",AAAB,230.0,58.00,55.00,NULL,NULL,9.0
+ALevel,"Level 3","AS Level",ABBB,210.0,55.00,52.00,NULL,NULL,8.0
+ALevel,"Level 3","AS Level",BBBC,190.0,52.00,50.20,NULL,NULL,7.0
+ALevel,"Level 3","AS Level",BBCC,180.0,50.20,48.40,NULL,NULL,6.0
+ALevel,"Level 3","AS Level",CCCC,160.0,48.40,46.60,NULL,NULL,5.0
+ALevel,"Level 3","AS Level",CCDD,140.0,46.60,44.80,NULL,NULL,4.0
+ALevel,"Level 3","AS Level",CDDD,130.0,44.80,43.00,NULL,NULL,3.0
+ALevel,"Level 3","AS Level",DDDD,120.0,43.00,41.20,NULL,NULL,2.0
+ALevel,"Level 3","AS Level",DDDE/DDE,0.0,41.20,38.20,NULL,NULL,1.6
+ALevel,"Level 3","AS Level",DDE,80.0,38.20,10.00,NULL,NULL,1.0

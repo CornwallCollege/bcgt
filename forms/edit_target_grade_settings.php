@@ -34,10 +34,10 @@ $url = '/blocks/bcgt/forms/my_dashboard.php';
 $PAGE->set_url($url, array('page' => $tab));
 $PAGE->set_title(get_string('edittargetgradesettings', 'block_bcgt'));
 $PAGE->set_heading(get_string('edittargetgradesettings', 'block_bcgt'));
-$PAGE->set_pagelayout('login');
-$PAGE->add_body_class(get_string('myDashboard', 'block_bcgt'));
-$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php','title');
-$PAGE->navbar->add(get_string('myDashboard', 'block_bcgt'),'my_dashboard.php?tab=dash','title');
+$PAGE->set_pagelayout( bcgt_get_layout() );
+$PAGE->add_body_class(get_string('bcgtmydashboard', 'block_bcgt'));
+$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php?tab=track','title');
+//$PAGE->navbar->add(get_string('bcgtmydashboard', 'block_bcgt'),'my_dashboard.php?tab=dash','title');
 $PAGE->navbar->add(get_string('dashtabadm', 'block_bcgt'),'my_dashboard.php?tab=adm','title');
 $PAGE->navbar->add('',$url.'?page='.$tab,'title');
 require_once($CFG->dirroot.'/blocks/bcgt/lib.php');
@@ -102,8 +102,10 @@ if($action == 'edit' && $id != -1)
                     $params->bcgttargetqualid= $id;
                     $params->targetgrade = $_POST['bgradeid_'.$breakdown->id];
                     $params->ucaspoints = isset($_POST['bucasid_'.$breakdown->id])? $_POST['bucasid_'.$breakdown->id] : 0;
-                    $params->unitsscoreupper = isset($_POST['bupperid_'.$breakdown->id])? $_POST['bupperid_'.$breakdown->id] : 0;
-                    $params->unitsscorelower = isset($_POST['blowerid_'.$breakdown->id])? $_POST['blowerid_'.$breakdown->id] : 0;
+                    $params->entryscoreupper = isset($_POST['bupperid_'.$breakdown->id])? $_POST['bupperid_'.$breakdown->id] : 0;
+                    $params->entryscorelower = isset($_POST['blowerid_'.$breakdown->id])? $_POST['blowerid_'.$breakdown->id] : 0;
+                    $params->unitsscoreupper = isset($_POST['bupperunitid_'.$breakdown->id])? $_POST['bupperunitid_'.$breakdown->id] : 0;
+                    $params->unitsscorelower = isset($_POST['blowerunitid_'.$breakdown->id])? $_POST['blowerunitid_'.$breakdown->id] : 0;
                     $params->ranking = isset($_POST['brankid_'.$breakdown->id])? $_POST['brankid_'.$breakdown->id] : 0;
                     $breakdown = new Breakdown($breakdown->id, $params);
                     $breakdown->save();
@@ -123,8 +125,10 @@ if($action == 'edit' && $id != -1)
                 $params->bcgttargetqualid= $id;
                 $params->targetgrade = $_POST['bgradeid_n_'.$i];
                 $params->ucaspoints = isset($_POST['bucasid_n_'.$i])? $_POST['bucasid_n_'.$i] : 0;
-                $params->unitsscoreupper = isset($_POST['bupperid_n_'.$i])? $_POST['bupperid_n_'.$i] : 0;
-                $params->unitsscorelower = isset($_POST['blowerid_n_'.$i])? $_POST['blowerid_n_'.$i] : 0;
+                $params->entryscoreupper = isset($_POST['bupperid_n_'.$i])? $_POST['bupperid_n_'.$i] : 0;
+                $params->entryscorelower = isset($_POST['blowerid_n_'.$i])? $_POST['blowerid_n_'.$i] : 0;
+                $params->unitsscoreupper = isset($_POST['bupperunitid_n_'.$i])? $_POST['bupperunitid_n_'.$i] : 0;
+                $params->unitsscorelower = isset($_POST['blowerunitid_n_'.$i])? $_POST['blowerunitid_n_'.$i] : 0;
                 $params->ranking = isset($_POST['brankid_n_'.$i])? $_POST['brankid_n_'.$i] : 0;
                 $breakdown = new Breakdown(-1, $params);
                 $breakdown->save();
@@ -185,17 +189,20 @@ if($action == 'edit' && $id != -1)
     }
     echo "<p>To delete a Grade simply delete the entry in the first column 'Target Grade' or 'Grade' and then save. 
         The rankings work when the higher the grade the higher the ranking. Not all 
-        qualification families and grades need Upper and Lower scores</p>";
+        qualification families and grades need Upper and Lower scores 
+        (These are used for Average GCSE Scores and Target Grades). The predicted grades upper and predicted grades lower 
+        are used for any qualifications that have unit points that go towards qualification awards. 
+        </p>";
     //then we need a form
     echo '<form action="" name="" method="POST"/>';
     echo '<input type="hidden" name="a" value="edit"/>';
     echo '<input type="hidden" name="id" value="'.$id.'"/>';
-    echo '<div>';
+    echo '<div id="breakdownupdateform">';
     echo '<input type="submit" name="save" value="Save & Return" class="bcgtFormButton" />';
     echo '<input type="submit" name="saveRows" value="Save & Add New Rows" class="bcgtFormButton"/>';
     echo '<h3>Overall Target Grades - <span class="desc">Used in Quals on Entry</span></h3>';
     echo '<table>';
-    echo '<tr><th>Target Grade</th><th>Ucas Points</th><th>Score Upper</th><th>Score Lower</th><th>Ranking</th></tr>';
+    echo '<tr><th>Target Grade</th><th>Ucas Points</th><th>Score Upper</th><th>Score Lower</th><th>Predicted Points Upper</th><th>Predicted Points Lower</th><th>Ranking</th></tr>';
     if($breakdowns)
     {
         foreach($breakdowns AS $breakdown)
@@ -205,6 +212,8 @@ if($action == 'edit' && $id != -1)
             echo '<td><input type="text" name="bucasid_'.$breakdown->id.'" value="'.$breakdown->ucaspoints.'"/></td>';
             echo '<td><input type="text" name="bupperid_'.$breakdown->id.'" value="'.$breakdown->entryscoreupper.'"/></td>';
             echo '<td><input type="text" name="blowerid_'.$breakdown->id.'" value="'.$breakdown->entryscorelower.'"/></td>';
+            echo '<td><input type="text" name="bupperunitid_'.$breakdown->id.'" value="'.$breakdown->unitsscoreupper.'"/></td>';
+            echo '<td><input type="text" name="blowerunitid_'.$breakdown->id.'" value="'.$breakdown->unitsscorelower.'"/></td>';
             echo '<td><input type="text" name="brankid_'.$breakdown->id.'" value="'.$breakdown->ranking.'"/></td>';
             echo '</tr>';
         }
@@ -216,6 +225,8 @@ if($action == 'edit' && $id != -1)
         echo '<td><input type="text" name="bucasid_n_'.$i.'" value=""/></td>';
         echo '<td><input type="text" name="bupperid_n_'.$i.'" value=""/></td>';
         echo '<td><input type="text" name="blowerid_n_'.$i.'" value=""/></td>';
+        echo '<td><input type="text" name="bupperunitid_n_'.$i.'" value=""/></td>';
+        echo '<td><input type="text" name="blowerunitid_n_'.$i.'" value=""/></td>';
         echo '<td><input type="text" name="brankid_n_'.$i.'" value=""/></td>';
         echo '</tr>';
     }
@@ -285,12 +296,12 @@ else
                 </td></tr>
                 <tr><td colspan='4' valign='top'>
                 <table align='center' class='bcgtTargetGradeSettingsOverall'>
-                <tr><th>TargetGrade</th><th>Ucas Points</th><th>Score Upper</th><th>Score Lower</th><th>Ranking</th></tr>";
+                <tr><th>TargetGrade</th><th>Ucas Points</th><th>Score Upper</th><th>Score Lower</th><th>Predicted Points Upper</th><th>Predicted Points Lower</th><th>Ranking</th></tr>";
                 if($breakdowns)
                 {
                     foreach($breakdowns AS $grade)
                     {
-                        echo "<tr><td>$grade->targetgrade</td><td>$grade->ucaspoints</td><td>$grade->entryscoreupper</td><td>$grade->entryscorelower</td><td>$grade->ranking</td></tr>";
+                        echo "<tr><td>$grade->targetgrade</td><td>$grade->ucaspoints</td><td>$grade->entryscoreupper</td><td>$grade->entryscorelower</td><td>$grade->unitsscoreupper</td><td>$grade->unitsscorelower</td><td>$grade->ranking</td></tr>";
                     }
                 }
             echo "</table></td>";

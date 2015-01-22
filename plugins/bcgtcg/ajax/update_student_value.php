@@ -13,13 +13,15 @@ require_login();
 $context = context_course::instance($COURSE->id);
 $PAGE->set_context($context);
 
-$grid = $_POST['grid']; # Student or Unit grid
-$method = $_POST['method']; # Check or Select
-$qualID = $_POST['qualID'];
-$unitID = $_POST['unitID'];
-$criteriaID = $_POST['criteriaID'];
-$studentID = $_POST['studentID'];
-$value = $_POST['value'];
+$params = $_POST['params'];
+
+$grid = $params['grid']; # Student or Unit grid
+$method = $params['method']; # Check or Select
+$qualID = $params['qualID'];
+$unitID = $params['unitID'];
+$criteriaID = $params['criteriaID'];
+$studentID = $params['studentID'];
+$value = $params['value'];
 
 $retval = new stdClass();
 
@@ -46,7 +48,7 @@ if ($grid == 'student')
     }
         
     // If we couldn't find the qual in the session, get it frmo db
-    if(!$qualification)
+    if(!$qualification || !$qualification->get_units())
     {
         $loadParams = new stdClass();
         $loadParams->loadLevel = Qualification::LOADLEVELCRITERIA;
@@ -113,8 +115,18 @@ if ($grid == 'student')
 
             $criteria->update_students_value($value);
             $criteria->save_student($qualID, false); # Save straight away so we can check the parent and loop through all children's awards         
+            
 
-
+        }
+        
+        elseif ($method == 'text' && $criteria->get_grading() == 'TEXT')
+        {
+            
+            $criteria->set_user_defined_value($value);
+            $criteria->set_user($USER->id);
+            $criteria->set_date();
+            $criteria->save_student($qualID, false); # Save straight away so we can check the parent and loop through all children's awards         
+            
         }
         
         // Else we're using a select menu to pick the value
@@ -138,7 +150,7 @@ if ($grid == 'student')
         
         // If we just updated it to a value that is not met, get rid of any award date
         // If the award was not met (e.g. anything but Achieved) reset the award date to null
-        if( !$criteria->get_student_value()->is_criteria_met_bool() )
+        if( $criteria->get_student_value() && !$criteria->get_student_value()->is_criteria_met_bool() )
         {
             $criteria->set_award_date( 0 );
             $criteria->save_student($qualID, false);
@@ -284,20 +296,28 @@ elseif($grid == 'unit')
     {
         $unitObject = $sessionUnits[$unitID];
         $unit = $unitObject->unit;
-        $qualArray = $unitObject->qualArray;
-        if(array_key_exists($qualID, $qualArray))
+        if (isset($unitObject->qualArray))
         {
-            $studentArray = $qualArray[$qualID];
-            if(array_key_exists($studentID, $studentArray))
+            $qualArray = $unitObject->qualArray;
+            if(array_key_exists($qualID, $qualArray))
             {
-                $studentObject = $studentArray[$studentID];
-                $studentUnit = $studentObject->unit;
-                if($studentUnit)
+                $studentArray = $qualArray[$qualID];
+                if(array_key_exists($studentID, $studentArray))
                 {
-                    $studentUnitFound = true;
+                    $studentObject = $studentArray[$studentID];
+
+                    // Added isset as fix for session problem
+                    if (isset($studentObject->unit))
+                    {
+                        $studentUnit = $studentObject->unit;
+                        if($studentUnit)
+                        {
+                            $studentUnitFound = true;
+                        }
+                    }
                 }
-            }
-        } 
+            } 
+        }
     }
     //will be used later
     $loadParams = new stdClass();
@@ -355,7 +375,16 @@ elseif($grid == 'unit')
                 $criteria->update_students_value($value);
                 $criteria->save_student($qualID, false); # Save straight away so we can check the parent and loop through all children's awards         
                 
-                
+            }
+            
+            elseif ($method == 'text' && $criteria->get_grading() == 'TEXT')
+            {
+
+                $criteria->set_user_defined_value($value);
+                $criteria->set_user($USER->id);
+                $criteria->set_date();
+                $criteria->save_student($qualID, false); # Save straight away so we can check the parent and loop through all children's awards         
+
             }
 
             // Else we're using a select menu to pick the value
@@ -414,6 +443,10 @@ elseif($grid == 'unit')
             if($qualification)
             {
                 $qualification->load_student_information($studentID, $loadParams);
+            }
+            
+            if (!$qualification){
+                exit;
             }
             
             
@@ -501,12 +534,19 @@ elseif($grid == 'unit')
     //                                
     //                $retval .= "<error>{$GLOBALS['AJAX_ERROR']}</error>";
 
-        
+                
         if(array_key_exists($unitID, $sessionUnits))
         {
             $unitObject = $sessionUnits[$unitID];
             $unit = $unitObject->unit;
-            $qualArray = $unitObject->qualArray;
+            if(isset($unitObject->qualArray))
+            {
+                $qualArray = $unitObject->qualArray;
+            }
+            else
+            {
+                $qualArray = array();
+            }
         }
         else
         {
@@ -517,6 +557,7 @@ elseif($grid == 'unit')
             $unitObject->unit = Unit::get_unit_class_id($unitID, $loadParams);
             $qualArray = array();
         }
+                
         if(array_key_exists($qualID, $qualArray))
         {
             $studentArray = $qualArray[$qualID];
@@ -525,7 +566,7 @@ elseif($grid == 'unit')
         {
             $studentArray = array();
         }
-                
+                        
         if(array_key_exists($studentID, $studentArray))
         {
             $studentObject = $studentArray[$studentID];
@@ -534,11 +575,15 @@ elseif($grid == 'unit')
         {
             $studentObject = $DB->get_record_sql("SELECT * FROM {user} WHERE id = ?", array($studentID));
         }
+                
         $studentObject->unit = $studentUnit;
         $studentArray[$studentID] = $studentObject;
         $qualArray[$qualID] = $studentArray;
         $unitObject->qualArray = $qualArray;
         $sessionUnits[$unitID] = $unitObject;
+        
+       // pn($sessionUnits);
+        
         $_SESSION['session_unit'] = urlencode(serialize($sessionUnits));
 
         echo json_encode( $retval );

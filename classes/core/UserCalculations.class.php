@@ -234,6 +234,7 @@ class UserCalculations {
     {
         $tgCheck = optional_param('targetgrade', false, PARAM_BOOL);
         $avgCheck = optional_param('avgscore', false, PARAM_BOOL);
+        $aspCheck = optional_param('asptargetgrade', false, PARAM_BOOL);
         
         $out = '';
         $checkedAvg = '';
@@ -248,8 +249,16 @@ class UserCalculations {
         {
             $checkedPred = 'checked';
         }
-        $out .= '<div><label for="avgscore">'.get_string('calctargetgrade', 'block_bcgt').
+        $out .= '<div><label for="targetgrade">'.get_string('calctargetgrade', 'block_bcgt').
                 ' : </label><input type="checkbox" '.$checkedPred.' name="targetgrade"/></div>';
+        
+        $checkedAsp = '';
+        if($aspCheck)
+        {
+            $checkedAsp = 'checked';
+        }
+        $out .= '<div><label for="asptargetgrade">'.get_string('calcasptargetgrade', 'block_bcgt').
+                ' : </label><input type="checkbox" '.$checkedAsp.' name="asptargetgrade"/></div>';
         
         $out .= $this->get_qual_options();
         $out .= $this->get_course_options();
@@ -272,6 +281,7 @@ class UserCalculations {
         $out = '';
         $tgCheck = optional_param('targetgrade', false, PARAM_BOOL);
         $avgCheck = optional_param('avgscore', false, PARAM_BOOL);
+        $aspCheck = optional_param('asptargetgrade', false, PARAM_BOOL);
         $userCourseTarget = new UserCourseTarget();
         if($avgCheck)
         {
@@ -279,6 +289,7 @@ class UserCalculations {
         }
         if(!$avgCheck && $tgCheck)
         {
+            $userCourseTarget->calculate_aspirational_grades_check($aspCheck);
             $userCourseTarget->calculate_users_target_grades($users);
         }
         $out .= get_string('success', 'block_bcgt');

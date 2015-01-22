@@ -100,5 +100,7 @@ function xmldb_bcgtbtec_uninstall()
     
     $DB->delete_records('block_bcgt_tabs', array('tabname'=>'BTEC'));
     
+    $DB->delete_records('scale', array('name' => 'BCGT BTEC Scale (PMD)'));
+    
 }
 ?>

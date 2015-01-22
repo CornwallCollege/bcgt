@@ -42,7 +42,7 @@ class elbp_prior_learning extends Plugin {
                 "name" => strip_namespace(get_class($this)),
                 "title" => "Prior Learning",
                 "path" => '/blocks/bcgt/',
-                "version" => 2013091300
+                "version" => \ELBP\ELBP::getBlockVersionStatic()
             ) );
         }
         else
@@ -52,6 +52,27 @@ class elbp_prior_learning extends Plugin {
 
     }
     
+    public function getConfigPath()
+    {
+        $path = $this->getPath() . 'config_'.$this->getName().'.php';
+        return $path;
+    }
+    
+    /**
+     * Get the path to the icon to put into an img tag
+     */
+    public function getDockIconPath(){
+        
+        global $CFG;
+        
+        $icon = $CFG->wwwroot . $this->getPath() . 'pix/'.$this->getName().'/dock.png';
+        if (!file_exists( str_replace($CFG->wwwroot, $CFG->dirroot, $icon) )){
+            $icon = $CFG->wwwroot . $this->getPath() . 'pix/dock.png';
+        }
+        
+        return $icon;        
+        
+    }
     
      /**
      * Install the plugin
@@ -62,8 +83,7 @@ class elbp_prior_learning extends Plugin {
         global $DB;
         
         $return = true;
-        $pluginID = $this->createPlugin();
-        $return = $return && $pluginID;
+        $this->id = $this->createPlugin();
         
         
         // [Any extra tables are handled by the bcgt block itself]
@@ -71,19 +91,19 @@ class elbp_prior_learning extends Plugin {
         // Data
         
         // Reporting elements for bc_dashboard reporting wizard
-        $DB->insert_record("lbp_plugin_report_elements", array("pluginid" => $pluginID, "getstringname" => "reports:pl:numrecords", "getstringcomponent" => "block_bcgt"));
-        $DB->insert_record("lbp_plugin_report_elements", array("pluginid" => $pluginID, "getstringname" => "reports:pl:percentwith", "getstringcomponent" => "block_bcgt"));
-        $DB->insert_record("lbp_plugin_report_elements", array("pluginid" => $pluginID, "getstringname" => "reports:pl:percentwithout", "getstringcomponent" => "block_bcgt"));
-        $DB->insert_record("lbp_plugin_report_elements", array("pluginid" => $pluginID, "getstringname" => "reports:pl:avggcsescore", "getstringcomponent" => "block_bcgt"));
-        $DB->insert_record("lbp_plugin_report_elements", array("pluginid" => $pluginID, "getstringname" => "reports:pl:percentwithavggcse", "getstringcomponent" => "block_bcgt"));
-        $DB->insert_record("lbp_plugin_report_elements", array("pluginid" => $pluginID, "getstringname" => "reports:pl:percentwithoutavggcse", "getstringcomponent" => "block_bcgt"));
-        $DB->insert_record("lbp_plugin_report_elements", array("pluginid" => $pluginID, "getstringname" => "reports:pl:avgnumrecords", "getstringcomponent" => "block_bcgt"));
-        $DB->insert_record("lbp_plugin_report_elements", array("pluginid" => $pluginID, "getstringname" => "reports:pl:numwith", "getstringcomponent" => "block_bcgt"));
-        $DB->insert_record("lbp_plugin_report_elements", array("pluginid" => $pluginID, "getstringname" => "reports:pl:numwithout", "getstringcomponent" => "block_bcgt"));
-        $DB->insert_record("lbp_plugin_report_elements", array("pluginid" => $pluginID, "getstringname" => "reports:pl:numwithavggcse", "getstringcomponent" => "block_bcgt"));
-        $DB->insert_record("lbp_plugin_report_elements", array("pluginid" => $pluginID, "getstringname" => "reports:pl:numwithoutavggcse", "getstringcomponent" => "block_bcgt"));
-        $DB->insert_record("lbp_plugin_report_elements", array("pluginid" => $pluginID, "getstringname" => "reports:pl:enggcse", "getstringcomponent" => "block_bcgt"));
-        $DB->insert_record("lbp_plugin_report_elements", array("pluginid" => $pluginID, "getstringname" => "reports:pl:mathsgcse", "getstringcomponent" => "block_bcgt"));
+        $DB->insert_record("lbp_plugin_report_elements", array("pluginid" => $this->id, "getstringname" => "reports:pl:numrecords", "getstringcomponent" => "block_bcgt"));
+        $DB->insert_record("lbp_plugin_report_elements", array("pluginid" => $this->id, "getstringname" => "reports:pl:percentwith", "getstringcomponent" => "block_bcgt"));
+        $DB->insert_record("lbp_plugin_report_elements", array("pluginid" => $this->id, "getstringname" => "reports:pl:percentwithout", "getstringcomponent" => "block_bcgt"));
+        $DB->insert_record("lbp_plugin_report_elements", array("pluginid" => $this->id, "getstringname" => "reports:pl:avggcsescore", "getstringcomponent" => "block_bcgt"));
+        $DB->insert_record("lbp_plugin_report_elements", array("pluginid" => $this->id, "getstringname" => "reports:pl:percentwithavggcse", "getstringcomponent" => "block_bcgt"));
+        $DB->insert_record("lbp_plugin_report_elements", array("pluginid" => $this->id, "getstringname" => "reports:pl:percentwithoutavggcse", "getstringcomponent" => "block_bcgt"));
+        $DB->insert_record("lbp_plugin_report_elements", array("pluginid" => $this->id, "getstringname" => "reports:pl:avgnumrecords", "getstringcomponent" => "block_bcgt"));
+        $DB->insert_record("lbp_plugin_report_elements", array("pluginid" => $this->id, "getstringname" => "reports:pl:numwith", "getstringcomponent" => "block_bcgt"));
+        $DB->insert_record("lbp_plugin_report_elements", array("pluginid" => $this->id, "getstringname" => "reports:pl:numwithout", "getstringcomponent" => "block_bcgt"));
+        $DB->insert_record("lbp_plugin_report_elements", array("pluginid" => $this->id, "getstringname" => "reports:pl:numwithavggcse", "getstringcomponent" => "block_bcgt"));
+        $DB->insert_record("lbp_plugin_report_elements", array("pluginid" => $this->id, "getstringname" => "reports:pl:numwithoutavggcse", "getstringcomponent" => "block_bcgt"));
+        $DB->insert_record("lbp_plugin_report_elements", array("pluginid" => $this->id, "getstringname" => "reports:pl:enggcse", "getstringcomponent" => "block_bcgt"));
+        $DB->insert_record("lbp_plugin_report_elements", array("pluginid" => $this->id, "getstringname" => "reports:pl:mathsgcse", "getstringcomponent" => "block_bcgt"));
 
         
         // Hooks
@@ -181,6 +201,10 @@ class elbp_prior_learning extends Plugin {
         $PL = new \UserPriorLearning();
         $prior = $PL->retrieve_user_plearn($this->student->id);
         $TPL->set("prior", $prior);
+        
+        $R = new \Reporting();
+        $avgScore = $R->get_users_average_gcse_score($this->student->id);
+        $TPL->set("avgScore", $avgScore);
                 
         try {
             return $TPL->load($this->CFG->dirroot . $this->path . 'tpl/elbp_prior_learning/summary.html');

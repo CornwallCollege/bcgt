@@ -36,6 +36,11 @@ else
     $context = context_course::instance($COURSE->id);
 }
 require_login();
+
+if(!has_capability('block/bcgt:manageactivitylinks', $context)){
+    print_error('invalid access');
+}
+
 $PAGE->set_context($context);
 $qualID = optional_param('qID', -1, PARAM_INT);
 
@@ -46,10 +51,19 @@ $longName = $qualification->get_display_name();
 $shortName = $qualification->get_display_name(false);
 $url = '/blocks/bcgt/grids/ass_grid_class.php';
 $PAGE->set_url($url, array());
-$PAGE->set_title(get_string('bcgtassessment', 'block_bcgt'));
+$PAGE->set_title(get_string('assessmenttracker', 'block_bcgt'));
 $PAGE->set_heading(get_string('bcgtassessment', 'block_bcgt'));
-$PAGE->set_pagelayout('login');
+$PAGE->set_pagelayout( bcgt_get_layout() );
 $PAGE->add_body_class(get_string('bcgtmydashboard', 'block_bcgt'));
+if($courseID != 1)
+{
+    global $DB;
+    $course = $DB->get_record_sql("SELECT * FROM {course} WHERE id = ?", array($courseID));
+    if($course)
+    {
+        $PAGE->navbar->add($course->shortname,$CFG->wwwroot.'/course/view.php?id='.$courseID,'title');
+    }
+}
 $PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),$CFG->wwwroot.'/blocks/bcgt/forms/my_dashboard.php?&cID='.$courseID,'title');
 
 $link1 = null;
@@ -65,7 +79,7 @@ $jsModule = array(
     'fullpath' => '/blocks/bcgt/js/block_bcgt.js',
     'requires' => array('base', 'io', 'node', 'json', 'event', 'button')
 );
-$PAGE->requires->js_init_call('M.block_bcgt.initgridstu', null, true, $jsModule);
+$PAGE->requires->js_init_call('M.block_bcgt.initgridfaclass', null, true, $jsModule);
 require_once($CFG->dirroot.'/blocks/bcgt/lib.php');
 load_javascript();
 $out = $OUTPUT->header();
@@ -97,7 +111,9 @@ $out = $OUTPUT->header();
         }
         $out .="</div><br clear='all'><br />";
     }
+    $out .= '<div id="ass_grid_class_data">';
     $out .= $qualification->display_qual_assessments($editing, $save, -1, 'q', $groupingID);
+    $out .= '</div>';
     $out .= html_writer::end_tag('div');
     $out .= '</form>';
     

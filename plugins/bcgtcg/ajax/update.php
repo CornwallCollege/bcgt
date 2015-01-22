@@ -35,7 +35,7 @@ if(is_null($action)) exit;
 function _check($req, &$params){
     if( count($req) > count($params) ) _error('count');
     foreach($req as $key){
-        if(!isset($params[$key]) || $params[$key] == '') _error('key: ' . $key);
+        if(!isset($params[$key])) _error('key: ' . $key);
     }
     $params = (object)$params;
 }
@@ -743,6 +743,33 @@ JS;
         calculateUnitAward($unit);
         
         
+        exit;
+        
+    break;
+    
+    case 'updateFormativeDetails':
+                
+        $req = array("qualID", "criteriaID", "unitID", "studentID", "value");
+        _check($req, $params);
+        _valid($params->grid, $params, 3, array('qualification'));    
+        
+        $o = new stdClass();
+        $o->loadLevel = Qualification::LOADLEVELMIN;
+        $qualification = Qualification::get_qualification_class_id($params->qualID, $o);
+        if(!$qualification) exit;
+        $qualification->load_student_information($params->studentID, $o);
+        
+        $sID = $criteria->get_student_ID();
+        if (is_null($sID)){
+            $criteria->load_student_information($params->studentID, $params->qualID, $params->unitID, false);
+        }
+                              
+        // Update the dateset/dateupdated to overwrite defaults set in save_student
+        $criteria->set_user_defined_value( $params->value );
+        
+        // Save Award
+        $criteria->save_student($params->qualID);
+                
         exit;
         
     break;

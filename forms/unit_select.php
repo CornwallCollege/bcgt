@@ -28,7 +28,7 @@ $unitID = optional_param('unitID', -1, PARAM_INT);
 $redirect = '';
 if(isset($_POST['edit']))
 {
-	$redirect = 'edit_unit.php?unitID='.$unitID;
+	$redirect = 'edit_unit.php?cID='.$courseID.'&unitID='.$unitID;
 }
 if($redirect != '')
 {
@@ -43,10 +43,10 @@ $string = 'selectunit';
 $PAGE->set_url($url, array('page' => $tab));
 $PAGE->set_title(get_string('selectunit', 'block_bcgt'));
 $PAGE->set_heading(get_string('selectunit', 'block_bcgt'));
-$PAGE->set_pagelayout('login');
-$PAGE->add_body_class(get_string('myDashboard', 'block_bcgt'));
-$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php','title');
-$PAGE->navbar->add(get_string('myDashboard', 'block_bcgt'),'my_dashboard.php?tab=dash','title');
+$PAGE->set_pagelayout( bcgt_get_layout() );
+$PAGE->add_body_class(get_string('bcgtmydashboard', 'block_bcgt'));
+$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php?tab=track','title');
+//$PAGE->navbar->add(get_string('bcgtmydashboard', 'block_bcgt'),'my_dashboard.php?tab=dash','title');
 $PAGE->navbar->add(get_string('dashtabadm', 'block_bcgt'),'my_dashboard.php?tab=adm','title');
 $PAGE->navbar->add(get_string($string, 'block_bcgt'));
 $PAGE->navbar->add('',$url.'?page='.$tab,'title');
@@ -195,7 +195,7 @@ $unitLevels = get_level_from_type(-1, $unitFamilyID);
 				echo '</form>';
 			echo '</div>';	
 			echo '<div id="unitsSelectList" class="bcgt_admin_right bcgt_col">';
-                echo '<form method="post" name="unitSelectForm" action="unit_select.php">';
+                echo '<form method="post" name="unitSelectForm" action="unit_select.php?cID='.$courseID.'">';
 					$select = '<select name="unitID" size="20" id="addselect">';
 					$loadParams = new stdClass();
                     $loadParams->loadLevel = Qualification::LOADLEVELUNITS;

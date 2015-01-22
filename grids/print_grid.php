@@ -21,7 +21,9 @@ else
 {
     $context = context_course::instance($COURSE->id);
 }
+
 require_login();
+
 $PAGE->set_context($context);
 $qualID = optional_param('qID', -1, PARAM_INT);
 $unitID = optional_param('uID', -1, PARAM_INT);
@@ -80,13 +82,15 @@ else
 
 $url = '/blocks/bcgt/forms/print_grid.php';
 $PAGE->set_url($url, array());
-$PAGE->set_title(get_string('bcgtmydashboard', 'block_bcgt'));
+$PAGE->set_title(get_string('printgrid', 'block_bcgt'));
 $PAGE->set_heading(get_string('bcgtmydashboard', 'block_bcgt'));
-$PAGE->set_pagelayout('login');
+$PAGE->set_pagelayout( bcgt_get_layout() );
 $PAGE->add_body_class(get_string('bcgtmydashboard', 'block_bcgt'));
 $PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),$CFG->wwwroot.'/blocks/bcgt/forms/my_dashboard.php','title');
-
-if(!$qualification)
+$loadParams = new stdClass();
+$loadParams->loadLevel = Qualification::LOADLEVELALL;
+$loadParams->loadAward = true;
+if(!$qualification && $qualID != -1)
 {
     $loadParams = new stdClass();
     $loadParams->loadLevel = Qualification::LOADLEVELALL;
@@ -95,7 +99,7 @@ if(!$qualification)
     $qualification->load_student_information($studentID, $loadParams);
 }
 
- if ($unitID > 0){
+ if ($qualification && $unitID > 0){
     
     $unit = $qualification->get_single_unit($unitID);
     if ($unit){
@@ -105,6 +109,14 @@ if(!$qualification)
     }
     
 }
+//elseif($unitID > 0)
+//{
+//    $unit = UNIT::get_unit_class_id($unitID, $loadParams);
+//    if ($unit){
+//        
+//        $unit->print_grid($qualID); 
+//    }
+//}
 elseif ($studentID > 0) 
 {
     

@@ -1,26 +1,4 @@
 <?php
-//General
-$settings->add(new admin_setting_configcheckbox(
-        'bcgt/linkqualcourse',
-        get_string('labellinkqualcourse', 'block_bcgt'),
-        get_string('desclinkqualcourse', 'block_bcgt'),
-        '1'
-        ));
-
-$settings->add(new admin_setting_configcheckbox(
-        'bcgt/linkqualstudent',
-        get_string('labellinkqualstudent', 'block_bcgt'),
-        get_string('desclinkqualstudent', 'block_bcgt'),
-        '1'
-        ));
-
-$settings->add(new admin_setting_configcheckbox(
-        'bcgt/linkqualteacher',
-        get_string('labellinkqualteacher', 'block_bcgt'),
-        get_string('desclinkqualteacher', 'block_bcgt'),
-        '1'
-        ));
-
 // Do we want to use the enrol & unenrol events to automatically link users to quals if they enrol/unenrol on a course with a qual?
 $settings->add(
         new admin_setting_configcheckbox('bcgt/autoenrolusers', get_string('autoenrolusers', 'block_bcgt'), get_string('autoenrolusersdesc', 'block_bcgt'), '1')
@@ -78,13 +56,6 @@ $settings->add(new admin_setting_configcheckbox(
         ));
 
 $settings->add(new admin_setting_configcheckbox(
-        'bcgt/alevelManageFACentrally',
-        get_string('labelalevelManageFACentrally', 'block_bcgt'),
-        get_string('descalevelManageFACentrally', 'block_bcgt'),
-        '0'
-        ));
-
-$settings->add(new admin_setting_configcheckbox(
         'bcgt/alevelLinkAlevelGradeBook',
         get_string('labelalavelLinkAlevelGradeBook', 'block_bcgt'),
         get_string('descalavelLinkAlevelGradeBook', 'block_bcgt'),
@@ -127,11 +98,47 @@ $settings->add(new admin_setting_configcheckbox(
 //        ));
 
 $settings->add(new admin_setting_configcheckbox(
-        'bcgt/alevelallowalpsweighting',
-        get_string('labelalevelallowalpsweighting', 'block_bcgt'),
-        get_string('descalevelallowalpsweighting', 'block_bcgt'),
+        'bcgt/allowalpsweighting',
+        get_string('labelallowalpsweighting', 'block_bcgt'),
+        get_string('descallowalpsweighting', 'block_bcgt'),
         '0'
         ));
+
+$settings->add(new admin_setting_configcheckbox(
+        'bcgt/weightedtargetgradesuseconstant',
+        get_string('labelweightedtargetuseconstant', 'block_bcgt'),
+        get_string('descweightedtargetuseconstant', 'block_bcgt'),
+        '0'
+        ));
+
+$settings->add(new admin_setting_configselect(
+            'bcgt/weightedtargetgradesclosestgrade',
+            get_string('labelweightedtargetgradesclosestgrade', 'block_bcgt'),
+            get_string('descweightedtargetgradesclosestgrade', 'block_bcgt'),
+            'DOWN',
+            array(
+                'UP'  => get_string('up', 'block_bcgt'),
+                'DOWN' => get_string('down', 'block_bcgt'),
+            )
+        ));
+
+
+$settings->add(new admin_setting_configtext(
+        'bcgt/alpsweightedfamilies',
+        get_string('labelalpsweightedfamilies', 'block_bcgt'),
+        get_string('descalpsweightedfamilies', 'block_bcgt'),
+        'ALevel,BTEC'
+        ));
+
+$settings->add(new admin_setting_configtext(
+        'bcgt/alpsweightedfamiliestargets',
+        get_string('labelalpsweightedfamiliestargets', 'block_bcgt'),
+        get_string('descalpsweightedfamiliestargets', 'block_bcgt'),
+        'ALevel,BTEC'
+        ));
+
+
+
 
 $settings->add(new admin_setting_configtext(
         'bcgt/weightedtargetmethod',
@@ -141,10 +148,17 @@ $settings->add(new admin_setting_configtext(
         ));
 
 $settings->add(new admin_setting_configtext(
-        'bcgt/aleveldefaultalpsperc',
-        get_string('labelaleveldefaultalpspercentage', 'block_bcgt'),
-        get_string('descaleveldefaultalpspercentage', 'block_bcgt'),
+        'bcgt/defaultalpsperc',
+        get_string('labeldefaultalpspercentage', 'block_bcgt'),
+        get_string('descdefaultalpspercentage', 'block_bcgt'),
         '75'
+        ));
+
+$settings->add(new admin_setting_configcheckbox(
+        'bcgt/calcultealpstempreports',
+        get_string('labelcalcultealpstempreports', 'block_bcgt'),
+        get_string('desccalcultealpstempreports', 'block_bcgt'),
+        '0'
         ));
 
 //BTECS
@@ -220,13 +234,13 @@ $settings->add(new admin_setting_configcheckbox(
         '0'
         ));
 
+
 $settings->add(new admin_setting_configcheckbox(
-        'bcgt/useassignmentbtecautoupdate',
+'bcgt/useassignmentbtecautoupdate',
         get_string('labelassignmentbtecautoupdate', 'block_bcgt'),
         get_string('descassignmentbtecautoupdate', 'block_bcgt'),
         '0'
         ));
-
 //$settings->add(new admin_setting_configcheckbox(
 //        'bcgt/assignmentcheckajax',
 //        get_string('labelassignmentcheckajax', 'block_bcgt'),
@@ -305,3 +319,86 @@ $settings->add(new admin_setting_configtext(
         get_string('tutorroleshortname:desc', 'block_bcgt'),
         ''
 ));
+
+
+$cats = get_categories();
+$catArray = array();
+foreach($cats as $cat)
+{
+    $catArray[$cat->id] = $cat->name;
+}
+
+// Choose which course categories to use in Reporting
+$settings->add( new admin_setting_configmultiselect(
+        'bcgt/reportingcats', 
+        get_string('reportingcats', 'block_bcgt'), 
+        get_string('reportingcats:desc', 'block_bcgt'), 
+        null, 
+        $catArray) );
+
+
+$settings->add(new admin_setting_configcheckbox(
+        'bcgt/reportingftptfilter',
+        get_string('reportingftptfilter', 'block_bcgt'),
+        get_string('reportingftptfilterdesc', 'block_bcgt'),
+        '0'
+        )); 
+
+$settings->add(new admin_setting_configcheckbox(
+        'bcgt/showucaspoints',
+        get_string('showucaspoints', 'block_bcgt'),
+        get_string('showucaspointsdesc', 'block_bcgt'),
+        '0'
+        )); 
+
+
+$settings->add(new admin_setting_configcheckbox(
+        'bcgt/usemassupdate',
+        get_string('usemassupdate', 'block_bcgt'),
+        get_string('usemassupdatedesc', 'block_bcgt'),
+        '0'
+        )); 
+
+
+// Page layout
+$settings->add(new admin_setting_configtext(
+        'bcgt/pagelayout',
+        get_string('pagelayout', 'block_bcgt'),
+        get_string('pagelayout:desc', 'block_bcgt'),
+        'login'
+));
+
+$settings->add(new admin_setting_configselect(
+            'bcgt/alpscrontime',
+            get_string('labelalpscrontime', 'block_bcgt'),
+            get_string('descalpscrontime', 'block_bcgt'),
+            '24',
+            array(
+                '1'  => "1 am",'2' => "2 am",'3' => " 3 am",'4' => " 4 am",'5' => " 5 am",
+                '6' => " 6 am",'7' => " 7 am",'8' => " 8 am",'9' => " 9 am",'10' => " 10 am",
+                '11' => " 11 am",'12' => " 12 pm",'13' => " 1 pm",'14' => " 2 pm",'15' => " 3 pm",
+                '16' => " 4 pm",'17' => " 5 pm",'18' => " 6 pm",'19' => " 7 pm",'20' => " 8 pm",
+                '21' => " 9 pm",'22' => " 10 pm",'23' => " 11 pm",'24' => " 12 am",
+            )
+        ));
+
+$settings->add(new admin_setting_configcheckbox(
+        'bcgt/showarchivegriddata',
+        get_string('labelshowarchivegriddata', 'block_bcgt'),
+        get_string('descshowarchivegriddata', 'block_bcgt'),
+        '0'
+        )); 
+$settings->add(new admin_setting_configcheckbox(
+        'bcgt/useregistergroups',
+        get_string('useregistergroups', 'block_bcgt'),
+        get_string('useregistergroupsdesc', 'block_bcgt'),
+        '1'
+        )); 
+
+$settings->add(new admin_setting_configtext(
+        'bcgt/alvlvalenience',
+        get_string('alvlvalenience', 'block_bcgt'),
+        get_string('alvlvalenience:desc', 'block_bcgt'),
+        '0'
+));
+

@@ -83,6 +83,13 @@ class AdminTab extends DashTab{
                     '.get_string('gradesettings', 'block_bcgt').'</h2>';
                 $retval .= $this->get_grade_options($courseID);
                 $retval .= '</div>'; 
+                
+                $retval .= '<div class="bcgt_admin_box">';
+                $retval .= '<h2 class="bcgt_dash_subtitle bcgt_admin_title">
+                    '.get_string('archivedata', 'block_bcgt').'</h2>';
+                $retval .= $this->get_archive_options($courseID);
+                $retval .= '</div>'; 
+                
                 $retval .= '<div class="bcgt_admin_box">';
                 $retval .= '<h2 class="bcgt_dash_subtitle bcgt_admin_title">
                     '.get_string('importexportdata', 'block_bcgt').'</h2>';
@@ -127,8 +134,7 @@ class AdminTab extends DashTab{
                     'title="'.get_string('editqualunithelp', 'block_bcgt').'">'.
                     get_string('editqualunit', 'block_bcgt').'</a></li>';
         }
-        if(($linkQualCourse = get_config('bcgt', 'linkqualcourse')) && 
-                has_capability('block/bcgt:editqualscourse', $courseContext))
+        if(has_capability('block/bcgt:editqualscourse', $courseContext))
         {
             $retval .= '<li><a href="'.$CFG->wwwroot.'/blocks/bcgt/forms/course_select.php?oCID='.$courseID.'"'. 
                     'title="'.get_string('editqualscoursehelp', 'block_bcgt').'">'.
@@ -197,10 +203,19 @@ class AdminTab extends DashTab{
         {
             $retval = '<ul class="bcgt_list bcgt_admin_list">';
             foreach($families AS $family)
-            {
-                $retval .= '<li><a href="'.$CFG->wwwroot.'/blocks/bcgt/forms/qual_settings.php?cID='.$courseID.'&fID='.
+            {                
+                $pluginName = get_plugin_name($family->id);
+                if($pluginName)
+                {
+                   $path = $CFG->dirroot.'/blocks/bcgt/plugins/'.$pluginName.'/forms/qual_settings.php'; 
+                }
+                //check if file exists. 
+                if(file_exists($path))
+                {
+                    $retval .= '<li><a href="'.$CFG->wwwroot.'/blocks/bcgt/forms/qual_settings.php?cID='.$courseID.'&fID='.
                         $family->id.'">'.$family->family.' '.
                         get_string('settings').'</a></li>';
+                }
             }
             $retval .= '</ul>';
         }
@@ -224,6 +239,9 @@ class AdminTab extends DashTab{
             $retval .= '<li><a href="'.$CFG->wwwroot.'/blocks/bcgt/forms/general_settings.php"'. 
                     'title="'.get_string('generalsettings', 'block_bcgt').'">'.
                     get_string('generalsettings', 'block_bcgt').'</a></li>';
+            $retval .= '<li><a href="'.$CFG->wwwroot.'/admin/settings.php?section=blocksettingbcgt"'. 
+                    'title="'.get_string('adminpluginsettings', 'block_bcgt').'">'.
+                    get_string('adminpluginsettings', 'block_bcgt').'</a></li>';
         $retval .= '</ul>';
         
         
@@ -238,10 +256,13 @@ class AdminTab extends DashTab{
                 $retval .= get_string('byStudent', 'block_bcgt').'</a></li>';   			
 
                 $retval .= '<li><a href="'.$CFG->wwwroot.'/blocks/bcgt/forms/grid_select.php?g=u&cID='.$COURSE->id.'">';   			
-                $retval .= get_string('byUnit', 'block_bcgt').'</a></li>'; 
+                $retval .= get_string('byunit', 'block_bcgt').'</a></li>'; 
 
                 $retval .= '<li><a href="'.$CFG->wwwroot.'/blocks/bcgt/forms/grid_select.php?g=c&cID='.$COURSE->id.'">';   			
                 $retval .= get_string('byClass', 'block_bcgt').'</a></li>';
+                
+                $retval .= '<li><a href="'.$CFG->wwwroot.'/blocks/bcgt/forms/grid_select.php?g=r&cID='.$COURSE->id.'">';   			
+                $retval .= get_string('byregistergroup', 'block_bcgt').'</a></li>';
                 
                 if(get_config('bcgt','alevelusefa'))
                 {
@@ -295,6 +316,9 @@ class AdminTab extends DashTab{
         $retval .= '<li><a href="'.$CFG->wwwroot.'/blocks/bcgt/forms/assessments.php?cID='.$courseID.'"'. 
                 'title="'.get_string('managefahelp', 'block_bcgt').'">'.
                 get_string('managefas', 'block_bcgt').'</a></li>';
+        $retval .= '<li><a href="'.$CFG->wwwroot.'/blocks/bcgt/forms/assessment_grades.php?cID='.$courseID.'"'. 
+                'title="'.get_string('managefagradeshelp', 'block_bcgt').'">'.
+                get_string('managefagrades', 'block_bcgt').'</a></li>';
         if(has_capability('block/bcgt:managemodlinking', $currentContext))
         {
             $retval .= '<li><a href="'.$CFG->wwwroot.'/blocks/bcgt/forms/mod_linking.php?cID='.$courseID.'"'. 
@@ -344,7 +368,7 @@ class AdminTab extends DashTab{
         
         if(has_capability('block/bcgt:transferstudentsunits', $courseContext))
         {
-            $retval .= '<li><a href="'.$CFG->wwwroot.'/blocks/bcgt/forms/transfer_units.php?a=u"'. 
+            $retval .= '<li><a href="'.$CFG->wwwroot.'/blocks/bcgt/forms/transfer_units_new.php"'. 
                     'title="'.get_string('transferstudentsunitshelp', 'block_bcgt').'">'.
                     get_string('transferstudentsunits', 'block_bcgt').'</a></li>';
         }
@@ -460,12 +484,29 @@ class AdminTab extends DashTab{
         {
             $courseContext = context_course::instance($COURSE->id);
         }
+        
         $retval = '<ul class="bcgt_list bcgt_admin_list">';
+        
+        if  ( has_capability('block/bcgt:exportqualspec', $courseContext)){
+            $retval .= '<li><a href="'.$CFG->wwwroot.'/blocks/bcgt/forms/qual_select.php?cID='.$courseID.'">'.get_string('exportspec', 'block_bcgt').'</a></li>';
+        }
+        
+//        if  ( has_capability('block/bcgt:importqualspec', $courseContext)){
+////            $retval .= '<li><a href="'.$CFG->wwwroot.'/blocks/bcgt/forms/import_spec.php">'.get_string('importspec', 'block_bcgt').'</a></li>';
+//        }
+        
+        
+        if  ( has_capability('block/bcgt:exportimportgriddata', $courseContext)){
+            $retval .= '<li><a href="'.$CFG->wwwroot.'/blocks/bcgt/forms/grid_data.php?cID='.$courseID.'">'.get_string('impexpdata', 'block_bcgt').'</a></li>';
+        }
+        
+        
+        
         if(has_capability('block/bcgt:importdata', $courseContext))
         {
             $retval .= '<li><a href="'.$CFG->wwwroot.'/blocks/bcgt/forms/import.php?cID='.$courseID.'&a=pl"'. 
                     'title="'.get_string('importhelp', 'block_bcgt').'">'.
-                    get_string('import', 'block_bcgt').'</a></li>';
+                    get_string('importvarious', 'block_bcgt').'</a></li>';
         }
 //        if(has_capability('block/bcgt:exportdata', $courseContext))
 //        {
@@ -512,6 +553,12 @@ class AdminTab extends DashTab{
                     'title="'.get_string('edittargetgradesettingshelp', 'block_bcgt').'">'.
                     get_string('edittargetgradesettings', 'block_bcgt').'</a></li>';
         }
+        if(has_capability('block/bcgt:editqualweightings', $courseContext) && get_config('bcgt','allowalpsweighting'))
+        {
+            $retval .= '<li><a href="'.$CFG->wwwroot.'/blocks/bcgt/forms/qual_weightings.php?cID='.$courseID.'"'. 
+                    'title="'.get_string('qualificationweightingsettingshelp', 'block_bcgt').'">'.
+                    get_string('qualificationweightingsettings', 'block_bcgt').'</a></li>';
+        }
 //        if(has_capability('block/bcgt:editpriorqualsettings', $courseContext))
 //        {
 //            $retval .= '<li><a href="'.$CFG->wwwroot.'/blocks/bcgt/forms/edit_prior_learning_settings.php?cID='.$courseID.'"'. 
@@ -539,9 +586,30 @@ class AdminTab extends DashTab{
         $retval .= '</ul>';
         return $retval;
     }
+    
+    function get_archive_options($courseID)
+    {   
+        global $COURSE, $CFG;
+        if($courseID != -1)
+        {
+            $courseContext = context_course::instance($courseID);
+        }
+        else
+        {
+            $courseContext = context_course::instance($COURSE->id);
+        }
+        $retval = '<ul class="bcgt_list bcgt_admin_list">';
+        if(has_capability('block/bcgt:archivestudentdata', $courseContext))
+        {
+            $retval .= '<li><a href="'.$CFG->wwwroot.'/blocks/bcgt/forms/archive_data.php?type='.Archive::STUDENTARCHIVETYPE.'&cID='.$courseID.'"'. 
+                    'title="'.get_string('archivestudentdatahelp', 'block_bcgt').'">'.
+                    get_string('archivestudentdata', 'block_bcgt').'</a></li>';
+        }
+        $retval .= '</ul>';
+        return $retval;
+    }
+    
 }
-
-
 //TODO : settings page for calculating averagegcsestudents, calculating targetgrades
     //his needs to be able to pick which quals/students as optional. 
 //Weightings insert: Need to check they dont already exist e.g. by percentage or by number

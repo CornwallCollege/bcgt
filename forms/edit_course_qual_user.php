@@ -34,13 +34,16 @@ $url = '/blocks/bcgt/forms/edit_course_qual.php';
 $PAGE->set_url($url, array());
 $PAGE->set_title(get_string('edituserscoursequal', 'block_bcgt'));
 $PAGE->set_heading(get_string('edituserscoursequal', 'block_bcgt'));
-$PAGE->set_pagelayout('login');
+$PAGE->set_pagelayout( bcgt_get_layout() );
 $PAGE->add_body_class(get_string('edituserscoursequals', 'block_bcgt'));
-$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php','title');
+$PAGE->navbar->add(get_string('pluginname', 'block_bcgt'),'my_dashboard.php?tab=track','title');
 if($courseID != -1)
 {
     $course = $DB->get_record_sql("SELECT * FROM {course} WHERE id = ?", array($courseID));
-    $PAGE->navbar->add($course->shortname,$CFG->wwwroot.'/course/view.php?id='.$courseID,'title');
+    if($course)
+    {
+        $PAGE->navbar->add($course->shortname,$CFG->wwwroot.'/course/view.php?id='.$courseID,'title');
+    }
     $PAGE->navbar->add(get_string('editcoursequal','block_bcgt'), $CFG->wwwroot.
             '/blocks/bcgt/forms/edit_course_qual.php?oCID='.
             $originalCourseID.'&cID='.$courseID,'title');
@@ -98,15 +101,16 @@ if($currentQuals)
 {
     foreach($currentQuals AS $qual)
     {
+        
         //Select all Students for this Qual
-        $headerStu .= '<th>'.$qual->family.'<br />'.$qual->trackinglevel.'<br />'.
+        $headerStu .= '<th>'.(isset($qual->displaytype) ? $qual->displaytype : $qual->type).'<br />'.( isset($qual->level) ? 'Level ' . $qual->level : $qual->trackinglevel ).'<br />'.
                 $qual->subtype.'<br />'.$qual->name.'<br /><br />'.
                 '<a href="edit_course_qual_user?cID='.$courseID.'" 
                     title="'.get_string('selectallstudentsqual', 'block_bcgt').'">'.
                         '<img src="'.$CFG->wwwroot.'/blocks/bcgt/images/arrowdown.jpg"'. 
                         'width="25" height="25" class="qualColumnAll" id="q'.$qual->id.'"/>'.
                         '</a></th>';
-        $staffHeader .= '<th>'.$qual->family.'<br />'.$qual->trackinglevel.'<br />'.
+        $staffHeader .= '<th>'.(isset($qual->displaytype) ? $qual->displaytype : $qual->type).'<br />'.( isset($qual->level) ? 'Level ' . $qual->level : $qual->trackinglevel ).'<br />'.
                 $qual->subtype.'<br />'.$qual->name.'<br /><br />'.
                 '<a href="edit_course_qual_user?cID='.$courseID.'" 
                     title="'.get_string('selectallstudentsqual', 'block_bcgt').'">'.

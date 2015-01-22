@@ -57,7 +57,7 @@ class A2LevelQualification extends ALevelQualification {
 	public function get_class_ID()
     {
         return A2LevelQualification::ID;
-    }
+    }    
     
     public function insert_qualification($insertUnits = true, $insertWeightings = true)
     {
@@ -71,33 +71,33 @@ class A2LevelQualification extends ALevelQualification {
 	 */
 	public function get_edit_form_fields()
     {
-        //any extras for an A2? Linking to the previous years qual for example?
-        $lastYearsQualID = -1;
-        if(isset($_POST['lastYearQualID']))
-        {
-            $lastYearsQualID = $_POST['lastYearQualID'];
-        }
+//        //any extras for an A2? Linking to the previous years qual for example?
+//        $lastYearsQualID = -1;
+//        if(isset($_POST['lastYearQualID']))
+//        {
+//            $lastYearsQualID = $_POST['lastYearQualID'];
+//        }
         $retval = '';
-		$retval .= "<div class='inputContainer'><div class='inputLeft'>".
-                "<label for='ums'><span class='required'>*</span>".
-                get_string('lastyearsqual', 'block_bcgt')."</label></div>";
-		$retval .= "<div class='inputRight'><select name='lastYearQualID' id='lastYearQualID'>";
-		$retval .= "<option value='-1'>Please Select one</option>";
-		$asLevelQuals = $this->get_AS_level_qualifications();
-		if($asLevelQuals)
-		{
-			foreach($asLevelQuals AS $asLevel)
-			{
-				$selected = '';
-				if(($this->lastYearsQualID && $asLevel->id == $this->lastYearsQualID) || (
-                        $lastYearsQualID && $asLevel->id == $lastYearsQualID))
-				{
-					$selected = 'selected';
-				}
-				$retval .= "<option $selected value='$asLevel->id'>$asLevel->name</option>";
-			}
-		}
-		$retval .= "</select></div></div>";
+//		$retval .= "<div class='inputContainer'><div class='inputLeft'>".
+//                "<label for='ums'><span class='required'>*</span>".
+//                get_string('lastyearsqual', 'block_bcgt')."</label></div>";
+//		$retval .= "<div class='inputRight'><select name='lastYearQualID' id='lastYearQualID'>";
+//		$retval .= "<option value='-1'>Please Select one</option>";
+//		$asLevelQuals = $this->get_AS_level_qualifications();
+//		if($asLevelQuals)
+//		{
+//			foreach($asLevelQuals AS $asLevel)
+//			{
+//				$selected = '';
+//				if(($this->lastYearsQualID && $asLevel->id == $this->lastYearsQualID) || (
+//                        $lastYearsQualID && $asLevel->id == $lastYearsQualID))
+//				{
+//					$selected = 'selected';
+//				}
+//				$retval .= "<option $selected value='$asLevel->id'>$asLevel->name</option>";
+//			}
+//		}
+//		$retval .= "</select></div></div>";
 		$retval .= parent::get_edit_form_fields();
 		return $retval;
         

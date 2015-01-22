@@ -16,7 +16,9 @@ global $COURSE, $CFG, $PAGE, $OUTPUT, $USER, $DB;
 require_once('../lib.php');
 require_once($CFG->dirroot.'/user/profile/lib.php');
 $context = context_course::instance($COURSE->id);
-require_login();
+if (!isset($_SESSION['pp_user'])){
+    require_login();
+}
 $PAGE->set_context($context);
 
 (int)$studentID = optional_param('sID', -1, PARAM_INT);

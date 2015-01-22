@@ -57,7 +57,7 @@ class CGCriteriaSorter
         
         function ComparisonOrder($a, $b)
         {
-            return ($a->get_order() == $b->get_order()) ? 0 : (($a->get_order() > $b->get_order()) ? 1 : -1);
+            return ($a->get_order() == $b->get_order()) ? $this->Comparison($a, $b) : (($a->get_order() > $b->get_order()) ? 1 : -1);
         }
         
 }

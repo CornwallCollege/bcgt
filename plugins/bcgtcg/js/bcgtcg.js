@@ -22,6 +22,381 @@ M.mod_bcgtcg.cginiteditqual = function(Y) {
 };
 
 
+M.mod_bcgtcg.initactgrid = function(Y, qualID, grid, courseID, groupingID, cmID, cols ) 
+{
+
+    $(document).ready(function() {
+        
+        draw_grid('CGActGridTable', '', grid, 'activity', cols);
+        
+//        var height = $('#CGActGridTable').height() + 50;
+//        var maxHeight = 600;
+//
+//        if (height < maxHeight){
+//            height = height + 100;
+//        } else {
+//            height = maxHeight;
+//        }
+//
+//        $('#CGActGridTable').tinytbl({
+//            'body': {
+//                'useclass': null,
+//                'autofocus':false
+//            },
+//            'head': {
+//                'useclass':null
+//            },
+////            'cols':{
+////                'frozen': 2
+////            },
+//            'rows':{
+//                'frozen': 3
+//            },
+//            'rtl':0,
+//            'width': 'auto',
+//            'height': ''+($('#CGActGridTable').height() + 50)+''
+//        });
+//        
+//        $('#loading').hide();
+//        applyTT();
+        
+        if (grid === 'se' || grid === 'ae'){
+            $('#toggleCommentsButton').removeAttr('disabled');
+        } else {
+            $('#toggleCommentsButton').attr('disabled', 'disabled');
+        }
+        
+        
+        
+        
+               
+        $('#viewsimple').unbind('click');
+        $('#viewsimple').bind('click', function(){
+            
+            $('#loading').show();
+
+            // Set grid hidden input
+            $('#grid').val('s');
+    
+            // Get data
+            var grid = $('#grid').val();
+            var url = M.cfg.wwwroot+"/blocks/bcgt/plugins/bcgtcg/ajax/get_act_grid.php?qID="+qualID+"&cmID="+cmID+"&g="+grid;
+            
+            $.post(url, function(data){
+                draw_grid('CGActGridTable', data, grid, 'activity', cols);
+            });
+            
+        });
+        
+        
+        $('#viewadvanced').unbind('click');
+        $('#viewadvanced').bind('click', function(){
+            
+            $('#loading').show();
+
+            // Set grid hidden input
+            $('#grid').val('a');
+    
+            // Get data
+            var grid = $('#grid').val();
+            var url = M.cfg.wwwroot+"/blocks/bcgt/plugins/bcgtcg/ajax/get_act_grid.php?qID="+qualID+"&cmID="+cmID+"&g="+grid;
+            
+            $.post(url, function(data){
+                draw_grid('CGActGridTable', data, grid, 'activity', cols);
+            });
+            
+        });
+        
+        $('#editsimple').unbind('click');
+        $('#editsimple').bind('click', function(){
+            
+            $('#loading').show();
+
+            // Set grid hidden input
+            $('#grid').val('se');
+    
+            // Get data
+            var grid = $('#grid').val();
+            var url = M.cfg.wwwroot+"/blocks/bcgt/plugins/bcgtcg/ajax/get_act_grid.php?qID="+qualID+"&cmID="+cmID+"&g="+grid;
+            
+            $.post(url, function(data){
+                draw_grid('CGActGridTable', data, grid, 'activity', cols);
+            });
+            
+        });
+        
+        $('#editadvanced').unbind('click');
+        $('#editadvanced').bind('click', function(){
+            
+            $('#loading').show();
+
+            // Set grid hidden input
+            $('#grid').val('ae');
+    
+            // Get data
+            var grid = $('#grid').val();
+            var url = M.cfg.wwwroot+"/blocks/bcgt/plugins/bcgtcg/ajax/get_act_grid.php?qID="+qualID+"&cmID="+cmID+"&g="+grid;
+            
+            $.post(url, function(data){
+                draw_grid('CGActGridTable', data, grid, 'activity', cols);
+            });
+            
+        });       
+               
+               
+               
+               
+        /*
+        $.fn.dataTableExt.oApi.fnReloadAjax = function ( oSettings, sNewSource, fnCallback, bStandingRedraw )
+        {
+            if ( sNewSource !== undefined && sNewSource !== null ) {
+                oSettings.sAjaxSource = sNewSource;
+            }
+            // Server-side processing should just call fnDraw
+            if ( oSettings.oFeatures.bServerSide ) {
+                this.fnDraw();
+                //return;
+            }
+            this.oApi._fnProcessingDisplay( oSettings, true );
+            var that = this;
+            var iStart = oSettings._iDisplayStart;
+            var aData = [];
+
+            this.oApi._fnServerParams( oSettings, aData );
+            oSettings.fnServerData.call( oSettings.oInstance, oSettings.sAjaxSource, aData, function(json) {
+                // Clear the old information from the table
+                that.oApi._fnClearTable( oSettings );
+                // Got the data - add it to the table
+                var aData =  (oSettings.sAjaxDataProp !== "") ?
+                    that.oApi._fnGetObjectDataFn( oSettings.sAjaxDataProp )( json ) : json;
+
+                var dataLength = aData.length;
+                for ( var i=0 ; i<dataLength ; i++ )
+                {
+                    that.oApi._fnAddData( oSettings, aData[i] );
+                }
+                oSettings.aiDisplay = oSettings.aiDisplayMaster.slice();
+                that.fnDraw();
+                if ( bStandingRedraw === true )
+                {
+                    oSettings._iDisplayStart = iStart;
+                    that.oApi._fnCalculateEnd( oSettings );
+                    that.fnDraw( false );
+                }
+                that.oApi._fnProcessingDisplay( oSettings, false );
+                // Callback user function - for event handlers etc
+                if ( typeof fnCallback == 'function' && fnCallback !== null )
+                {
+                    fnCallback( oSettings );
+                }
+
+            }, oSettings );
+        };
+        draw_CG_act_table(qualID, grid, courseID, groupingID, columnsLocked, configColumnWidth, cmID);
+        
+        
+        var pageNumbers = $('.unitgridpage');
+        pageNumbers.each(function(pageNumber){
+        $(this).on('click',function(e){
+            e.preventDefault();
+            //get the page number:
+            
+            $('.unitgridpage').removeClass('active');
+            
+            var page = $(this).attr('page');
+            Y.one('#pageInput').set('value',page);
+            var checked = '';
+            if(Y.one('#showlate'))
+            {
+                checked = Y.one('#showlate').get('checked');
+                if(checked)
+                {
+                    checked = 'L';
+                }
+            }
+            var grid = Y.one('#grid').get('value');
+            redraw_CG_act_table(qualID, 's', checked, courseID, page, groupingID, cmID);
+            
+            $(this).addClass('active');
+            
+        });
+    } );
+    */
+    
+    });
+    
+    /*
+    var viewsimple = Y.one('#viewsimple');
+    if (viewsimple != null)
+    {
+        viewsimple.on('click', function(e){
+            e.preventDefault();
+            Y.one('#grid').set('value', 's');
+            var checked = '';
+            if(Y.one('#showlate'))
+            {
+                checked = Y.one('#showlate').get('checked');
+                if(checked)
+                {
+                    checked = 'L';
+                }
+            }
+            var page = 0;
+            if(Y.one('#pageInput'))
+            {
+                page = Y.one('#pageInput').get('value');
+            }
+            redraw_CG_act_table(qualID, 's', checked, courseID, page, groupingID, cmID);
+        });
+    }
+    
+    
+    var editsimple = Y.one('#editsimple');
+    if (editsimple != null){
+        editsimple.on('click', function(e){
+            e.preventDefault();
+            Y.one('#grid').set('value', 'se');
+            var page = 0;
+            if(Y.one('#pageInput'))
+            {
+                page = Y.one('#pageInput').get('value');
+            }
+            redraw_CG_act_table(qualID, 'se', false, courseID, page, groupingID, cmID);
+        });
+    }
+    
+    
+    var editadvanced = Y.one('#editadvanced');
+    if (editadvanced != null){
+        editadvanced.on('click', function(e){
+            e.preventDefault();
+            Y.one('#grid').set('value', 'ae');
+            var page = 0;
+            if(Y.one('#pageInput'))
+            {
+                page = Y.one('#pageInput').get('value');
+            }
+            redraw_CG_act_table(qualID, 'ae', false, courseID, page, groupingID, cmID);
+        });
+    }
+   
+    var viewadvanced = Y.one('#viewadvanced');
+    if (viewadvanced != null){
+        viewadvanced.detach();
+        viewadvanced.on('click', function(e){
+            e.preventDefault();
+            Y.one('#grid').set('value', 'a');
+            var page = 0;
+            if(Y.one('#pageInput'))
+            {
+                page = Y.one('#pageInput').get('value');
+            }
+            redraw_CG_act_table(qualID, 'a', false, courseID, page, groupingID, cmID);
+        });
+    }
+    
+    
+    var viewLate = Y.one('#showlate');
+    if(viewLate)
+    {
+        viewLate.detach();
+        viewLate.on('click', function(e){
+            var checked = viewLate.get('checked');
+            if(checked)
+            {
+                checked = 'L';
+            }
+            var page = 0;
+            if(Y.one('#pageInput'))
+            {
+                page = Y.one('#pageInput').get('value');
+            }
+            redraw_CG_act_table(qualID, 's', checked, courseID, page, groupingID, cmID);
+       });     
+    }
+        
+    // buttons
+    $(function() {
+      var loc = window.location.href;     
+      if(/g=se/.test(loc)) {
+        $('#editsimple').addClass('gridbuttonswitchON');
+      }
+      else if(/g=s/.test(loc)) {
+        $('#viewsimple').addClass('gridbuttonswitchON');
+      }
+      else {}
+    });
+    
+    $(".gridbuttonswitch").click(function(){
+    $(".gridbuttonswitchON").removeClass("gridbuttonswitchON");
+     $(this).addClass("gridbuttonswitchON");
+    });
+    */
+        
+}
+
+
+
+var draw_CG_act_table = function(qualID, grid, courseID, groupingID, columnsLocked, configColumnWidth, cmID) { 
+    var oTable = $('#BTECActGrid').dataTable( {
+        "bProcessing": true,
+        "bServerSide": true,
+//        "iDisplayStart": 0,
+//        "iDisplayLength": 15,
+        "sScrollX": "100%",
+        "sScrollY": "800px",
+        "bScrollCollapse": true,
+        "bPaginate": false,
+        "bSort":false,
+        "bInfo":false,
+        "bFilter":false,
+        "sAjaxSource": M.cfg.wwwroot+"/blocks/bcgt/plugins/bcgtcg/ajax/get_act_grid.php?qID="+qualID+"&g="+grid+"&cID="+courseID+"&grID="+groupingID+"&cmID="+cmID,
+        "fnDrawCallback": function () {
+            if ( typeof oTable != 'undefined' ) {
+                applyActTT(true);
+                setTimeout("applyActTT(true);", 2000); 
+            }
+        }
+    } );
+    var fCol = new FixedColumns( oTable, {
+                    "iLeftColumns": columnsLocked,
+                    "iLeftWidth": configColumnWidth 
+                } );
+    //applyUnitTT();
+    
+}
+
+var recalculate_cols_act = function() {
+    $(":input").attr("disabled",true);
+    var oDataTable = $('#BTECActGrid').dataTable();
+    if(typeof oDataTable != 'undefined'  )
+    {
+        oDataTable.fnAdjustColumnSizing(false);
+        applyActTT();
+        setTimeout("applyActTT();", 2000);
+        setTimeout("applyActTT();", 3000);
+        setTimeout("applyActTT();", 4000);
+    }
+    setTimeout("$(':input').attr('disabled',false);", 2000);
+    setTimeout("$(':input').attr('disabled',false);", 3000);
+}
+
+var redraw_CG_act_table = function(qualID, grid, flag, courseID, page, groupingID, cmID) {
+    $(":input").attr("disabled",true);
+    var lock = false;
+    if(grid == 'se' || grid == 'ae')
+    {
+        lock = true;
+    }
+    var oDataTable = $('#BTECActGrid').dataTable();
+    var newUrl = M.cfg.wwwroot+"/blocks/bcgt/plugins/bcgtcg/ajax/get_act_grid.php?qID="+qualID+"&g="+grid+"&f="+flag+"&cID="+courseID+"&page="+page+"&lock="+lock+"&cmID="+cmID+"&grID="+groupingID;
+    //var oSettings = oDataTable.fnSettings();
+    oDataTable.fnReloadAjax(newUrl, recalculate_cols_act);
+//    applyUnitTT(false);
+    //applyUnitTT();
+}
+
+
 M.mod_bcgtcg.cginiteditunit = function(Y) {
         
     var qualPath = Y.one('#unitPathway');
@@ -140,43 +515,258 @@ M.mod_bcgtcg.cginiteditunit = function(Y) {
     
 };
 
+function applyActTT(enableInputs)
+{
+    var selects = Y.one('#selects').get('value');
+    var cmID = -1;
+    if(selects == "yes")
+    {
+        
+        if (Y.one("#activityChange") != null){
+            var index3 = Y.one("#activityChange").get('selectedIndex');
+            cmID = Y.one("#activityChange").get("options").item(index3).getAttribute('value');
+        }
+        
+    }
+    else
+    {
+        if(Y.one('#cmID'))
+        {
+            cmID = Y.one('#cmID').get('value');
+        }
+    }
+    
+    // Criteria checkboxes    
+    $('.criteriaCheck').unbind('click');
+    $('.criteriaCheck').bind('click', function(e){
+        
+        var value = +$(this).is(':checked');
+        var studentID = $(this).attr('studentID');
+        var criteriaID = $(this).attr('criteriaID');
+        var unitID = $(this).attr('unitID');
+        var qualID = $(this).attr('qualID');
+        var grid = $(this).attr('grid');
+        
+        var params = {
+            grid: grid,
+            value: value,
+            studentID: studentID,
+            criteriaID: criteriaID,
+            unitID: unitID,
+            qualID: qualID,
+            method: 'check'
+        };
+        
+        var cell = $($(this).parents('td')[0]);
+        
+        runPost('update_student_value.php', '', params, function(d){
+            
+            updateActivityGrid(d, cell, unitID, studentID);
+            
+        });
+        
+    });
+        
+    
+    // Select Criteria
+    $('.criteriaValueSelect').unbind('change');
+    $('.criteriaValueSelect').bind('change', function(e){
+        
+        var value = $(this).val();
+        var studentID = $(this).attr('studentID');
+        var criteriaID = $(this).attr('criteriaID');
+        var unitID = $(this).attr('unitID');
+        var qualID = $(this).attr('qualID');
+        var grid = $(this).attr('grid');
+        
+        var params = {
+            grid: grid,
+            value: value,
+            studentID: studentID,
+            criteriaID: criteriaID,
+            unitID: unitID,
+            qualID: qualID,
+            method: 'select'
+        };
+        
+        var cell = $($(this).parents('td')[0]);
+        
+        runPost('update_student_value.php', '', params, function(d){
+            
+            updateActivityGrid(d, cell, unitID, studentID);
+            
+        });
+        
+    });
+    
+    
+    
+    $('.criteriaValueDate').datepicker( {
+        dateFormat: "dd-mm-yy",
+        onSelect: function(date){
+            
+            var critID = $(this).attr('criteriaid');
+            var unitID = $(this).attr('unitid');
+            var qualID = $(this).attr('qualid');
+            var studentID = $(this).attr('studentid');
+            var grid = $(this).attr('grid');
 
+            var params = {
+                grid: grid,
+                value: date,
+                studentID: studentID,
+                criteriaID: critID,
+                unitID: unitID,
+                qualID: qualID,
+                method: 'date'
+            };
+            
+            var cell = $($(this).parents('td')[0]);
+        
+            runPost('update_student_value.php', '', params, function(d){
+
+                updateActivityGrid(d, cell, unitID, studentID);
+
+            });
+            
+        }
+    } );
+    
+    
+    
+    
+    
+    
+    
+//    // Tick Criteria
+//    var criteriaChecks = Y.all('.criteriaCheck');
+//    if(criteriaChecks)
+//    {
+//        criteriaChecks.each(function(check){
+//            check.detach();
+//            check.on('click', function(e){
+//                
+//                //grey everything out first
+//                Y.all('#unitGridDiv select, #unitGridDiv input, #unitGridDiv textarea, #studentGridDiv select, #studentGridDiv input, #studentGridDiv textarea').setAttribute('disabled', true);
+//                Y.all("#popUpContent select, #popUpContent input, #popUpContent textarea").setAttribute('disabled', true);
+//                
+//                var critID = check.getAttribute('criteriaid');
+//                var unitID = check.getAttribute('unitid');
+//                var qualID = check.getAttribute('qualid');
+//                var studentID = check.getAttribute('studentid');
+//                var value = +check.get('checked');
+//                var grid = check.getAttribute('grid');
+//                                
+//                var data = {
+//                    method: 'post',
+//                    data: {
+//                        grid: grid,
+//                        method: 'check',
+//                        qualID: qualID,
+//                        studentID: studentID,
+//                        unitID: unitID,
+//                        criteriaID: critID,
+//                        value: value
+//                    },
+//                    dataType: 'json',
+//                    on: {
+//                        success: update_act_grid
+//                    }
+//                }
+//                
+//                var url = M.cfg.wwwroot+"/blocks/bcgt/plugins/bcgtcg/ajax/update_student_value.php";
+//                Y.io(url, data);
+//                
+//                $(":input").attr("disabled",false);
+//                
+//          });  
+//        });
+//    }
+//        
+//    
+//    // Select Criteria
+//    var criteriaSelects = Y.all('.criteriaValueSelect');
+//    if(criteriaSelects)
+//    {
+//        criteriaSelects.each(function(sel){
+//            sel.detach();
+//            sel.on('change', function(e){
+//                
+//                //grey everything out first
+//                Y.all('#studentGridDiv select, #studentGridDiv input, #studentGridDiv textarea').setAttribute('disabled', true);
+//                Y.all("#popUpContent select, #popUpContent input, #popUpContent textarea").setAttribute('disabled', true);
+//                
+//                var critID = sel.getAttribute('criteriaid');
+//                var unitID = sel.getAttribute('unitid');
+//                var qualID = sel.getAttribute('qualid');
+//                var studentID = sel.getAttribute('studentid');
+//                var value = +sel.get('value');
+//                var grid = sel.getAttribute('grid');
+//                                
+//                var data = {
+//                    method: 'post',
+//                    data: {
+//                        grid: grid,
+//                        method: 'select',
+//                        qualID: qualID,
+//                        studentID: studentID,
+//                        unitID: unitID,
+//                        criteriaID: critID,
+//                        value: value
+//                    },
+//                    dataType: 'json',
+//                    on: {
+//                        success: update_act_grid
+//                    }
+//                }
+//                
+//                var url = M.cfg.wwwroot+"/blocks/bcgt/plugins/bcgtcg/ajax/update_student_value.php";
+//                Y.io(url, data);
+//                
+//                
+//                
+//          });  
+//          
+//        });
+//        
+//    }
+//    
+//    
+//    $(":input").attr("disabled",false);
+//    applyTT();
+}
+
+function update_act_grid(id, o){
+    applyActTT(true);
+}
 
 M.mod_bcgtcg.inithbvrqstudgrid = function(Y, qualID, studentID, grid){
     
     $(document).ready( function(){
         
-        var viewsimple = Y.one('#viewsimple');
-        if (viewsimple != null){
-            viewsimple.on('click', function(e){
-                e.preventDefault();
-                window.location = M.cfg.wwwroot + '/blocks/bcgt/grids/student_grid.php?sID='+studentID+'&qID='+qualID+'&g=s';
-            });
-        }
+        $('#viewsimple').unbind('click');
+        $('#viewsimple').bind('click', function(e){
+            e.preventDefault();
+            window.location = M.cfg.wwwroot + '/blocks/bcgt/grids/student_grid.php?sID='+studentID+'&qID='+qualID+'&g=s';
+        });
         
-        var viewadv = Y.one('#viewadvanced');
-        if (viewadv != null){
-            viewadv.on('click', function(e){
-                e.preventDefault();
-                window.location = M.cfg.wwwroot + '/blocks/bcgt/grids/student_grid.php?sID='+studentID+'&qID='+qualID+'&g=a';
-            });
-        }
+        $('#viewadvanced').unbind('click');
+        $('#viewadvanced').bind('click', function(e){
+            e.preventDefault();
+            window.location = M.cfg.wwwroot + '/blocks/bcgt/grids/student_grid.php?sID='+studentID+'&qID='+qualID+'&g=a';
+        });
         
-        var editsimple = Y.one('#editsimple');
-        if (editsimple != null){
-            editsimple.on('click', function(e){
-                e.preventDefault();
-                window.location = M.cfg.wwwroot + '/blocks/bcgt/grids/student_grid.php?sID='+studentID+'&qID='+qualID+'&g=se';
-            });
-        }
+        $('#editsimple').unbind('click');
+        $('#editsimple').bind('click', function(e){
+            e.preventDefault();
+            window.location = M.cfg.wwwroot + '/blocks/bcgt/grids/student_grid.php?sID='+studentID+'&qID='+qualID+'&g=se';
+        });
         
-        var editadv = Y.one('#editadvanced');
-        if (editadv != null){
-            editadv.on('click', function(e){
-                e.preventDefault();
-                window.location = M.cfg.wwwroot + '/blocks/bcgt/grids/student_grid.php?sID='+studentID+'&qID='+qualID+'&g=ae';
-            });
-        }
+        $('#editadvanced').unbind('click');
+        $('#editadvanced').bind('click', function(e){
+            e.preventDefault();
+            window.location = M.cfg.wwwroot + '/blocks/bcgt/grids/student_grid.php?sID='+studentID+'&qID='+qualID+'&g=ae';
+        });
         
         applyTT();
         applyStudentTT();
@@ -184,6 +774,19 @@ M.mod_bcgtcg.inithbvrqstudgrid = function(Y, qualID, studentID, grid){
     } );
     
 };
+
+function runPost(url, action, params, callBack){
+    
+    loading();
+    $.post(M.cfg.wwwroot + '/blocks/bcgt/plugins/bcgtcg/ajax/'+url, {action: action, params: params}, function(d){
+        callBack(d);
+        loading(false);
+    }).fail(function(){
+        alert('Error: Could not update!');
+        loading(false);
+    });
+    
+}
 
 function update(action, params)
 {
@@ -202,183 +805,532 @@ function update(action, params)
 }
 
 
-
-M.mod_bcgtcg.initstudentgrid = function(Y, qualID, studentID, grid) {
-    var qualID;
-    var studentID;
-    $(document).ready(function() {
-        var selects = Y.one('#selects');
-        if(selects != null && selects.get('value') == "yes")
-        {
-            var select = Y.one("#qualChange");
-            if(select)
-            {
-                var index = Y.one("#qualChange").get('selectedIndex');
-                qualID = Y.one("#qualChange").get("options").item(index).getAttribute('value');  
-            }
-            else
-            {
-                qualID = Y.one('#qID').get('value');    
-            }
-            var index2 = Y.one("#studentChange").get('selectedIndex');
-            studentID = Y.one("#studentChange").get("options").item(index2).getAttribute('value');
-        }
-        else
-        {
-            studentID = Y.one('#sID').get('value');
-            qualID = Y.one('#qID').get('value');   
-        }
-        $.fn.dataTableExt.oApi.fnReloadAjax = function ( oSettings, sNewSource, fnCallback, bStandingRedraw )
-        {
-            if ( sNewSource !== undefined && sNewSource !== null ) {
-                oSettings.sAjaxSource = sNewSource;
-            }
-            // Server-side processing should just call fnDraw
-            if ( oSettings.oFeatures.bServerSide ) {
-                this.fnDraw();
-                //return;
-            }
-            this.oApi._fnProcessingDisplay( oSettings, true );
-            var that = this;
-            var iStart = oSettings._iDisplayStart;
-            var aData = [];
-
-            this.oApi._fnServerParams( oSettings, aData );
-            oSettings.fnServerData.call( oSettings.oInstance, oSettings.sAjaxSource, aData, function(json) {
-                /* Clear the old information from the table */
-                that.oApi._fnClearTable( oSettings );
-                /* Got the data - add it to the table */
-                var aData =  (oSettings.sAjaxDataProp !== "") ?
-                    that.oApi._fnGetObjectDataFn( oSettings.sAjaxDataProp )( json ) : json;
-
-                for ( var i=0 ; i<aData.length ; i++ )
-                {
-                    that.oApi._fnAddData( oSettings, aData[i] );
-                }
-                oSettings.aiDisplay = oSettings.aiDisplayMaster.slice();
-                that.fnDraw();
-                if ( bStandingRedraw === true )
-                {
-                    oSettings._iDisplayStart = iStart;
-                    that.oApi._fnCalculateEnd( oSettings );
-                    that.fnDraw( false );
-                }
-                that.oApi._fnProcessingDisplay( oSettings, false );
-                /* Callback user function - for event handlers etc */
-                if ( typeof fnCallback == 'function' && fnCallback !== null )
-                {
-                    fnCallback( oSettings );
-                }
-
-            }, oSettings );
-        };
-        
-        draw_CG_student_table(qualID, studentID, grid);
-    } );
+function toggleAddComments()
+{
     
-    var viewsimple = Y.one('#viewsimple');
-    if (viewsimple != null)
-    {
-        viewsimple.on('click', function(e){
-            e.preventDefault();
-            Y.one('#grid').set('value', 's');
-            var checked = '';
-            if(Y.one('#showlate'))
-            {
-                checked = Y.one('#showlate').get('checked');
-                if(checked)
-                {
-                    checked = 'L';
-                }
-            }
-            redraw_CG_student_table(qualID, studentID, 's', checked);
-        });
+    var button = $('#toggleCommentsButton');
+    
+    if (button.attr('disabled') === 'disabled'){
+        return false;
     }
     
-    var editsimple = Y.one('#editsimple');
-    if (editsimple != null)
-    {
-        editsimple.on('click', function(e){
-            e.preventDefault();
-            Y.one('#grid').set('value', 'se');
-            redraw_CG_student_table(qualID, studentID, 'se');
-        });
+    if (button.hasClass('active')){
+        button.removeClass('active');
+    } else {
+        button.addClass('active');
     }
     
-    var editadvanced = Y.one('#editadvanced');
-    if (editadvanced != null)
-    {
-        editadvanced.on('click', function(e){
-            e.preventDefault();
-            Y.one('#grid').set('value', 'ae');
-            redraw_CG_student_table(qualID, studentID, 'ae');
-        });
-    }
-    
-    var viewadvanced = Y.one('#viewadvanced');
-    if (viewadvanced != null)
-    {
-        viewadvanced.detach();
-        viewadvanced.on('click', function(e){
-            e.preventDefault();
-            Y.one('#grid').set('value', 'a');
-            redraw_CG_student_table(qualID, studentID, 'a');
-        });
-    }
-    
-    
-        
-    // buttons
-    $(function() {
-      var loc = window.location.href;     
-      if(/g=se/.test(loc)) {
-        if ($('#editsimple') != null){  
-            $('#editsimple').addClass('gridbuttonswitchON');
-        }
-      }
-      else if(/g=s/.test(loc)) {
-        if ($('#viewsimple') != null){
-            $('#viewsimple').addClass('gridbuttonswitchON');
-        }
-      }
-      
-    });
-    
-    if ($(".gridbuttonswitch") != null){
-        $(".gridbuttonswitch").click(function(){
-        $(".gridbuttonswitchON").removeClass("gridbuttonswitchON");
-         $(this).addClass("gridbuttonswitchON");
-        });
-    }
+    $('.criteriaTDContent').toggle();
+    $('.hiddenCriteriaCommentButton').toggle();
     
 }
 
-M.mod_bcgtcg.inithbvrqunitgrid = function(Y, qualID, unitID, grid){
+
+function draw_grid(id, data, view, grid, freezeCols){
+            
+    // Destroy current tinytbl, if exists
+    $('.ui-tinytbl').each( function(){
+        
+        var role = $(this).attr('role');
+        if (role === id){
+            $('#'+id).tinytbl('destroy');
+        }
+        
+    } );
+    
+    // Replace table data
+    if (data !== ''){
+        $('#'+id+ ' tbody').html(data);
+    }
+    
+    
+    // if editing, increase the size of the headers
+    if (view === 'se' || view ==='ae'){
+        
+        $('.criteriaName').css('width', '100px');
+        $('.criteriaName').css('min-width', '100px');
+        $('.criteriaName').css('max-width', '100px');
+        
+        $('.criteriaCell').css('width', '100px');
+        $('.criteriaCell').css('min-width', '100px');
+        $('.criteriaCell').css('max-width', '100px');
+        
+        $('#toggleCommentsButton').removeAttr('disabled');
+                
+        $('.unitCommentCell').css('width', '65px');
+        $('.unitCommentCell').css('min-width', '65px');
+        $('.unitCommentCell').css('max-width', '65px');
+        
+    } else {
+        
+        $('.criteriaName').css('width', '40px');
+        $('.criteriaName').css('min-width', '40px');
+        $('.criteriaName').css('max-width', '40px');
+        
+        $('.criteriaCell').css('width', '40px');
+        $('.criteriaCell').css('min-width', '40px');
+        $('.criteriaCell').css('max-width', '40px');
+        
+        $('.unitCommentCell').css('width', '40px');
+        $('.unitCommentCell').css('min-width', '40px');
+        $('.unitCommentCell').css('max-width', '40px');
+        
+        $('#toggleCommentsButton').attr('disabled', 'disabled');
+        
+    }
+        
+    var activityUnits = $('.activityUnitName');
+    $.each(activityUnits, function(){
+        
+        var unitID = $(this).attr('unitID');
+        var cnt = $('.criterionUnit_'+unitID).length;
+        var cWidth = $($('.criterionUnit_'+unitID)[0]).outerWidth();
+        var newWidth = cnt * cWidth;
+        $(this).css('width', newWidth + 'px');
+        $(this).css('min-width', newWidth + 'px');
+        $(this).css('max-width', newWidth + 'px');
+        $(this).css('padding-left', '0px');
+        $(this).css('padding-right', '0px');
+        
+    });
+    
+    
+    
+    
+    
+    $('#toggleCommentsButton').removeClass('active');
+        
+    
+    // Draw tinytbl again
+    var windowHeight = window.innerHeight;
+    var height = $('#'+id).height();
+    var maxHeight = 800;
+    var minHeight = 400;
+    
+    if (height < minHeight){
+        height = 400;
+    }
+    else if (height > maxHeight) {
+        height = maxHeight;
+    }
+    
+    // If too big for window, now make smaller
+    if (height >= windowHeight)
+    {
+        height = windowHeight - 80;
+    }
+    
+    var freezeRows = 1;
+            
+    $('#'+id).tinytbl({
+            'body': {
+                'useclass': null,
+                'autofocus':false
+            },
+            'head': {
+                'useclass':null
+            },
+            'cols': {
+                'frozen': freezeCols
+            },
+            'rows': {
+                'frozen': freezeRows
+            },
+            'rtl':0,
+            'width': 'auto',
+            'height': ''+height+''
+        });
+
+    // Width fix
+    $('#tinytbl-1').width( $('#tinytbl-1').width() + 20);
+    
+    $('#loading').hide();
+    applyTT();
+    
+    if (grid === 'student'){
+        applyStudentTT();
+    } else if (grid === 'unit'){
+        applyUnitTT();
+    } else if (grid === 'activity'){
+        applyActTT();
+    } else if(grid === 'class'){
+        applyClassTT();
+    }
+    
+    
+}
+
+
+M.mod_bcgtcg.initstudentgrid = function(Y, qualID, studentID, grid, cols) {
+    var qualID;
+    var studentID;
+    var grid;
+    var cols;
+        
+    $(document).ready( function(){
+        
+        draw_grid('CGStudentGridTable', '', grid, 'student', cols);
+        
+//        var height = $('#CGStudentGridTable').height() + 50;
+//        var maxHeight = 600;
+//
+//        if (height < maxHeight){
+//            height = height + 100;
+//        } else {
+//            height = maxHeight;
+//        }
+//
+//
+//        $('#CGStudentGridTable').tinytbl({
+//            'body': {
+//                'useclass': null,
+//                'autofocus':false
+//            },
+//            'head': {
+//                'useclass':null
+//            },
+//            'cols': {
+//                'frozen': 4
+//            },
+//            'rows': {
+//                'frozen': 1
+//            },
+//            'rtl':0,
+//            'width': 'auto',
+//            'height': ''+height+''
+//        });
+
+
+//        $('#loading').hide();
+//        applyTT();
+        
+        if (grid === 'se' || grid === 'ae'){
+            $('#toggleCommentsButton').removeAttr('disabled');
+        } else {
+            $('#toggleCommentsButton').attr('disabled', 'disabled');
+        }
+        
+        
+        $('#viewsimple').unbind('click');
+        $('#viewsimple').bind('click', function(){
+            
+            $('#loading').show();
+
+            // Set grid hidden input
+            $('#grid').val('s');
+    
+            // Get data
+            var grid = $('#grid').val();
+
+            if ( $('#changeUnitGroup').val() !== undefined ){
+                var uGroup = encodeURIComponent( $('#changeUnitGroup').val() );
+            } else {
+                var uGroup = 0;
+            }
+            
+            var url = M.cfg.wwwroot+"/blocks/bcgt/plugins/bcgtcg/ajax/get_student_grid.php?qID="+qualID+"&sID="+studentID+"&g="+grid+"&uGroup="+uGroup;
+            
+            $.post(url, function(data){
+                draw_grid('CGStudentGridTable', data, grid, 'student', cols);
+            });
+            
+            
+        });
+        
+        
+        $('#viewadvanced').unbind('click');
+        $('#viewadvanced').bind('click', function(){
+            
+            $('#loading').show();
+
+            // Set grid hidden input
+            $('#grid').val('a');
+    
+            // Get data
+            var grid = $('#grid').val();
+            
+            if ( $('#changeUnitGroup').val() !== undefined ){
+                var uGroup = encodeURIComponent( $('#changeUnitGroup').val() );
+            } else {
+                var uGroup = 0;
+            }
+            
+            var url = M.cfg.wwwroot+"/blocks/bcgt/plugins/bcgtcg/ajax/get_student_grid.php?qID="+qualID+"&sID="+studentID+"&g="+grid+"&uGroup="+uGroup;
+            
+            $.post(url, function(data){
+                draw_grid('CGStudentGridTable', data, grid, 'student', cols);
+            });
+            
+            
+        });
+        
+        $('#editsimple').unbind('click');
+        $('#editsimple').bind('click', function(){
+            
+            $('#loading').show();
+
+            // Set grid hidden input
+            $('#grid').val('se');
+    
+            // Get data
+            var grid = $('#grid').val();
+            
+            if ( $('#changeUnitGroup').val() !== undefined ){
+                var uGroup = encodeURIComponent( $('#changeUnitGroup').val() );
+            } else {
+                var uGroup = 0;
+            }
+            
+            var url = M.cfg.wwwroot+"/blocks/bcgt/plugins/bcgtcg/ajax/get_student_grid.php?qID="+qualID+"&sID="+studentID+"&g="+grid+"&uGroup="+uGroup;
+            
+            $.post(url, function(data){
+                draw_grid('CGStudentGridTable', data, grid, 'student', cols);
+            });
+            
+            
+        });
+        
+        $('#editadvanced').unbind('click');
+        $('#editadvanced').bind('click', function(){
+            
+            $('#loading').show();
+
+            // Set grid hidden input
+            $('#grid').val('ae');
+    
+            // Get data
+            var grid = $('#grid').val();
+            
+            if ( $('#changeUnitGroup').val() !== undefined ){
+                var uGroup = encodeURIComponent( $('#changeUnitGroup').val() );
+            } else {
+                var uGroup = 0;
+            }
+            
+            var url = M.cfg.wwwroot+"/blocks/bcgt/plugins/bcgtcg/ajax/get_student_grid.php?qID="+qualID+"&sID="+studentID+"&g="+grid+"&uGroup="+uGroup;
+            
+            $.post(url, function(data){
+                draw_grid('CGStudentGridTable', data, grid, 'student', cols);
+            });
+            
+            
+        });
+        
+        
+        // CHange unit group 
+        $('#changeUnitGroup').unbind('change');
+        $('#changeUnitGroup').change( function(){
+
+            $('#loading').show();
+                
+            // Get data
+            var grid = $('#grid').val();
+            var uGroup = encodeURIComponent( $(this).val() );
+            
+            var url = M.cfg.wwwroot+"/blocks/bcgt/plugins/bcgtcg/ajax/get_student_grid.php?qID="+qualID+"&sID="+studentID+"&g="+grid+"&uGroup="+uGroup;
+            
+            $.post(url, function(data){
+                draw_grid('CGStudentGridTable', data, grid, 'student', cols);
+            });
+
+        } );
+        
+        
+        var doResize;
+        
+        $(window).resize( function(){
+            clearTimeout(doResize);
+            $('#loading').show();
+            doResize = setTimeout( function(){
+                var g = $('#grid').val();
+                draw_grid('CGStudentGridTable', '', g, 'student', cols);
+            }, 100 );
+        } );
+        
+                
+        
+    } );
+    
+    
+    
+    
+//    $(document).ready(function() {
+//        var selects = Y.one('#selects');
+//        if(selects != null && selects.get('value') == "yes")
+//        {
+//            var select = Y.one("#qualChange");
+//            if(select)
+//            {
+//                var index = Y.one("#qualChange").get('selectedIndex');
+//                qualID = Y.one("#qualChange").get("options").item(index).getAttribute('value');  
+//            }
+//            else
+//            {
+//                qualID = Y.one('#qID').get('value');    
+//            }
+//            var index2 = Y.one("#studentChange").get('selectedIndex');
+//            studentID = Y.one("#studentChange").get("options").item(index2).getAttribute('value');
+//        }
+//        else
+//        {
+//            studentID = Y.one('#sID').get('value');
+//            qualID = Y.one('#qID').get('value');   
+//        }
+//        $.fn.dataTableExt.oApi.fnReloadAjax = function ( oSettings, sNewSource, fnCallback, bStandingRedraw )
+//        {
+//            if ( sNewSource !== undefined && sNewSource !== null ) {
+//                oSettings.sAjaxSource = sNewSource;
+//            }
+//            // Server-side processing should just call fnDraw
+//            if ( oSettings.oFeatures.bServerSide ) {
+//                this.fnDraw();
+//                //return;
+//            }
+//            this.oApi._fnProcessingDisplay( oSettings, true );
+//            var that = this;
+//            var iStart = oSettings._iDisplayStart;
+//            var aData = [];
+//
+//            this.oApi._fnServerParams( oSettings, aData );
+//            oSettings.fnServerData.call( oSettings.oInstance, oSettings.sAjaxSource, aData, function(json) {
+//                /* Clear the old information from the table */
+//                that.oApi._fnClearTable( oSettings );
+//                /* Got the data - add it to the table */
+//                var aData =  (oSettings.sAjaxDataProp !== "") ?
+//                    that.oApi._fnGetObjectDataFn( oSettings.sAjaxDataProp )( json ) : json;
+//
+//                for ( var i=0 ; i<aData.length ; i++ )
+//                {
+//                    that.oApi._fnAddData( oSettings, aData[i] );
+//                }
+//                oSettings.aiDisplay = oSettings.aiDisplayMaster.slice();
+//                that.fnDraw();
+//                if ( bStandingRedraw === true )
+//                {
+//                    oSettings._iDisplayStart = iStart;
+//                    that.oApi._fnCalculateEnd( oSettings );
+//                    that.fnDraw( false );
+//                }
+//                that.oApi._fnProcessingDisplay( oSettings, false );
+//                /* Callback user function - for event handlers etc */
+//                if ( typeof fnCallback == 'function' && fnCallback !== null )
+//                {
+//                    fnCallback( oSettings );
+//                }
+//
+//            }, oSettings );
+//        };
+//        
+//        draw_CG_student_table(qualID, studentID, grid);
+//    } );
+//    
+//    var viewsimple = Y.one('#viewsimple');
+//    if (viewsimple != null)
+//    {
+//        viewsimple.on('click', function(e){
+//            e.preventDefault();
+//            Y.one('#grid').set('value', 's');
+//            var checked = '';
+//            if(Y.one('#showlate'))
+//            {
+//                checked = Y.one('#showlate').get('checked');
+//                if(checked)
+//                {
+//                    checked = 'L';
+//                }
+//            }
+//            redraw_CG_student_table(qualID, studentID, 's', checked);
+//        });
+//    }
+//    
+//    var editsimple = Y.one('#editsimple');
+//    if (editsimple != null)
+//    {
+//        editsimple.on('click', function(e){
+//            e.preventDefault();
+//            Y.one('#grid').set('value', 'se');
+//            redraw_CG_student_table(qualID, studentID, 'se');
+//        });
+//    }
+//    
+//    var editadvanced = Y.one('#editadvanced');
+//    if (editadvanced != null)
+//    {
+//        editadvanced.on('click', function(e){
+//            e.preventDefault();
+//            Y.one('#grid').set('value', 'ae');
+//            redraw_CG_student_table(qualID, studentID, 'ae');
+//        });
+//    }
+//    
+//    var viewadvanced = Y.one('#viewadvanced');
+//    if (viewadvanced != null)
+//    {
+//        viewadvanced.detach();
+//        viewadvanced.on('click', function(e){
+//            e.preventDefault();
+//            Y.one('#grid').set('value', 'a');
+//            redraw_CG_student_table(qualID, studentID, 'a');
+//        });
+//    }
+//    
+//    
+//        
+//    // buttons
+//    $(function() {
+//      var loc = window.location.href;     
+//      if(/g=se/.test(loc)) {
+//        if ($('#editsimple') != null){  
+//            $('#editsimple').addClass('gridbuttonswitchON');
+//        }
+//      }
+//      else if(/g=s/.test(loc)) {
+//        if ($('#viewsimple') != null){
+//            $('#viewsimple').addClass('gridbuttonswitchON');
+//        }
+//      }
+//      
+//    });
+//    
+//    if ($(".gridbuttonswitch") != null){
+//        $(".gridbuttonswitch").click(function(){
+//        $(".gridbuttonswitchON").removeClass("gridbuttonswitchON");
+//         $(this).addClass("gridbuttonswitchON");
+//        });
+//    }
+    
+}
+
+M.mod_bcgtcg.inithbvrqunitgrid = function(Y, qualID, unitID, page){
     
     $(document).ready( function(){
+        
+        if (page === undefined || page === false || page === ''){
+            page = 1;
+        }
         
         var viewsimple = Y.one('#viewsimple');
         viewsimple.on('click', function(e){
             e.preventDefault();
-            window.location = M.cfg.wwwroot + '/blocks/bcgt/grids/unit_grid.php?uID='+unitID+'&qID='+qualID+'&g=s';
+            window.location = M.cfg.wwwroot + '/blocks/bcgt/grids/unit_grid.php?uID='+unitID+'&qID='+qualID+'&g=s&page='+page;
         });
         
         var viewadv = Y.one('#viewadvanced');
         viewadv.on('click', function(e){
             e.preventDefault();
-            window.location = M.cfg.wwwroot + '/blocks/bcgt/grids/unit_grid.php?uID='+unitID+'&qID='+qualID+'&g=a';
+            window.location = M.cfg.wwwroot + '/blocks/bcgt/grids/unit_grid.php?uID='+unitID+'&qID='+qualID+'&g=a&page='+page;
         });
         
         var editsimple = Y.one('#editsimple');
         editsimple.on('click', function(e){
             e.preventDefault();
-            window.location = M.cfg.wwwroot + '/blocks/bcgt/grids/unit_grid.php?uID='+unitID+'&qID='+qualID+'&g=se';
+            window.location = M.cfg.wwwroot + '/blocks/bcgt/grids/unit_grid.php?uID='+unitID+'&qID='+qualID+'&g=se&page='+page;
         });
         
         var editadv = Y.one('#editadvanced');
         editadv.on('click', function(e){
             e.preventDefault();
-            window.location = M.cfg.wwwroot + '/blocks/bcgt/grids/unit_grid.php?uID='+unitID+'&qID='+qualID+'&g=ae';
+            window.location = M.cfg.wwwroot + '/blocks/bcgt/grids/unit_grid.php?uID='+unitID+'&qID='+qualID+'&g=ae&page='+page;
         });
         
         applyTT();
@@ -389,8 +1341,152 @@ M.mod_bcgtcg.inithbvrqunitgrid = function(Y, qualID, unitID, grid){
 };
 
 
-M.mod_bcgtcg.initunitgrid = function(Y, qualID, unitID, columnsLocked, configColumnWidth) {
+M.mod_bcgtcg.initunitgrid = function(Y, qualID, unitID, grid, cols) {
 
+    var qualID;
+    var unitID;
+    var grid;
+    
+    $(document).ready( function(){
+        
+        draw_grid('CGUnitGridTable', '', grid, 'unit', cols);
+        
+        if (grid === 'se' || grid === 'ae'){
+            $('#toggleCommentsButton').removeAttr('disabled');
+        } else {
+            $('#toggleCommentsButton').attr('disabled', 'disabled');
+        }
+        
+        var regGrpID = $('#reggrpid').val();
+        if (regGrpID === undefined){
+            regGrpID = -1;
+        }
+        
+        
+        $('#viewsimple').unbind('click');
+        $('#viewsimple').bind('click', function(){
+            
+            $('#loading').show();
+
+            // Set grid hidden input
+            $('#grid').val('s');
+    
+            // Get data
+            var grid = $('#grid').val();
+            var page = $('#pageInput').val();
+            var url = M.cfg.wwwroot+"/blocks/bcgt/plugins/bcgtcg/ajax/get_unit_grid.php?qID="+qualID+"&uID="+unitID+"&g="+grid+"&page="+page+"&regGrpID="+regGrpID;
+            
+            $.post(url, function(data){
+                draw_grid('CGUnitGridTable', data, grid, 'unit', cols);
+            });
+            
+            
+        });
+        
+        
+        $('#viewadvanced').unbind('click');
+        $('#viewadvanced').bind('click', function(){
+            
+            $('#loading').show();
+
+            // Set grid hidden input
+            $('#grid').val('a');
+    
+            // Get data
+            var grid = $('#grid').val();
+            var page = $('#pageInput').val();
+            var url = M.cfg.wwwroot+"/blocks/bcgt/plugins/bcgtcg/ajax/get_unit_grid.php?qID="+qualID+"&uID="+unitID+"&g="+grid+"&page="+page+"&regGrpID="+regGrpID;
+            
+            $.post(url, function(data){
+                draw_grid('CGUnitGridTable', data, grid, 'unit', cols);
+            });
+            
+            
+        });
+        
+        $('#editsimple').unbind('click');
+        $('#editsimple').bind('click', function(){
+            
+            $('#loading').show();
+
+            // Set grid hidden input
+            $('#grid').val('se');
+    
+            // Get data
+            var grid = $('#grid').val();
+            var page = $('#pageInput').val();
+            var url = M.cfg.wwwroot+"/blocks/bcgt/plugins/bcgtcg/ajax/get_unit_grid.php?qID="+qualID+"&uID="+unitID+"&g="+grid+"&page="+page+"&regGrpID="+regGrpID;
+            
+            $.post(url, function(data){
+                draw_grid('CGUnitGridTable', data, grid, 'unit', cols);
+            });
+            
+            
+        });
+        
+        $('#editadvanced').unbind('click');
+        $('#editadvanced').bind('click', function(){
+            
+            $('#loading').show();
+
+            // Set grid hidden input
+            $('#grid').val('ae');
+    
+            // Get data
+            var grid = $('#grid').val();
+            var page = $('#pageInput').val();
+            var url = M.cfg.wwwroot+"/blocks/bcgt/plugins/bcgtcg/ajax/get_unit_grid.php?qID="+qualID+"&uID="+unitID+"&g="+grid+"&page="+page+"&regGrpID="+regGrpID;
+            
+            $.post(url, function(data){
+                draw_grid('CGUnitGridTable', data, grid, 'unit', cols);
+            });
+            
+            
+        });
+        
+        
+        $('.unitgridpage').unbind('click');
+        $('.unitgridpage').bind('click', function(e){
+            
+            $('#loading').show();
+            
+            e.preventDefault();
+            $('.unitgridpage').removeClass('active');
+            var page = $(this).attr('page');
+            $('#pageInput').val(page);
+            $(this).addClass('active');
+            
+            var grid = $('#grid').val();
+            var url = M.cfg.wwwroot+"/blocks/bcgt/plugins/bcgtcg/ajax/get_unit_grid.php?qID="+qualID+"&uID="+unitID+"&g="+grid+"&page="+page+"&regGrpID="+regGrpID;
+            
+            $.post(url, function(data){
+                draw_grid('CGUnitGridTable', data, grid, 'unit', cols);
+            });
+            
+            
+        });
+        
+        
+        var doResize;
+        
+        $(window).resize( function(){
+            clearTimeout(doResize);
+            $('#loading').show();
+            doResize = setTimeout( function(){
+                var g = $('#grid').val();
+                draw_grid('CGUnitGridTable', '', g, 'unit', cols);
+            }, 100 );
+        } );
+        
+        
+                
+        
+    } );
+
+
+
+
+/*
     var qualID;
     var unitID;
     var courseID;
@@ -426,9 +1522,9 @@ M.mod_bcgtcg.initunitgrid = function(Y, qualID, unitID, columnsLocked, configCol
 
             this.oApi._fnServerParams( oSettings, aData );
             oSettings.fnServerData.call( oSettings.oInstance, oSettings.sAjaxSource, aData, function(json) {
-                /* Clear the old information from the table */
+                // Clear the old information from the table 
                 that.oApi._fnClearTable( oSettings );
-                /* Got the data - add it to the table */
+                // Got the data - add it to the table 
                 var aData =  (oSettings.sAjaxDataProp !== "") ?
                     that.oApi._fnGetObjectDataFn( oSettings.sAjaxDataProp )( json ) : json;
 
@@ -445,7 +1541,7 @@ M.mod_bcgtcg.initunitgrid = function(Y, qualID, unitID, columnsLocked, configCol
                     that.fnDraw( false );
                 }
                 that.oApi._fnProcessingDisplay( oSettings, false );
-                /* Callback user function - for event handlers etc */
+                // Callback user function - for event handlers etc 
                 if ( typeof fnCallback == 'function' && fnCallback !== null )
                 {
                     fnCallback( oSettings );
@@ -511,6 +1607,10 @@ M.mod_bcgtcg.initunitgrid = function(Y, qualID, unitID, columnsLocked, configCol
     $(".gridbuttonswitchON").removeClass("gridbuttonswitchON");
      $(this).addClass("gridbuttonswitchON");
     });
+    
+    
+    */
+    
 }
 
 
@@ -537,6 +1637,36 @@ M.mod_bcgtcg.initstudunits = function(Y) {
            }); 
         }
     });
+    
+    
+    
+    $(document).ready( function(){
+        
+        $('td.nameCol').on('click', function(){
+
+            if (selectedSetID > 0)
+            {
+                var sID = $(this).attr('sID');
+                var qID = $(this).attr('qID');
+                var units = unitSets[selectedSetID];
+                var unitArray = units.split(',');
+                
+                // FIrst untick all for this student
+                $('.chq'+qID+'s'+sID).prop('checked', false);
+                
+                // Then loop through units in set and tick
+                for (var i = 0; i < unitArray.length; i++)
+                {
+                    $('#chs'+sID+'q'+qID+'u'+unitArray[i]).prop('checked', true);
+                }
+
+            }
+
+        }); 
+        
+    } );
+         
+    
          
     var unitCopy = Y.all('.unitsColumn');
     unitCopy.each(function(unit){
@@ -875,54 +2005,98 @@ function applyTT()
     
     var today = new Date();
     
-    // Set class for background yellow on comments
-    $('.tooltipContent').parents('td').addClass('criteriaComments');
-    $('.tooltipContent').parents('td').attr('title', 'title');
-    
-    //Gets the Unit details
-    $('.uNToolTip').each( function(){
-        
-        // Check is already bound
-        var aria = $(this).attr('aria-describedby');
-        
-        if (aria === undefined || (aria !== undefined && aria.search('ui-tooltip') < 0) ){
-            
-            $(this).tooltip( {
-                content: function(){
-
-                    var uID = $(this).attr('unitID');
-                    var sID = $(this).attr('studentID');
-                    var html = $('div#unitTooltipContent_'+uID+'_'+sID).html();
-                    return html;
-                }
-            } );
-            
-        }
-        
-    } );
+//    // Set class for background yellow on comments
+//    $('.tooltipContent').parents('td').addClass('criteriaComments');
+//    $('.tooltipContent').parents('td').attr('title', 'title');
+//    
+//    //Gets the Unit details
+//    $('.uNToolTip').each( function(){
+//        
+//        // Check is already bound
+//        var aria = $(this).attr('aria-describedby');
+//        
+//        if (aria === undefined || (aria !== undefined && aria.search('ui-tooltip') < 0) ){
+//            
+//            $(this).tooltip( {
+//                content: function(){
+//
+//                    var uID = $(this).attr('unitID');
+//                    var sID = $(this).attr('studentID');
+//                    var html = $('div#unitTooltipContent_'+uID+'_'+sID).html();
+//                    return html;
+//                }
+//            } );
+//            
+//        }
+//        
+//    } );
     
      
-    //    Gets the criteria comments
-    $('.stuValue').each( function(){
-        
-        // Check is already bound
-        var aria = $(this).attr('aria-describedby');
-        
-        if (aria === undefined || (aria !== undefined && aria.search('ui-tooltip') < 0) ){
-            
-            $(this).tooltip( {
-                content: function(){
+//    //    Gets the criteria comments
+//    $('.stuValue').each( function(){
+//        
+//        // Check is already bound
+//        var aria = $(this).attr('aria-describedby');
+//        
+//        if (aria === undefined || (aria !== undefined && aria.search('ui-tooltip') < 0) ){
+//            
+//            $(this).tooltip( {
+//                content: function(){
+//
+//                    var cID = $(this).attr('criteriaID');
+//                    var sID = $(this).attr('studentID');
+//                    var html = $('div#criteriaTooltipContent_'+cID+'_'+sID).html();
+//                    return html;
+//                }
+//            }  );
+//            
+//        }
+//        
+//    } );
 
-                    var cID = $(this).attr('criteriaID');
-                    var sID = $(this).attr('studentID');
-                    var html = $('div#criteriaTooltipContent_'+cID+'_'+sID).html();
-                    return html;
-                }
-            }  );
-            
-        }
+
+    $('.criteriaValueNonEdit').unbind('click');
+    $('.criteriaValueNonEdit').bind('click', function(){
         
-    } );
+        var t = $(this);
+        
+        // Check if it already has data brought back from ajax
+        var html = t.children('.criteriaContent').html();
+        if (html !== undefined && html !== ''){
+            
+            t.children('.criteriaContent').dialog({
+                resizable: false,
+                close: function(ev, ui){
+                    $(this).dialog('destroy');
+                }
+            });
+            
+        } 
+        
+                
+    });
+    
+          
+$('.uNToolTipInfo').unbind('click');
+$('.uNToolTipInfo').bind('click', function(){
+
+    var t = $(this);
+
+    // Check if it already has data brought back from ajax
+    var html = t.siblings('.unitInfoContent').html();
+    if (html !== ''){
+
+        t.siblings('.unitInfoContent').dialog({
+            resizable: false,
+            close: function(ev, ui){
+                $(this).dialog('destroy');
+            }
+        });
+
+    } 
+
+});
+
     
     
     $('.overallTask').each( function(){
@@ -947,50 +2121,29 @@ function applyTT()
     
     
     
-    $('.rangeValue').each( function(){
-        
-        // Check is already bound
-        var aria = $(this).attr('aria-describedby');
-        
-        if (aria === undefined || (aria !== undefined && aria.search('ui-tooltip') < 0) ){
-            
-            $(this).tooltip( {
-                content: function(){
-
-                    var rID = $(this).attr('rangeID');
-                    var uID = $(this).attr('unitID');
-                    var sID = $(this).attr('studentID');
-                    var html = $('div#rangeTooltipContent_'+rID+'_'+uID+'_'+sID).html();
-                    return html;
-                }
-            }  );
-            
-        }
-        
-    } );
+//    $('.rangeValue').each( function(){
+//        
+//        // Check is already bound
+//        var aria = $(this).attr('aria-describedby');
+//        
+//        if (aria === undefined || (aria !== undefined && aria.search('ui-tooltip') < 0) ){
+//            
+//            $(this).tooltip( {
+//                content: function(){
+//
+//                    var rID = $(this).attr('rangeID');
+//                    var uID = $(this).attr('unitID');
+//                    var sID = $(this).attr('studentID');
+//                    var html = $('div#rangeTooltipContent_'+rID+'_'+uID+'_'+sID).html();
+//                    return html;
+//                }
+//            }  );
+//            
+//        }
+//        
+//    } );
     
         
-    
-    $('.criteriaComments').each( function(){
-        
-        // Check is already bound
-        var aria = $(this).attr('aria-describedby');
-        
-        if (aria === undefined || (aria !== undefined && aria.search('ui-tooltip') < 0) ){
-            
-            $(this).tooltip( {
-                content: function(){
-
-                    var tt = $(this).find('div.tooltipContent');
-                    var html = $(tt).html();
-                    return html;
-
-                }
-            } );
-            
-        }
-        
-    } );
     
         
     $('.signOffTD').each( function(){
@@ -1018,101 +2171,151 @@ function applyTT()
     
 
     
+    
+    $('.bcgt_comments_dialog').each( function(indx, item){
+        
+        if (!$(item).hasClass('ui-dialog-content')){
+        
+            var cellID = $(item).attr('id');
+            var studentID = $(item).attr('studentID');
+            var critID = $(item).attr('critID');
+            var qualID = $(item).attr('qualID');
+            var unitID = $(item).attr('unitID');
+            var grid = $(item).attr('grid');
+            var imgID = $(item).attr('imgID');
+            
+            $(item).dialog({
+
+                autoOpen: false,
+                resizable: false,
+                show: {
+                    effect: "fade",
+                    duration: 500
+                },
+                hide: {
+                    effect: "fade",
+                    duration: 500
+                },
+                buttons: {
+                    "Save": function(){
+                        
+                        var comments = $(item).find('.dialogCommentText').val();
+                        comments = encodeURIComponent(comments);
+                        var params = {action: 'criteriaComment', params: {element: cellID, studentID: studentID, qualID: qualID, unitID: unitID, criteriaID: critID, grid: grid, comment: comments, imgID: imgID} };
+                        $.post( M.cfg.wwwroot+'/blocks/bcgt/plugins/bcgtcg/ajax/update_student_comments.php', params, function(data){
+                            eval(data);
+                        });
+                    },
+                    Cancel: function(){
+                        $(this).dialog("close");
+                    }
+                }
+
+            });
+        
+        }
+        
+    } );
+    
+    
+    $('.bcgt_unit_comments_dialog').each( function(indx, item){
+        
+        if (!$(item).hasClass('ui-dialog-content')){
+        
+            var cellID = $(item).attr('id');
+            var studentID = $(item).attr('studentID');
+            var qualID = $(item).attr('qualID');
+            var unitID = $(item).attr('unitID');
+            var grid = $(item).attr('grid');
+            var imgID = $(item).attr('imgID');
+            
+            $(item).dialog({
+
+                autoOpen: false,
+                resizable: false,
+                show: {
+                    effect: "fade",
+                    duration: 500
+                },
+                hide: {
+                    effect: "fade",
+                    duration: 500
+                },
+                buttons: {
+                    "Save": function(){
+                        
+                        var comments = $(item).find('.dialogCommentText').val();
+                        comments = encodeURIComponent(comments);
+                        var params = {action: 'unitComment', params: {element: cellID, studentID: studentID, qualID: qualID, unitID: unitID, grid: grid, comment: comments, imgID: imgID} };
+                        $.post( M.cfg.wwwroot+'/blocks/bcgt/plugins/bcgtcg/ajax/update_student_comments.php', params, function(data){
+                            eval(data);
+                        });
+                    },
+                    Cancel: function(){
+                        $(this).dialog("close");
+                    }
+                }
+
+            });
+        
+        }
+        
+    } );
+    
+    
+    
+    
+    
+    
     $('.addComments').unbind('click');
     $('.addComments').bind('click', function(){
-             
-        var idAttr = $(this).attr('id');
         
-        var criteriaID = $(this).attr("criteriaid");
-        var unitID = $(this).attr("unitid");
-        var studentID = $(this).attr("studentid");
-        var qualID = $(this).attr("qualid");
-
-        var username = $(this).attr("username");
-        var name = $(this).attr("fullname");
-        var unitName = $(this).attr("unitname");
-        var critName = $(this).attr("critname");
-        
-        var grid = $(this).attr("grid");
-        
-        cmt.setup(qualID, unitID, criteriaID, studentID, idAttr, grid);
-        cmt.create("popUpDiv", username, name, unitName, critName);
+        var idAttr = $(this).attr("id");
+        var criteriaID = idAttr.split('_')[2];
+        var studentID = idAttr.split('_')[6];
+        var qualID = idAttr.split('_')[8];
                 
+        $('#dialog_'+studentID+'_'+criteriaID+'_'+qualID).dialog("open");
         
     } );
     
     $('.editComments').unbind('click');
-    $('.editComments').unbind('mouseover');
     $('.editComments').bind('click', function(){
-                        
-        var idAttr = $(this).attr('id');
         
-        var criteriaID = $(this).attr("criteriaid");
-        var unitID = $(this).attr("unitid");
-        var studentID = $(this).attr("studentid");
-        var qualID = $(this).attr("qualid");
-
-        var username = $(this).attr("username");
-        var name = $(this).attr("fullname");
-        var unitName = $(this).attr("unitname");
-        var critName = $(this).attr("critname");
-        
-        var grid = $(this).attr("grid");
-        
-        var text = $(this).siblings('.tooltipContent').text();
-        
-        cmt.setup(qualID, unitID, criteriaID, studentID, idAttr, grid);
-        cmt.create("popUpDiv", username, name, unitName, critName, text);
+        var idAttr = $(this).attr("id");
+        var criteriaID = idAttr.split('_')[2];
+        var studentID = idAttr.split('_')[6];
+        var qualID = idAttr.split('_')[8];
                 
+        $('#dialog_'+studentID+'_'+criteriaID+'_'+qualID).dialog("open");
         
     } );
-        
+    
     
     // Unit Comments
     $('.addCommentsUnit').unbind('click');
     $('.addCommentsUnit').bind('click', function(){
-          
-        var idAttr = $(this).attr('id');
         
-        var unitID = $(this).attr("unitid");
-        var studentID = $(this).attr("studentid");
-        var qualID = $(this).attr("qualid");
-
-        var username = $(this).attr("username");
-        var name = $(this).attr("fullname");
-        var unitName = $(this).attr("unitname");
-        var critName = $(this).attr("critname");
-        
-        var grid = $(this).attr("grid");
-        
-        cmt.setup(qualID, unitID, -1, studentID, idAttr, grid);
-        cmt.create("popUpDiv", username, name, unitName, critName);
+        var idAttr = $(this).attr("id");
+        var unitID = idAttr.split('_')[2];
+        var studentID = idAttr.split('_')[4];
+        var qualID = idAttr.split('_')[6];
                 
+        $('#dialog_S'+studentID+'_U'+unitID+'_Q'+qualID).dialog("open");
         
     } );
+    
     
     $('.editCommentsUnit').unbind('click');
     $('.editCommentsUnit').unbind('mouseover');
     $('.editCommentsUnit').bind('click', function(){
-                
-        var idAttr = $(this).attr('id');
-                
-        var unitID = $(this).attr("unitid");
-        var studentID = $(this).attr("studentid");
-        var qualID = $(this).attr("qualid");
-
-        var username = $(this).attr("username");
-        var name = $(this).attr("fullname");
-        var unitName = $(this).attr("unitname");
-        var critName = $(this).attr("critname");
         
-        var grid = $(this).attr("grid");
-        
-        var text = $(this).siblings('.tooltipContent').text();
-        
-        cmt.setup(qualID, unitID, -1, studentID, idAttr, grid);
-        cmt.create("popUpDiv", username, name, unitName, critName, text);
+        var idAttr = $(this).attr("id");
+        var unitID = idAttr.split('_')[2];
+        var studentID = idAttr.split('_')[4];
+        var qualID = idAttr.split('_')[6];
                 
+        $('#dialog_S'+studentID+'_U'+unitID+'_Q'+qualID).dialog("open");
         
     } );
     
@@ -1120,72 +2323,43 @@ function applyTT()
     
     
     
-    $('#commentClose a, #cancelComment').unbind('click');
-    $('#commentClose a, #cancelComment').bind('click', function(){
-        cmt.reset();
-        cmt.cancel();
-    });
     
-    $('#saveComment').unbind('click');
-    $('#saveComment').bind('click', function(){
+    
+//    // Tooltip to show comments if there are some
+//    $('.showCommentsUnit').tooltip({
+//        delay: 0, 
+//        track: true,
+//        showURL: false,
+//        position: 'center right',
+//        relative: true,
+//        bodyHandler: function() {
+//            var text = $(this).siblings('.tooltipContent').text();
+//            return text;
+//        }
+//    });
+
+
+    $('.viewSomething').unbind('click');
+    $('.viewSomething').bind('click', function(){
         
-        var comments = encodeURIComponent( $('#commentText').val() );
+        var t = $(this);
         
-        // Criteria Comment
-        if (critID > 0){
-            var params = {action: 'criteriaComment', params: {element: cellID, studentID: studentID, qualID: qualID, unitID: unitID, criteriaID: critID, grid: grid, comment: comments} };
-        }
-        
-        // Unit Comment
-        else if(critID < 0 && unitID > 0){
-            var params = {action: 'unitComment', params: {element: cellID, studentID: studentID, qualID: qualID, unitID: unitID, grid: grid, comment: comments} };
-        }
-        
-        
-        $.post( M.cfg.wwwroot+'/blocks/bcgt/plugins/bcgtcg/ajax/update_student_comments.php', params, function(data){
-            eval(data);
-        });
+        // Check if it already has data brought back from ajax
+        var html = t.siblings('.thatSomething').html();
+        if (html !== ''){
+            
+            t.siblings('.thatSomething').dialog({
+                resizable: false,
+                close: function(ev, ui){
+                    $(this).dialog('destroy');
+                }
+            });
+            
+        } 
         
                 
     });
-    
-    $('#deleteComment').unbind('click');
-    $('#deleteComment').bind('click', function(){
-        
-        $('#commentText').val('');
-        var comments = '';
-        
-         // Criteria Comment
-        if (critID > 0){
-            var params = {action: 'criteriaComment', params: {element: cellID, studentID: studentID, qualID: qualID, unitID: unitID, criteriaID: critID, grid: grid, comment: comments} };
-        }
-        
-        // Unit Comment
-        else if(critID < 0 && unitID > 0){
-            var params = {action: 'unitComment', params: {element: cellID, studentID: studentID, qualID: qualID, unitID: unitID, grid: grid, comment: comments} };
-        }
-        
-        
-        $.post( M.cfg.wwwroot+'/blocks/bcgt/plugins/bcgtcg/ajax/update_student_comments.php', params, function(data){
-            eval(data);
-        });
-        
-        
-    });
-    
-    // Tooltip to show comments if there are some
-    $('.showCommentsUnit').tooltip({
-        delay: 0, 
-        track: true,
-        showURL: false,
-        position: 'center right',
-        relative: true,
-        bodyHandler: function() {
-            var text = $(this).siblings('.tooltipContent').text();
-            return text;
-        }
-    });
-    
+
     
     $('#saveQualComment').unbind('click');
     $('#saveQualComment').bind('click', function(){
@@ -1303,6 +2477,7 @@ function applyTT()
                 mode: $('#grid').val(),
                 grid: grid
             };    
+            
             update('updateUnitAttribute', params);    
 
         }
@@ -1454,194 +2629,432 @@ function applyTT()
         tmpDate = $(this).val();
     });
     
-    $( "#genericPopup" ).draggable();
+    $( "#genericPopup" ).draggable(
+        {
+            handle: "#genericContent"
+        }
+    );
         
     
     //$('#genericPopup').resizable();
+    
+    // Set class for background yellow on comments
+    $('.editComments, .editCommentsUnit, .tooltipContent').parents('td').addClass('criteriaComments');
+    $('.editComments, .editCommentsUnit, .tooltipContent').parents('td').attr('title', '');
+    
+    
+    $('.criteriaComments').each( function(){
+        
+        var aria = $(this).attr('aria-describedby');
+        if (aria === undefined || (aria !== undefined && aria.search('ui-tooltip') < 0) ){
+
+            $(this).tooltip( {
+                content: function(){
+
+                    var tt = $(this).find('div.tooltipContent');
+                    var html = $(tt).html();
+                    return html;
+                }
+            });
+
+        }
+        
+    } );
+    
+    // if IE, change button links to have onclick, because as we all know, IE is shit and plays by its own rules
+    if (navigator.appName === 'Microsoft Internet Explorer')
+    {
+        $('a input.btn').click(function(){
+            window.location = $(this).closest('a').attr('href');
+        });
+    }
     
     $(document).on('click', 'body', function(){
         $('.ui-tooltip').fadeOut();
     });
     
-    
+    $('#loading').hide();
         
 }
+
+function loading(end){
+    
+    if (end === false){
+        $('#loading').hide();
+    } else {
+        $('#loading').show();
+    }
+    
+}
+
+
+function applyClassTT(){
+    
+    // Select Criteria
+    $('.unitAward').unbind('change');
+    $('.unitAward').bind('change', function(e){
+        
+        var value = $(this).val();
+        var studentID = $(this).attr('studentID');
+        var unitID = $(this).attr('unitID');
+        var qualID = $(this).attr('qualID');
+        
+        var params = {
+            grid: 'student',
+            value: value,
+            sID: studentID,
+            uID: unitID,
+            qID: qualID
+        };
+        
+        var cell = $($(this).parents('td')[0]);
+        
+        runPost('update_student_unit_award.php', '', params, function(d){
+            
+            updateClassGrid(d, cell, qualID, studentID, unitID);
+            
+        });
+        
+    });
+    
+}
+
 
 
 function applyUnitTT(){
     
-    // Tick Criteria
-    var criteriaChecks = Y.all('.criteriaCheck');
-    if(criteriaChecks)
-    {
-        criteriaChecks.each(function(check){
-            check.detach();
-            check.on('click', function(e){
-                
-                //grey everything out first
-                Y.all('#unitGridDiv select, #unitGridDiv input, #unitGridDiv textarea, #studentGridDiv select, #studentGridDiv input, #studentGridDiv textarea').setAttribute('disabled', true);
-                Y.all("#popUpContent select, #popUpContent input, #popUpContent textarea").setAttribute('disabled', true);
-                
-                var critID = check.getAttribute('criteriaid');
-                var unitID = check.getAttribute('unitid');
-                var qualID = check.getAttribute('qualid');
-                var studentID = check.getAttribute('studentid');
-                var value = +check.get('checked');
-                var grid = check.getAttribute('grid');
-                                
-                var data = {
-                    method: 'post',
-                    data: {
-                        grid: grid,
-                        method: 'check',
-                        qualID: qualID,
-                        studentID: studentID,
-                        unitID: unitID,
-                        criteriaID: critID,
-                        value: value
-                    },
-                    dataType: 'json',
-                    on: {
-                        success: update_unit_grid
-                    }
-                }
-                
-                var url = M.cfg.wwwroot+"/blocks/bcgt/plugins/bcgtcg/ajax/update_student_value.php";
-                Y.io(url, data);
-                
-                $(":input").attr("disabled",false);
-                
-          });  
+    
+    // Criteria checkboxes    
+    $('.criteriaCheck').unbind('click');
+    $('.criteriaCheck').bind('click', function(e){
+        
+        var value = +$(this).is(':checked');
+        var studentID = $(this).attr('studentID');
+        var criteriaID = $(this).attr('criteriaID');
+        var unitID = $(this).attr('unitID');
+        var qualID = $(this).attr('qualID');
+        var grid = $(this).attr('grid');
+        
+        var params = {
+            grid: grid,
+            value: value,
+            studentID: studentID,
+            criteriaID: criteriaID,
+            unitID: unitID,
+            qualID: qualID,
+            method: 'check'
+        };
+        
+        var cell = $($(this).parents('td')[0]);
+        
+        runPost('update_student_value.php', '', params, function(d){
+            
+            updateUnitGrid(d, cell, qualID, studentID, unitID);
+            
         });
-    }
+        
+    });
         
     
     // Select Criteria
-    var criteriaSelects = Y.all('.criteriaValueSelect');
-    if(criteriaSelects)
-    {
-        criteriaSelects.each(function(sel){
-            sel.detach();
-            sel.on('change', function(e){
-                
-                //grey everything out first
-                Y.all('#unitGridDiv select, #unitGridDiv input, #unitGridDiv textarea').setAttribute('disabled', true);
-                Y.all("#popUpContent select, #popUpContent input, #popUpContent textarea").setAttribute('disabled', true);
-                
-                var critID = sel.getAttribute('criteriaid');
-                var unitID = sel.getAttribute('unitid');
-                var qualID = sel.getAttribute('qualid');
-                var studentID = sel.getAttribute('studentid');
-                var value = +sel.get('value');
-                var grid = sel.getAttribute('grid');
-                                
-                var data = {
-                    method: 'post',
-                    data: {
-                        grid: grid,
-                        method: 'select',
-                        qualID: qualID,
-                        studentID: studentID,
-                        unitID: unitID,
-                        criteriaID: critID,
-                        value: value
-                    },
-                    dataType: 'json',
-                    on: {
-                        success: update_unit_grid
-                    }
-                }
-                
-                var url = M.cfg.wwwroot+"/blocks/bcgt/plugins/bcgtcg/ajax/update_student_value.php";
-                Y.io(url, data);
-                
-                
-                
-          });  
-          
+    $('.criteriaValueSelect').unbind('change');
+    $('.criteriaValueSelect').bind('change', function(e){
+        
+        var value = $(this).val();
+        var studentID = $(this).attr('studentID');
+        var criteriaID = $(this).attr('criteriaID');
+        var unitID = $(this).attr('unitID');
+        var qualID = $(this).attr('qualID');
+        var grid = $(this).attr('grid');
+        
+        var params = {
+            grid: grid,
+            value: value,
+            studentID: studentID,
+            criteriaID: criteriaID,
+            unitID: unitID,
+            qualID: qualID,
+            method: 'select'
+        };
+        
+        var cell = $($(this).parents('td')[0]);
+        
+        runPost('update_student_value.php', '', params, function(d){
+            
+            updateUnitGrid(d, cell, qualID, studentID, unitID);
+            
         });
         
-    }
+    });
+    
     
     
     $('.criteriaValueDate').datepicker( {
         dateFormat: "dd-mm-yy",
         onSelect: function(date){
             
-            //grey everything out first
-            Y.all('#unitGridDiv select, #unitGridDiv input, #unitGridDiv textarea').setAttribute('disabled', true);
-            Y.all("#popUpContent select, #popUpContent input, #popUpContent textarea").setAttribute('disabled', true);
-
             var critID = $(this).attr('criteriaid');
             var unitID = $(this).attr('unitid');
             var qualID = $(this).attr('qualid');
             var studentID = $(this).attr('studentid');
             var grid = $(this).attr('grid');
 
-            var data = {
-                method: 'post',
-                data: {
-                    grid: grid,
-                    method: 'date',
-                    qualID: qualID,
-                    studentID: studentID,
-                    unitID: unitID,
-                    criteriaID: critID,
-                    value: date
-                },
-                dataType: 'json',
-                on: {
-                    success: update_unit_grid
-                }
-            }
+            var params = {
+                grid: grid,
+                value: date,
+                studentID: studentID,
+                criteriaID: critID,
+                unitID: unitID,
+                qualID: qualID,
+                method: 'date'
+            };
+            
+            var cell = $($(this).parents('td')[0]);
+            runPost('update_student_value.php', '', params, function(d){
 
-            var url = M.cfg.wwwroot+"/blocks/bcgt/plugins/bcgtcg/ajax/update_student_value.php";
-            Y.io(url, data);
+                updateUnitGrid(d, cell, qualID, studentID, unitID);
 
-            $(":input").attr("disabled",false);
+            });
             
         }
     } );
     
     
     
-    
-    var unitAward = Y.all('.unitAward');
-    if(unitAward)
-    {
-        unitAward.each(function(award){
-            award.detach();
-            award.on('change', function(e){
-                //grey everything out first
-                Y.all('#unitGridDiv select, #unitGridDiv input, #unitGridDiv textarea').setAttribute('disabled', true);
-                //get the id which will be the unitid
-                var idString = award.get('id');
-                
-                var unitID = award.getAttribute('unitid');
-                var studentID = award.getAttribute('studentid');
-                var qualID = award.getAttribute('qualid');
-                
-                var index = award.get('selectedIndex');
-                var value = award.get("options").item(index).getAttribute('value');
-                
-                var data = {
-                    method: 'POST',
-                    data: {
-                        'qID' : qualID, 
-                        'sID' : studentID, 
-                        'uID' : unitID,
-                        'value' : value,
-                        'grid' : 'unit'
-                    },
-                    on: {
-                        success: update_unit_grid
-                    }
-                }
-                var url = M.cfg.wwwroot+"/blocks/bcgt/plugins/bcgtcg/ajax/update_student_unit_award.php";
-                Y.io(url, data);
-            });
+     // User defined values - TEXT criteria
+    $('.criteriaUserDefinedValue').unbind();
+    $('.criteriaUserDefinedValue').bind('blur', function(){
+        
+        var value = $(this).val();
+        var critID = $(this).attr('criteriaid');
+        var unitID = $(this).attr('unitid');
+        var qualID = $(this).attr('qualid');
+        var studentID = $(this).attr('studentid');
+        var grid = $(this).attr('grid');
+
+        var params = {
+            grid: grid,
+            value: value,
+            studentID: studentID,
+            criteriaID: critID,
+            unitID: unitID,
+            qualID: qualID,
+            method: 'text'
+        };
+
+        var cell = $($(this).parents('td')[0]);
+
+        runPost('update_student_value.php', '', params, function(d){
+
+            updateUnitGrid(d, cell, qualID, studentID, unitID);
+
         });
-    }
+        
+    });
+    
+    
+    // Select Criteria
+    $('.unitAward').unbind('change');
+    $('.unitAward').bind('change', function(e){
+        
+        var value = $(this).val();
+        var studentID = $(this).attr('studentID');
+        var unitID = $(this).attr('unitID');
+        var qualID = $(this).attr('qualID');
+        
+        var params = {
+            grid: 'student',
+            value: value,
+            sID: studentID,
+            uID: unitID,
+            qID: qualID
+        };
+        
+        var cell = $($(this).parents('td')[0]);
+        
+        runPost('update_student_unit_award.php', '', params, function(d){
+            
+            updateUnitGrid(d, cell, qualID, studentID, unitID);
+            
+        });
+        
+    });
+    
+    
+    
+    
+//    // Tick Criteria
+//    var criteriaChecks = Y.all('.criteriaCheck');
+//    if(criteriaChecks)
+//    {
+//        criteriaChecks.each(function(check){
+//            check.detach();
+//            check.on('click', function(e){
+//                
+//                //grey everything out first
+//                Y.all('#unitGridDiv select, #unitGridDiv input, #unitGridDiv textarea, #studentGridDiv select, #studentGridDiv input, #studentGridDiv textarea').setAttribute('disabled', true);
+//                Y.all("#popUpContent select, #popUpContent input, #popUpContent textarea").setAttribute('disabled', true);
+//                
+//                var critID = check.getAttribute('criteriaid');
+//                var unitID = check.getAttribute('unitid');
+//                var qualID = check.getAttribute('qualid');
+//                var studentID = check.getAttribute('studentid');
+//                var value = +check.get('checked');
+//                var grid = check.getAttribute('grid');
+//                                
+//                var data = {
+//                    method: 'post',
+//                    data: {
+//                        grid: grid,
+//                        method: 'check',
+//                        qualID: qualID,
+//                        studentID: studentID,
+//                        unitID: unitID,
+//                        criteriaID: critID,
+//                        value: value
+//                    },
+//                    dataType: 'json',
+//                    on: {
+//                        success: update_unit_grid
+//                    }
+//                }
+//                
+//                var url = M.cfg.wwwroot+"/blocks/bcgt/plugins/bcgtcg/ajax/update_student_value.php";
+//                Y.io(url, data);
+//                
+//                $(":input").attr("disabled",false);
+//                
+//          });  
+//        });
+//    }
+//        
+//    
+//    // Select Criteria
+//    var criteriaSelects = Y.all('.criteriaValueSelect');
+//    if(criteriaSelects)
+//    {
+//        criteriaSelects.each(function(sel){
+//            sel.detach();
+//            sel.on('change', function(e){
+//                
+//                //grey everything out first
+//                Y.all('#unitGridDiv select, #unitGridDiv input, #unitGridDiv textarea').setAttribute('disabled', true);
+//                Y.all("#popUpContent select, #popUpContent input, #popUpContent textarea").setAttribute('disabled', true);
+//                
+//                var critID = sel.getAttribute('criteriaid');
+//                var unitID = sel.getAttribute('unitid');
+//                var qualID = sel.getAttribute('qualid');
+//                var studentID = sel.getAttribute('studentid');
+//                var value = +sel.get('value');
+//                var grid = sel.getAttribute('grid');
+//                                
+//                var data = {
+//                    method: 'post',
+//                    data: {
+//                        grid: grid,
+//                        method: 'select',
+//                        qualID: qualID,
+//                        studentID: studentID,
+//                        unitID: unitID,
+//                        criteriaID: critID,
+//                        value: value
+//                    },
+//                    dataType: 'json',
+//                    on: {
+//                        success: update_unit_grid
+//                    }
+//                }
+//                
+//                var url = M.cfg.wwwroot+"/blocks/bcgt/plugins/bcgtcg/ajax/update_student_value.php";
+//                Y.io(url, data);
+//                
+//                
+//                
+//          });  
+//          
+//        });
+//        
+//    }
+//    
+//    
+//    $('.criteriaValueDate').datepicker( {
+//        dateFormat: "dd-mm-yy",
+//        onSelect: function(date){
+//            
+//            //grey everything out first
+//            Y.all('#unitGridDiv select, #unitGridDiv input, #unitGridDiv textarea').setAttribute('disabled', true);
+//            Y.all("#popUpContent select, #popUpContent input, #popUpContent textarea").setAttribute('disabled', true);
+//
+//            var critID = $(this).attr('criteriaid');
+//            var unitID = $(this).attr('unitid');
+//            var qualID = $(this).attr('qualid');
+//            var studentID = $(this).attr('studentid');
+//            var grid = $(this).attr('grid');
+//
+//            var data = {
+//                method: 'post',
+//                data: {
+//                    grid: grid,
+//                    method: 'date',
+//                    qualID: qualID,
+//                    studentID: studentID,
+//                    unitID: unitID,
+//                    criteriaID: critID,
+//                    value: date
+//                },
+//                dataType: 'json',
+//                on: {
+//                    success: update_unit_grid
+//                }
+//            }
+//
+//            var url = M.cfg.wwwroot+"/blocks/bcgt/plugins/bcgtcg/ajax/update_student_value.php";
+//            Y.io(url, data);
+//
+//            $(":input").attr("disabled",false);
+//            
+//        }
+//    } );
+//    
+//    
+//    
+//    
+//    var unitAward = Y.all('.unitAward');
+//    if(unitAward)
+//    {
+//        unitAward.each(function(award){
+//            award.detach();
+//            award.on('change', function(e){
+//                //grey everything out first
+//                Y.all('#unitGridDiv select, #unitGridDiv input, #unitGridDiv textarea').setAttribute('disabled', true);
+//                //get the id which will be the unitid
+//                var idString = award.get('id');
+//                
+//                var unitID = award.getAttribute('unitid');
+//                var studentID = award.getAttribute('studentid');
+//                var qualID = award.getAttribute('qualid');
+//                
+//                var index = award.get('selectedIndex');
+//                var value = award.get("options").item(index).getAttribute('value');
+//                
+//                var data = {
+//                    method: 'POST',
+//                    data: {
+//                        'qID' : qualID, 
+//                        'sID' : studentID, 
+//                        'uID' : unitID,
+//                        'value' : value,
+//                        'grid' : 'unit'
+//                    },
+//                    on: {
+//                        success: update_unit_grid
+//                    }
+//                }
+//                var url = M.cfg.wwwroot+"/blocks/bcgt/plugins/bcgtcg/ajax/update_student_unit_award.php";
+//                Y.io(url, data);
+//            });
+//        });
+//    }
         
         
         
@@ -1663,178 +3076,266 @@ function applyUnitTT(){
 
 
 
+function updateStudentGrid(data, cell, unitID, studentID){
+    
+    var d = $.parseJSON(data);
+                
+    // Highlight criteria cell
+    $(cell).effect('highlight', {color: '#ccff66'}, 3000);
+
+    // If a unit award is present, highlight that cell as well (actually do it anyway, in case it's changing to -1)
+    //if ( $(cell).attr('id').indexOf('unitAward') === -1 ){
+        //$('#unitAwardCell_'+unitID+'_'+studentID).effect('highlight', {color: '#ccff66'}, 3000);
+    //}
+
+    // Also, set the new award
+    if (d.unitaward !== undefined && d.unitaward.awardid !== undefined){
+        if ( $('#unitAwardEdit_'+unitID+'_'+studentID).length > 0 ){
+            $('#unitAwardEdit_'+unitID+'_'+studentID).val( d.unitaward.awardid );
+        } else if( $('#unitAwardAdv_'+unitID+'_'+studentID).length > 0 ){
+            $('#unitAwardAdv_'+unitID+'_'+studentID).text( d.unitaward.awardvalue );
+        }
+    }
+
+    // Percentange
+    if (d.percentage !== undefined && d.percentage.percent !== undefined){
+        //$('#U'+unitID+'S'+studentID+'PercentParent').parent().parent().effect('highlight', {color: '#ccff66'}, 3000);
+        $('#U'+unitID+'S'+studentID+'PercentText').text(d.percentage.percent + '%');
+        $('#U'+unitID+'S'+studentID+'PercentParent').attr('title', d.percentage.percent + '% Complete');
+        $('#U'+unitID+'S'+studentID+'PercentComplete').css('width', d.percentage.percent + '%');
+    }
+
+
+    // Qual award
+    $('.qualAward').text( d.qualaward.awardvalue );
+    //$('.qualAward').parent().effect('highlight', {color: '#ccff66'}, 3000);
+    
+}
+
+
+
+function updateUnitGrid(data, cell, qualID, studentID, unitID){
+    
+    var d = $.parseJSON(data);
+            
+            
+            
+    // Highlight criteria cell
+    $(cell).effect('highlight', {color: '#ccff66'}, 3000);
+
+
+    // If a unit award is present, highlight that cell as well (actually do it anyway, in case it's changing to -1)
+    //if ( $(cell).attr('id').indexOf('unitAward') === -1 ){
+        //$('#unitAwardCell_'+studentID+'_'+qualID).effect('highlight', {color: '#ccff66'}, 3000);
+    //}
+
+    // Also, set the new award
+    if (d.unitaward !== undefined && d.unitaward.awardid !== undefined){
+        if ( $('#unitAwardEdit_'+studentID+'_'+qualID).length > 0 ){
+            $('#unitAwardEdit_'+studentID+'_'+qualID).val( d.unitaward.awardid );
+        } else if( $('#unitAwardAdv_'+studentID+'_'+qualID).length > 0 ){
+            $('#unitAwardAdv_'+studentID+'_'+qualID).text( d.unitaward.awardvalue );
+        }
+    }
+
+    // Percentange
+    if (d.percentage !== undefined && d.percentage.percent !== undefined){
+        //$('#U'+unitID+'S'+studentID+'PercentParent').parent().parent().effect('highlight', {color: '#ccff66'}, 3000);
+        $('#U'+unitID+'S'+studentID+'PercentText').text(d.percentage.percent + '%');
+        $('#U'+unitID+'S'+studentID+'PercentParent').attr('title', d.percentage.percent + '% Complete');
+        $('#U'+unitID+'S'+studentID+'PercentComplete').css('width', d.percentage.percent + '%');
+    }
+
+
+    // Qual award
+    $('.qualAward_'+studentID).text( d.qualaward.awardvalue );
+    //$('.qualAward_'+studentID).parent().effect('highlight', {color: '#ccff66'}, 3000);
+    
+}
+
+
+
+
+function updateActivityGrid(data, cell, unitID, studentID){
+                            
+    // Highlight criteria cell
+    $(cell).effect('highlight', {color: '#ccff66'}, 3000);
+
+}
+
+
+function updateClassGrid(data, cell, unitID, studentID){
+                            
+    // Highlight criteria cell
+    $(cell).effect('highlight', {color: '#ccff66'}, 3000);
+
+}
+
+
+
+
 
 
 function applyStudentTT(){
     
-    // Tick Criteria
-    var criteriaChecks = Y.all('.criteriaCheck');
-    if(criteriaChecks)
-    {
-        criteriaChecks.each(function(check){
-            check.detach();
-            check.on('click', function(e){
-                
-                //grey everything out first
-                Y.all('#unitGridDiv select, #unitGridDiv input, #unitGridDiv textarea, #studentGridDiv select, #studentGridDiv input, #studentGridDiv textarea').setAttribute('disabled', true);
-                Y.all("#popUpContent select, #popUpContent input, #popUpContent textarea").setAttribute('disabled', true);
-                
-                var critID = check.getAttribute('criteriaid');
-                var unitID = check.getAttribute('unitid');
-                var qualID = check.getAttribute('qualid');
-                var studentID = check.getAttribute('studentid');
-                var value = +check.get('checked');
-                var grid = check.getAttribute('grid');
-                                
-                var data = {
-                    method: 'post',
-                    data: {
-                        grid: grid,
-                        method: 'check',
-                        qualID: qualID,
-                        studentID: studentID,
-                        unitID: unitID,
-                        criteriaID: critID,
-                        value: value
-                    },
-                    dataType: 'json',
-                    on: {
-                        success: update_student_grid
-                    }
-                }
-                
-                var url = M.cfg.wwwroot+"/blocks/bcgt/plugins/bcgtcg/ajax/update_student_value.php";
-                Y.io(url, data);
-                
-                $(":input").attr("disabled",false);
-                
-          });  
+            
+    // Criteria checkboxes    
+    $('.criteriaCheck').unbind('click');
+    $('.criteriaCheck').bind('click', function(e){
+        
+        var value = +$(this).is(':checked');
+        var studentID = $(this).attr('studentID');
+        var criteriaID = $(this).attr('criteriaID');
+        var unitID = $(this).attr('unitID');
+        var qualID = $(this).attr('qualID');
+        var grid = $(this).attr('grid');
+        
+        var params = {
+            grid: grid,
+            value: value,
+            studentID: studentID,
+            criteriaID: criteriaID,
+            unitID: unitID,
+            qualID: qualID,
+            method: 'check'
+        };
+        
+        var cell = $($(this).parents('td')[0]);
+        
+        runPost('update_student_value.php', '', params, function(d){
+            
+            updateStudentGrid(d, cell, unitID, studentID);
+            
         });
-    }
+        
+    });
         
     
     // Select Criteria
-    var criteriaSelects = Y.all('.criteriaValueSelect');
-    if(criteriaSelects)
-    {
-        criteriaSelects.each(function(sel){
-            sel.detach();
-            sel.on('change', function(e){
-                
-                //grey everything out first
-                Y.all('#studentGridDiv select, #studentGridDiv input, #studentGridDiv textarea').setAttribute('disabled', true);
-                Y.all("#popUpContent select, #popUpContent input, #popUpContent textarea").setAttribute('disabled', true);
-                
-                var critID = sel.getAttribute('criteriaid');
-                var unitID = sel.getAttribute('unitid');
-                var qualID = sel.getAttribute('qualid');
-                var studentID = sel.getAttribute('studentid');
-                var value = +sel.get('value');
-                var grid = sel.getAttribute('grid');
-                                
-                var data = {
-                    method: 'post',
-                    data: {
-                        grid: grid,
-                        method: 'select',
-                        qualID: qualID,
-                        studentID: studentID,
-                        unitID: unitID,
-                        criteriaID: critID,
-                        value: value
-                    },
-                    dataType: 'json',
-                    on: {
-                        success: update_student_grid
-                    }
-                }
-                
-                var url = M.cfg.wwwroot+"/blocks/bcgt/plugins/bcgtcg/ajax/update_student_value.php";
-                Y.io(url, data);
-                
-                
-                
-          });  
-          
+    $('.criteriaValueSelect').unbind('change');
+    $('.criteriaValueSelect').bind('change', function(e){
+        
+        var value = $(this).val();
+        var studentID = $(this).attr('studentID');
+        var criteriaID = $(this).attr('criteriaID');
+        var unitID = $(this).attr('unitID');
+        var qualID = $(this).attr('qualID');
+        var grid = $(this).attr('grid');
+        
+        var params = {
+            grid: grid,
+            value: value,
+            studentID: studentID,
+            criteriaID: criteriaID,
+            unitID: unitID,
+            qualID: qualID,
+            method: 'select'
+        };
+        
+        var cell = $($(this).parents('td')[0]);
+        
+        runPost('update_student_value.php', '', params, function(d){
+            
+            updateStudentGrid(d, cell, unitID, studentID);
+            
         });
         
-    }
+    });
+    
+    
     
     $('.criteriaValueDate').datepicker( {
         dateFormat: "dd-mm-yy",
         onSelect: function(date){
             
-            //grey everything out first
-            Y.all('#studentGridDiv select, #studentGridDiv input, #studentGridDiv textarea').setAttribute('disabled', true);
-            Y.all("#popUpContent select, #popUpContent input, #popUpContent textarea").setAttribute('disabled', true);
-
             var critID = $(this).attr('criteriaid');
             var unitID = $(this).attr('unitid');
             var qualID = $(this).attr('qualid');
             var studentID = $(this).attr('studentid');
             var grid = $(this).attr('grid');
 
-            var data = {
-                method: 'post',
-                data: {
-                    grid: grid,
-                    method: 'date',
-                    qualID: qualID,
-                    studentID: studentID,
-                    unitID: unitID,
-                    criteriaID: critID,
-                    value: date
-                },
-                dataType: 'json',
-                on: {
-                    success: update_student_grid
-                }
-            }
+            var params = {
+                grid: grid,
+                value: date,
+                studentID: studentID,
+                criteriaID: critID,
+                unitID: unitID,
+                qualID: qualID,
+                method: 'date'
+            };
             
-            var url = M.cfg.wwwroot+"/blocks/bcgt/plugins/bcgtcg/ajax/update_student_value.php";
-            Y.io(url, data);
+            var cell = $($(this).parents('td')[0]);
+        
+            runPost('update_student_value.php', '', params, function(d){
 
-            $(":input").attr("disabled",false);
+                updateStudentGrid(d, cell, unitID, studentID);
+
+            });
             
         }
     } );
     
-    var unitAward = Y.all('.unitAward');
-    if(unitAward)
-    {
-        unitAward.each(function(award){
-            award.detach();
-            award.on('change', function(e){
-                //grey everything out first
-                Y.all('#studentGridDiv select, #studentGridDiv input, #studentGridDiv textarea').setAttribute('disabled', true);
-                //get the id which will be the unitid
-                var idString = award.get('id');
-                
-                var unitID = award.getAttribute('unitid');
-                var studentID = award.getAttribute('studentid');
-                var qualID = award.getAttribute('qualid');
-                
-                var index = award.get('selectedIndex');
-                var value = award.get("options").item(index).getAttribute('value');
-                
-                var data = {
-                    method: 'POST',
-                    data: {
-                        'qID' : qualID, 
-                        'sID' : studentID, 
-                        'uID' : unitID,
-                        'value' : value,
-                        'grid' : 'student'
-                    },
-                    on: {
-                        success: update_student_grid
-                    }
-                }
-                var url = M.cfg.wwwroot+"/blocks/bcgt/plugins/bcgtcg/ajax/update_student_unit_award.php";
-                Y.io(url, data);
-            });
+    
+    // User defined values - TEXT criteria
+    $('.criteriaUserDefinedValue').unbind();
+    $('.criteriaUserDefinedValue').bind('blur', function(){
+        
+        var value = $(this).val();
+        var critID = $(this).attr('criteriaid');
+        var unitID = $(this).attr('unitid');
+        var qualID = $(this).attr('qualid');
+        var studentID = $(this).attr('studentid');
+        var grid = $(this).attr('grid');
+
+        var params = {
+            grid: grid,
+            value: value,
+            studentID: studentID,
+            criteriaID: critID,
+            unitID: unitID,
+            qualID: qualID,
+            method: 'text'
+        };
+
+        var cell = $($(this).parents('td')[0]);
+
+        runPost('update_student_value.php', '', params, function(d){
+
+            updateStudentGrid(d, cell, unitID, studentID);
+
         });
-    }
+        
+        
+    });
+    
+    
+    // Select Criteria
+    $('.unitAward').unbind('change');
+    $('.unitAward').bind('change', function(e){
+        
+        var value = $(this).val();
+        var studentID = $(this).attr('studentID');
+        var unitID = $(this).attr('unitID');
+        var qualID = $(this).attr('qualID');
+        
+        var params = {
+            grid: 'student',
+            value: value,
+            sID: studentID,
+            uID: unitID,
+            qID: qualID
+        };
+        
+        var cell = $($(this).parents('td')[0]);
+        
+        runPost('update_student_unit_award.php', '', params, function(d){
+            
+            updateStudentGrid(d, cell, unitID, studentID);
+            
+        });
+        
+    });
+    
     
     
 }
@@ -1963,13 +3464,15 @@ function window_pos(popUpDivVar) {
 }
 
 
-function updateCommentCell(id, comment)
+
+function updateCommentCell(id, comment, imgID)
 {
     
     comment = comment.replace(/\\n/g, "<br>");
+    comment = comment.replace(/\+/g, " ");
     comment = $.trim(comment);
         
-    var button = $('#'+id);
+    var button = $('#'+imgID);
     
     // Empty comment, so set button to "add comment" style
     if(comment == "")
@@ -1979,7 +3482,7 @@ function updateCommentCell(id, comment)
         button.attr("title", "Click here to add comments");
         button.attr("alt", "Click here to add comments");     
         
-        var img = button.attr('src').replace('comments.jpg', 'plus.png');
+        var img = button.attr('src').replace('comment_edit', 'comment_add');
         button.attr("src", img);
 
         // Remove the tooltip div
@@ -1990,11 +3493,12 @@ function updateCommentCell(id, comment)
     // Else must be a comment so we changed button to "edit comment" style
     else
     {
+        
         button.attr("class", "editComments");
         button.attr("title", "Click here to edit comments");
         button.attr("alt", "Click here to edit comments");
         
-        var img = button.attr('src').replace('plus.png', 'comments.jpg');
+        var img = button.attr('src').replace('comment_add', 'comment_edit');
         button.attr("src", img);
 
         // Remove the tooltip div
@@ -2003,23 +3507,24 @@ function updateCommentCell(id, comment)
         comment = decodeURIComponent(comment);
 
         // Add the tooltip div
-        button.after("<div class='tooltipContent'>"+comment+"</div>");
+        $('#'+id).find('.dialogCommentText').val(comment);
 
     }
 
     applyTT();
-    cmt.cancel();
+    $('#'+id).dialog('close');
     
 }
 
 
-function updateUnitCommentCell(id, comment)
+function updateUnitCommentCell(id, comment, imgID)
 {
     
     comment = comment.replace(/\\n/g, "<br>");
+    comment = comment.replace(/\+/g, " ");
     comment = $.trim(comment);
         
-    var button = $('#'+id);
+    var button = $('#'+imgID);
     
     // Empty comment, so set button to "add comment" style
     if(comment == "")
@@ -2029,7 +3534,7 @@ function updateUnitCommentCell(id, comment)
         button.attr("title", "Click here to add comments");
         button.attr("alt", "Click here to add comments");     
         
-        var img = button.attr('src').replace('comments.jpg', 'plus.png');
+        var img = button.attr('src').replace('edit.png', 'add.png');
         button.attr("src", img);
 
         // Remove the tooltip div
@@ -2044,7 +3549,7 @@ function updateUnitCommentCell(id, comment)
         button.attr("title", "Click here to edit comments");
         button.attr("alt", "Click here to edit comments");
         
-        var img = button.attr('src').replace('plus.png', 'comments.jpg');
+        var img = button.attr('src').replace('add.png', 'edit.png');
         button.attr("src", img);
 
         // Remove the tooltip div
@@ -2053,12 +3558,12 @@ function updateUnitCommentCell(id, comment)
         comment = decodeURIComponent(comment);
 
         // Add the tooltip div
-        button.after("<div class='tooltipContent'>"+comment+"</div>");
+        $('#'+id).find('.dialogCommentText').val(comment);
 
     }
 
     applyTT();
-    cmt.cancel();
+    $('#'+id).dialog('close');
     
 }
 
@@ -2353,7 +3858,7 @@ function addNewCriterion()
         newSection += '<td><input type="hidden" name="criterionIDs['+d+']" value="-1" /><input type="text" placeholder="Name" name="criterionNames['+d+']" value="C'+numOfCriterion+'" class="critNameInput" id="critName_'+d+'" /></td>';
         newSection += '<td><textarea placeholder="Criteria Details" name="criterionDetails['+d+']" id="criterionDetails'+d+'" class="critDetailsTextArea"></textarea></td>';
         newSection += '<td><input title="Weighting" type="text" class="w40" name="criterionWeights['+d+']" value="1.00" /></td>';
-        newSection += '<td class="align-l"><input type="radio" name="criterionGradings['+d+']" value="PMD" checked /> Pass, Merit, Distinction<br><input type="radio" name="criterionGradings['+d+']" value="PCD" /> Pass, Credit, Distinction<br><input type="radio" name="criterionGradings['+d+']" value="P" /> Pass Only<br><input type="radio" name="criterionGradings['+d+']" value="DATE" /> Date</td>';
+        newSection += '<td class="align-l"><input type="radio" name="criterionGradings['+d+']" value="PMD" checked /> Pass, Merit, Distinction<br><input type="radio" name="criterionGradings['+d+']" value="PCD" /> Pass, Credit, Distinction<br><input type="radio" name="criterionGradings['+d+']" value="P" /> Pass Only<br><input type="radio" name="criterionGradings['+d+']" value="DATE" /> Date<br><input type="radio" name="criterionGradings['+d+']" value="TEXT" /> Free Text</td>';
         newSection += '<td><input type="text" class="w40" name="criterionOrders['+d+']" value="'+numOfCriterion+'" /></td>';
         newSection += '<td><select class="parent_criteria_select" name="criterionParents['+d+']"><option value=""></option></select></td>';
         newSection += '<td><a href="#" onclick="removeCriterionTable('+d+');return false;"><img src="'+M.cfg.wwwroot+'/blocks/bcgt/plugins/bcgtcg/pix/redX.png" /></a></td>';
@@ -2567,7 +4072,7 @@ function addNewHBVRQTask()
     
     newSection += '<tr class="taskRow_'+d+'">';
         newSection += '<td><input type="hidden" name="taskIDs['+d+']" value="-1" /><input type="text" placeholder="Name" name="taskNames['+d+']" value="T'+numOfTasks+'" class="critNameInput" id="taskName_'+d+'" /></td>';
-        newSection += '<td><select onchange="changeCriterionTypeVRQ(this.value, '+d+');return false;" name="taskTypes['+d+']"><option value="Summative">Summative</option><option value="Formative">Formative</option></select>';
+        newSection += '<td><select onchange="changeCriterionTypeVRQ(this.value, '+d+');return false;" name="taskTypes['+d+']"><option value="Summative">Summative</option><option value="Formative">Formative</option><option value="L1">Level 1 - PMD</option></select>';
         newSection += '<td><textarea style="width:100%;" placeholder="Task Details" name="taskDetails['+d+']" id="taskDetails'+d+'" class="critDetailsTextArea"></textarea></td>';
         newSection += '<td><input type="text" readonly="true" name="taskTargetDates['+d+']" class="bcgtDatePicker" /> </td>';
         newSection += '<td><input type="text" class="w40" name="taskOrders['+d+']" value="'+numOfTasks+'" /></td>';
@@ -2577,7 +4082,7 @@ function addNewHBVRQTask()
     // Observation row
     newSection += '<tr class="taskRow_'+d+'">';
         newSection += '<td colspan="6">';
-            newSection += loadHBVRQSummativeBox();
+            newSection += loadHBVRQSummativeBox(d);
         newSection += '</td>';
     newSection += '</tr>';
     
@@ -2776,7 +4281,7 @@ function addNewHBVRQObservation(pid)
     $('#observationRow_'+pid).append(newCol);
 
     // Add delete button to criteria header row
-    var deleteCol = '<td class="c noBorder Rng'+num+'"><a href="#" onclick="deleteObservation('+pid+', '+num+');return false;"><img src="'+M.cfg.wwwroot+'/blocks/bcgt/plugins/bcgtcg/pix/close.png" class="small" /></a></td>';
+    var deleteCol = '<td class="c noBorder Rng'+num+'"><a href="#" onclick="deleteHBRVQObservation('+pid+', '+num+');return false;"><img src="'+M.cfg.wwwroot+'/blocks/bcgt/plugins/bcgtcg/pix/close.png" class="small" /></a></td>';
     $('#buttonRow_'+pid).append(deleteCol);
 
     // Add conversion chart for observation
@@ -2954,6 +4459,7 @@ function loadSignOffSheets(studentID, unitID, qualID, sheetID)
 
 function callPopUp(type, params)
 {
+    $('#loading').show();
     $.post(M.cfg.wwwroot+'/blocks/bcgt/plugins/bcgtcg/ajax/popUpScript.php', {type: type, params: params}, function(data){
         eval(data);
         applyTT();
@@ -3089,10 +4595,373 @@ function changeCriterionTypeVRQ(type, id){
         
         $('.taskRow_'+id+':last td').html( loadHBVRQFormativeBox(id) );
         
-    } else {
+    } else if (type == 'Summative') {
         
         $('.taskRow_'+id+':last td').html( loadHBVRQSummativeBox(id) );
         
+    } else {
+        
+        $('.taskRow_'+id+':last td').html( '' );
+        
     }
+    
+}
+
+
+function saveHBVRQFormative(studentID, qualID, unitID, critID){
+    
+    var el = $('#details_studentID_'+studentID+'_qualID_'+qualID+'_critID_'+critID);
+    
+    var params = {
+        studentID: studentID,
+        qualID: qualID,
+        unitID: unitID,
+        criteriaID: critID,
+        value: $(el).val()
+    }
+
+    update('updateFormativeDetails', params);
+    
+}
+
+
+
+M.mod_bcgtcg.cgaddactivity = function(Y) {
+    //on change of uID
+    var unit = Y.one('#uID');
+    unit.on('change', function(e){
+        Y.one('#addActivity').submit();
+    } ); 
+    //onchange of aID
+    var activity = Y.one('#aID');
+    activity.on('change', function(e){
+        Y.one('#addActivity').submit();
+    } ); 
+}
+
+M.mod_bcgtcg.cgmodactivity = function(Y) {
+    //on change of uID
+    var unitAdd = $('#bcgtAddUnitCG');
+    if(unitAdd)
+    {
+           unitAdd.on("click", function(e){
+                e.preventDefault();
+                //go and load up the new unit selection. 
+                //need the unitid
+                //the courseid
+                //coursemoduleid
+                var courseID = unitAdd.attr('course');
+                var courseModuleID = unitAdd.attr('cmid');
+                var unitID = $('#nUIDCG').find(":selected").val();
+                var span = $('#bcgtloadingcg');
+                if(span)
+                {
+                    span.html('<img src="'+M.cfg.wwwroot+'/blocks/bcgt/pix/ajax-loader.gif" alt="" />');
+                }
+                var data = {
+                      method: 'POST',
+                      data: {
+                          'cID' : courseID, 
+                          'uID' : unitID, 
+                          'cmID' : courseModuleID
+                      },
+                      on: {
+                          success: update_mod_page
+                      }
+                  }
+                  var url = M.cfg.wwwroot+"/blocks/bcgt/plugins/bcgtcg/ajax/get_mod_selection.php";
+                  var request = Y.io(url, data);
+           }); 
+    }
+    
+    apply_mod_tt();
+}
+
+function update_mod_page(id, o)
+{
+    var data = o.responseText; // Response data.
+    var json = Y.JSON.parse(o.responseText);
+    if(json.retval != null)
+    {
+        var div = $('#bcgtMODAddUnitSelectionCG');
+        if(div)
+        {
+            div.append(json.retval);
+        }
+        var unitID = json.unit;
+        //set selected index to blank.
+        $("select#nUIDCG").prop('selectedIndex', 0);
+        //need to disable the option in the drop down. 
+        $("select#nUIDCG option[value='"+ unitID + "']").attr('disabled', true ); 
+        //need to add the id to the hidden list of units we have selected.
+        var unitsSelected = $('#bcgtunitsselectedcg').val() + "_" + unitID;
+        $('#bcgtunitsselectedcg').val(unitsSelected)
+    }
+    var span = $('#bcgtloadingcg');
+    if(span)
+    {
+        span.html('');
+    }
+    apply_mod_tt();
+}
+
+function apply_mod_tt()
+{
+    //need to listen for deletes etc. 
+    var remUnits = $('.remUnit');
+    if(remUnits)
+    {
+        $(remUnits).each(function(index){
+            $(this).on('click', function(e){
+                e.preventDefault();
+                var unitID = $(this).attr('unit');
+                var div = $('#bcgtunitMod_'+unitID);
+                if(div)
+                {
+                    $(div).remove();
+                }
+                
+                //also need to add back to drop down.
+                //no lets re-enable it. 
+                $("select#nUIDCG option[value='"+ unitID + "']").attr('disabled', false); 
+                
+                //need to remove the id from the hidden list of units we have selected.
+                var unitsSelected = $('#bcgtunitsselected').val();
+                unitsSelected.replace("_"+unitID,"");
+                $('#bcgtunitsselected').val(unitsSelected);
+            });
+        });   
+    }
+}
+
+M.mod_bcgtcg.initactivitiescheck = function(Y) {
+    $(document).ready(function() {
+	var $dialogBoxContent = $('<div id="dialogBoxContent"></div>')
+		.dialog({
+			autoOpen: false,
+			title: 'Gradebook Details',
+            modal: true,
+            dialogClass: 'bcgtdialogmodcheck'    
+		});
+
+	$('.criteriamod').on('click', function(e) {
+        //reset the html to the loading symbol. 
+        $dialogBoxContent.html('<img class="modalload" src="'+M.cfg.wwwroot+'/blocks/bcgt/pix/ajax-loader.gif" alt="" />');
+		$dialogBoxContent.dialog('open');
+		// prevent the default action, e.g., following a link
+		e.preventDefault();
+        var courseID = $(this).attr('course');
+        var unitID = -1;
+        var criteriaID = $(this).attr('crit');
+        var qualID = $(this).attr('qual');
+        var modType = $(this).attr('mod');
+        var userID = -1;
+        var cmID = -1;
+        //this will now go and get the data based onn the attributes through ajax.
+        var data = {
+            method: 'POST',
+            data: {
+                'cID' : courseID, 
+                'uID' : unitID, 
+                'cmID' : cmID,
+                'sID' : userID,
+                'mod' : modType,
+                'qID' : qualID,
+                'criteriaID' : criteriaID
+            },
+            on: {
+                success: display_modal
+            }
+        }
+//        alert(JSON.stringify(data));
+        var url = M.cfg.wwwroot+"/blocks/bcgt/ajax/get_mod_details.php";
+        var request = Y.io(url, data);
+        
+	});
+});
+
+    //listen for the red x on click:
+    var noCriterias = $('.bcgtcritnoass');
+    if(noCriterias)
+    {
+        noCriterias.on('click', function(e){
+           var courseID = $(this).attr('course');
+           var unitID = $(this).attr('uID');
+           var familyID = $(this).attr('fID');
+           
+           //go to add activity
+           var link = M.cfg.wwwroot+'/blocks/bcgt/forms/add_activity.php?'+
+                        'page=addact&uID='+unitID+'&cID='+courseID+
+                        '&fID='+familyID+'';
+           window.location.href = link;
+        });
+    }
+}
+
+function display_modal(id, o)
+{
+    var data = o.responseText; // Response data.
+    var json = Y.JSON.parse(o.responseText);
+    var div = $('#dialogBoxContent');
+    if(div)
+    {
+        div.html('');    
+    }
+    if(json.retval != null && div)
+    { 
+        div.html(json.retval); 
+    }
+    apply_mod_link_TT();
+}
+
+function apply_mod_link_TT()
+{
+    //listen out for the modal button clicks. 
+    
+    //close the diaplog
+    
+    //go to the corect destination
+    
+    //activity tracker
+    //or activity
+    
+    var actTracking = $('input.acttracking');
+    if(actTracking)
+    {
+        actTracking.on('click', function(e){
+        e.preventDefault();
+           var courseID = $(this).attr('course');
+           var qualID = $(this).attr('qID');
+           var cmID = $(this).attr('cmID');
+           var groupingID = $(this).attr('grID');
+           
+           //go to activity grid. 
+           var link = M.cfg.wwwroot+'/blocks/bcgt/grids/act_grid.php?cID='+
+                        courseID+'&cmID='+cmID+'&grID='+groupingID+'&qID='+qualID;
+           window.location.href = link;
+        });
+    }
+    
+    var act = $('input.act');
+    if(act)
+    {
+        act.on('click', function(e){
+            e.preventDefault();
+           var cmID = $(this).attr('cmid');
+           var mod = $(this).attr('mod');
+           //go to add activity
+           //go to add activity
+           var link = M.cfg.wwwroot+'/mod/'+mod+'/view.php?'+
+                        'id='+cmID+'';
+           window.location.href = link;
+        });
+    }
+}
+
+
+
+
+
+M.mod_bcgtcg.initclassgrid = function(Y, qualID, grid, columnsLocked) {
+
+    var qualID;
+    var grid;
+    var columnsLocked;
+    
+    
+    $(document).ready( function(){
+        
+        draw_grid('CGClassGridTable', '', grid, 'class', columnsLocked);
+        
+        $('#viewsimple').unbind('click');
+        $('#viewsimple').bind('click', function(){
+            
+            $('#loading').show();
+
+            // Set grid hidden input
+            $('#grid').val('s');
+            
+            var page = $('#pageInput').val();
+            var courseID = $('#scID').val();
+            var groupID = $('#grID').val();
+            var flag = '';
+    
+            // Get data
+            var grid = $('#grid').val();
+            var url = M.cfg.wwwroot+"/blocks/bcgt/plugins/bcgtcg/ajax/get_class_grid.php?qID="+qualID+"&g="+grid+"&f="+flag+"&cID="+courseID+"&page="+page+"&grID="+groupID;            
+            
+            $.post(url, function(data){
+                draw_grid('CGClassGridTable', data, grid, 'class', columnsLocked);
+            });
+            
+            
+        });
+        
+        
+        $('#editsimple').unbind('click');
+        $('#editsimple').bind('click', function(){
+            
+            $('#loading').show();
+
+            // Set grid hidden input
+            $('#grid').val('se');
+            
+            var page = $('#pageInput').val();
+            var courseID = $('#scID').val();
+            var groupID = $('#grID').val();
+            var flag = '';
+    
+            // Get data
+            var grid = $('#grid').val();
+            var url = M.cfg.wwwroot+"/blocks/bcgt/plugins/bcgtcg/ajax/get_class_grid.php?qID="+qualID+"&g="+grid+"&f="+flag+"&cID="+courseID+"&page="+page+"&grID="+groupID;            
+            
+            $.post(url, function(data){
+                draw_grid('CGClassGridTable', data, grid, 'class', columnsLocked);
+            });
+            
+            
+        });
+        
+        
+        $('.classgridpage').unbind('click');
+        $('.classgridpage').bind('click', function(e){
+            
+            $('#loading').show();
+            
+            e.preventDefault();
+            $('.classgridpage').removeClass('active');
+            var page = $(this).attr('page');
+            $('#pageInput').val(page);
+            
+            var flag = '';
+            var courseID = $('#scID').val();
+            var groupID = $('#grID').val();
+            var grid = $('#grid').val();
+            var url = M.cfg.wwwroot+"/blocks/bcgt/plugins/bcgtcg/ajax/get_class_grid.php?qID="+qualID+"&g="+grid+"&f="+flag+"&cID="+courseID+"&page="+page+"&grID="+groupID;            
+            
+            $.post(url, function(data){
+                draw_grid('CGClassGridTable', data, grid, 'class', columnsLocked);
+            });
+            
+            $(this).addClass('active');
+            
+        });
+        
+           
+        
+        var doResize;
+        
+        $(window).resize( function(){
+            clearTimeout(doResize);
+            $('#loading').show();
+            doResize = setTimeout( function(){
+                var g = $('#grid').val();
+                draw_grid('CGClassGridTable', '', g, 'class', columnsLocked);
+            }, 100 );
+        } );
+        
+        
+    } );
+    
     
 }

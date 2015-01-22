@@ -33,6 +33,9 @@ class UserPriorLearning {
     protected $importmissingsubject;
     protected $importmissinggrade;
     protected $importmissinguser;
+    protected $calculateTargetGrade;
+    protected $calculateAspGrade;
+    
     
     protected $summary;
     protected $success;
@@ -165,6 +168,15 @@ class UserPriorLearning {
         $retval .= '<tr><td><label for="option4">'.get_string('plcreatemissinguser', 'block_bcgt').' : </label></td>';
         $retval .= '<td><input type="checkbox" name="option4"/></td>';
         $retval .= '<td><span class="description">('.get_string('plcreatemissinguserdesc', 'block_bcgt').')</span></td></tr>';
+        
+        $retval .= '<tr><td><label for="option5">'.get_string('plcalculatetargetgrades', 'block_bcgt').' : </label></td>';
+        $retval .= '<td><input type="checkbox" name="option5"/></td>';
+        $retval .= '<td><span class="description">('.get_string('plcalculatetargetgradesdesc', 'block_bcgt').')</span></td></tr>';
+        
+        $retval .= '<tr><td><label for="option6">'.get_string('plcalculateaspgrades', 'block_bcgt').' : </label></td>';
+        $retval .= '<td><input type="checkbox" name="option6"/></td>';
+        $retval .= '<td><span class="description">('.get_string('plcalculateaspgradesdesc', 'block_bcgt').')</span></td></tr>';
+        
         $retval .= '</table>';
         return $retval;
     }
@@ -186,6 +198,24 @@ class UserPriorLearning {
         if(isset($_POST['option4']))
         {
             $this->importmissinguser = true;
+        }
+        
+        if(isset($_POST['option5']))
+        {
+            $this->calculateTargetGrade = true;
+        }
+        else
+        {
+            $this->calculateTargetGrade = false;
+        }
+        
+        if(isset($_POST['option6']))
+        {
+            $this->calculateAspGrade = true;
+        }
+        else
+        {
+            $this->calculateAspGrade = false;
         }
     }
     
@@ -211,7 +241,9 @@ class UserPriorLearning {
             {
                 //TODO think about lower and upper case: Mark 12th sept 2013. 
                 
-                
+                if (empty($userPLearn[0])){
+                    continue;
+                }
                 //find the user
                 //find the qualid
                 //find the gradeid
@@ -225,12 +257,14 @@ class UserPriorLearning {
                         continue;
                     }
                     $obj = new stdClass();
-                    $obj->username = $userPLearn[0];
-                    $obj->email = $userPLearn[0].'@something.something';
-                    $obj->firstname = $userPLearn[0];
-                    $obj->lastname = $userPLearn[0];
+                    $obj->username = trim($userPLearn[0]);
+                    $obj->email = trim($userPLearn[0]).'@student.bedford.ac.uk';
+                    $obj->firstname = trim($userPLearn[0]);
+                    $obj->lastname = trim($userPLearn[0]);
                     $obj->country = 0;
-                    $obj->city = 'Unknown';
+                    $obj->city = 'Bedford';
+                    $obj->confirmed = 1;
+                    $obj->institution = 'Student';
                     $userID = $DB->insert_record('user', $obj);
                 }
                 else
@@ -318,7 +352,8 @@ class UserPriorLearning {
         {
             //then calculate average gcse scores
             $userCourseTarget = new UserCourseTarget();
-            $userCourseTarget->calculate_users_average_gcse_score($usersArray, true);
+            $userCourseTarget->calculate_aspirational_grades_check($this->calculateAspGrade);
+            $userCourseTarget->calculate_users_average_gcse_score($usersArray, $this->calculateTargetGrade);
         }
         $success = true;
         if((!$this->importmissinguser && count($userNotFound) > 0) ||
@@ -380,7 +415,7 @@ class UserPriorLearning {
             JOIN {block_bcgt_prior_qual_grades} grades ON grades.id = plearn.bcgtpriorqualgradesid 
             JOIN {block_bcgt_prior_qual} qual ON qual.id = grades.bcgtpriorqualid
             JOIN {block_bcgt_subject} subject ON subject.id = plearn.bcgtsubjectid 
-            WHERE plearn.userid = ? AND (qual.name = ? || qual.name = ? || qual.name = ?)";
+            WHERE plearn.userid = ? AND (qual.name = ? OR qual.name = ? OR qual.name = ?)";
         //this should IDEALLY do an object or UserPriorLearning that has an array of each qual object. This qual object
         //should then have an array of all Grade options!
         $records = $DB->get_records_sql($sql, array($userID, UserPriorLearning::GCSE, UserPriorLearning::GCSES, UserPriorLearning::GCSED));
@@ -587,10 +622,26 @@ class UserPriorLearning {
         $records = $DB->get_records_sql($sql, array($userID));
         if($records)
         {
-            //then we do have prior learning.
-            //do we have an avg score?
-            $targetGradeOut = '<span style="color:grey">'.
+            //then we do have prior learning
+            //do we have gcses?
+            $sql = "SELECT distinct(q.id), q.* FROM {block_bcgt_user_prlearn} up 
+                JOIN {block_bcgt_prior_qual_grades} g ON g.id = up.bcgtpriorqualgradesid 
+                JOIN {block_bcgt_prior_qual} q ON q.id = g.bcgtpriorqualid 
+                WHERE userid = ? AND (q.name = ? OR q.name = ? OR q.name = ?)";
+            $records = $DB->get_records_sql($sql, array($userID, 'GCSE', 'GCSE Short Course', 'GCSE Double Award'));
+            if($records)
+            {
+                //so we have an average gcse score from it 
+                //we must not be able to calculate one
+                $targetGradeOut = '<span style="color:grey">'.
+                    get_string('reportnotg', 'block_bcgt').'</span>';
+            }
+            else
+            {
+                //do we have an avg score?
+                $targetGradeOut = '<span style="color:grey">'.
                     get_string('reportnogcse', 'block_bcgt').'</span>';
+            }
         }
         else
         {

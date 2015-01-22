@@ -15,6 +15,7 @@ var helloWorld = function(e) {
 
 var reloadEditQualForm = function(changeType) {
         
+    var courseID = Y.one('#cID').get('value');
     var typeID = Y.one('#tID').get('value');
     var qualID = Y.one('#qID').get('value');
     var index = Y.one("#qualFamilySelect").get('selectedIndex');
@@ -42,7 +43,7 @@ var reloadEditQualForm = function(changeType) {
         var pathwaySubType = -1;
     }
     
-    self.location='edit_qual.php?fID='+familyID+'&tID='+typeID+'&qID='+qualID+'&pathway='+pathway+'&pathwaytype='+pathwayType+'&subtype='+pathwaySubType;
+    self.location='edit_qual.php?fID='+familyID+'&tID='+typeID+'&qID='+qualID+'&pathway='+pathway+'&pathwaytype='+pathwayType+'&subtype='+pathwaySubType+'&cID='+courseID;
 }
 
 var checkMultipleSelects = function(select){
