@@ -3867,7 +3867,7 @@ abstract class Qualification {
 //            ) AS dissaward ON dissaward.userid = u.id";
             $sql .= " LEFT OUTER JOIN
             (
-                SELECT count(bcgtunitid) as unitcount, userid
+                SELECT count(distinct bcgtunitid) as unitcount, userid
                 FROM {block_bcgt_user_unit} AS userunit
                 WHERE userunit.bcgtqualificationid = ?
                 GROUP BY userid
@@ -4868,37 +4868,37 @@ abstract class Qualification {
                     {
                         
                         // P
-                        $countP = $DB->count_records_sql("select count(c.id)
+                        $countP = $DB->count_records_sql("select count(distinct c.id)
                                                             from {block_bcgt_user_criteria} uc
                                                             inner join {block_bcgt_criteria} c on c.id = uc.bcgtcriteriaid
                                                             inner join {block_bcgt_value} v ON v.id = uc.bcgtvalueid
                                                             where uc.userid = ? and c.name LIKE 'P%' and v.specialval = 'A' and uc.bcgtqualificationid = ?", array($student->userid, $this->id));
                         
-                        $countPTotal = $DB->count_records_sql("select count(c.id)
+                        $countPTotal = $DB->count_records_sql("select count(distinct c.id)
                                                                 from {block_bcgt_criteria} c
                                                                 inner join {block_bcgt_user_unit} uu ON uu.bcgtunitid = c.bcgtunitid
                                                                 where uu.bcgtqualificationid = ? AND c.name LIKE 'P%' AND uu.userid = ?", array($this->id, $student->userid));
                         
                         // M
-                        $countM = $DB->count_records_sql("select count(c.id)
+                        $countM = $DB->count_records_sql("select count(distinct c.id)
                                                             from {block_bcgt_user_criteria} uc
                                                             inner join {block_bcgt_criteria} c on c.id = uc.bcgtcriteriaid
                                                             inner join {block_bcgt_value} v ON v.id = uc.bcgtvalueid
                                                             where uc.userid = ? and c.name LIKE 'M%' and v.specialval = 'A' and uc.bcgtqualificationid = ?", array($student->userid, $this->id));
                         
-                        $countMTotal = $DB->count_records_sql("select count(c.id)
+                        $countMTotal = $DB->count_records_sql("select count(distinct c.id)
                                                                 from {block_bcgt_criteria} c
                                                                 inner join {block_bcgt_user_unit} uu ON uu.bcgtunitid = c.bcgtunitid
                                                                 where uu.bcgtqualificationid = ? AND c.name LIKE 'M%' AND uu.userid = ?", array($this->id, $student->userid));
                        
                         // P
-                        $countD = $DB->count_records_sql("select count(c.id)
+                        $countD = $DB->count_records_sql("select count(distinct c.id)
                                                             from {block_bcgt_user_criteria} uc
                                                             inner join {block_bcgt_criteria} c on c.id = uc.bcgtcriteriaid
                                                             inner join {block_bcgt_value} v ON v.id = uc.bcgtvalueid
                                                             where uc.userid = ? and c.name LIKE 'D%' and v.specialval = 'A' and uc.bcgtqualificationid = ?", array($student->userid, $this->id));
                         
-                        $countDTotal = $DB->count_records_sql("select count(c.id)
+                        $countDTotal = $DB->count_records_sql("select count(distinct c.id)
                                                                 from {block_bcgt_criteria} c
                                                                 inner join {block_bcgt_user_unit} uu ON uu.bcgtunitid = c.bcgtunitid
                                                                 where uu.bcgtqualificationid = ? AND c.name LIKE 'D%' AND uu.userid = ?", array($this->id, $student->userid));

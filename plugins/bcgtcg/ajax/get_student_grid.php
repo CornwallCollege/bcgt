@@ -36,11 +36,9 @@ if($grid == 'a' || $grid == 'ae')
 {
     $advancedMode = true;
 }
-$editing = false;
-if($grid == 'se' || $grid == 'ae')
-{
-    $editing = true;
-}
+
+$editing = (has_capability('block/bcgt:editstudentgrid', $context) && in_array($grid, array('se', 'ae'))) ? true : false;
+
 global $CFG;
 
 

@@ -1762,7 +1762,6 @@ class CGQualification extends Qualification {
         }
         
         $editing = (has_capability('block/bcgt:editstudentgrid', $context) && in_array($grid, array('se', 'ae'))) ? true : false;
-        
         $cols = 3;
         if ($this->has_percentage_completions()){
             $cols++;
@@ -1779,17 +1778,22 @@ class CGQualification extends Qualification {
                 $retval .= "&nbsp;&nbsp;&nbsp;&nbsp;";
                 $retval .= "<input type='button' id='viewadvanced' class='btn' value='View Advanced' />";                
                 
-                $retval .= "&nbsp;&nbsp;&nbsp;&nbsp;";
-                $retval .= "&nbsp;&nbsp;&nbsp;&nbsp;";
-                $retval .= "&nbsp;&nbsp;&nbsp;&nbsp;";
+                if (has_capability('block/bcgt:editstudentgrid', $context))
+                {
                 
-                $retval .= "<input type='button' id='editsimple' class='btn' value='Edit Simple' />";
-                $retval .= "&nbsp;&nbsp;&nbsp;&nbsp;";
-                $retval .= "<input type='button' id='editadvanced' class='btn' value='Edit Advanced' />";                
+                    $retval .= "&nbsp;&nbsp;&nbsp;&nbsp;";
+                    $retval .= "&nbsp;&nbsp;&nbsp;&nbsp;";
+                    $retval .= "&nbsp;&nbsp;&nbsp;&nbsp;";
+
+                    $retval .= "<input type='button' id='editsimple' class='btn' value='Edit Simple' />";
+                    $retval .= "&nbsp;&nbsp;&nbsp;&nbsp;";
+                    $retval .= "<input type='button' id='editadvanced' class='btn' value='Edit Advanced' />";                
+
+                    $retval .= "<br><br>";
+                    $retval .= "<a href='#' onclick='toggleAddComments();return false;'><input id='toggleCommentsButton' type='button' class='btn' value='".get_string('addcomment', 'block_bcgt')."' disabled='disabled' /></a>";
                     
-                $retval .= "<br><br>";
-                $retval .= "<a href='#' onclick='toggleAddComments();return false;'><input id='toggleCommentsButton' type='button' class='btn' value='".get_string('addcomment', 'block_bcgt')."' disabled='disabled' /></a>";
-                    
+                }
+                
             $retval .= "</div>";
         
         }
@@ -2004,6 +2008,7 @@ JS;
         $unitSorter = new UnitSorter();
 		usort($units, array($unitSorter, "ComparisonDelegateByType"));        
         $possibleValues = null;
+                
         if($advancedMode && $editing)
         {
            $possibleValues = $this->get_possible_values(CGQualification::ID, true); 
